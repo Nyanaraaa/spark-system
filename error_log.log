@@ -1,0 +1,5 @@
+[01-Jan-2025 04:59:42 Europe/Berlin] PHP Fatal error:  Uncaught mysqli_sql_exception: Column 'day' cannot be null in C:\xampp\htdocs\spark8\delete_schedule.php:45
+Stack trace:
+#0 C:\xampp\htdocs\spark8\delete_schedule.php(45): mysqli_stmt->execute()
+#1 {main}
+  thrown in C:\xampp\htdocs\spark8\delete_schedule.php on line 45

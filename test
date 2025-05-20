@@ -1,0 +1,517 @@
+<?php
+session_start();
+require 'database.php'; 
+
+
+if (!isset($_SESSION['staff_id'])) {
+    echo "Access denied. Please log in.";
+    exit();
+}
+
+
+$stmt = $conn->prepare("SELECT staff_id, first_name, last_name FROM staff WHERE staff_id = ?");
+$stmt->bind_param("i", $_SESSION['staff_id']); 
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+   
+    $staff = $result->fetch_assoc();
+    $staff_id = $staff['staff_id'];
+    $first_name = $staff['first_name'];
+    $last_name = $staff['last_name'];
+} else {
+    echo "No staff record found.";
+    exit();
+}
+
+$schedule_stmt = $conn->prepare("SELECT days, shift_time, location, break_time FROM staff_schedule WHERE staff_id = ?");
+$schedule_stmt->bind_param("i", $staff_id);
+$schedule_stmt->execute();
+$schedule_result = $schedule_stmt->get_result();
+
+
+
+$leaderboard_stmt = $conn->prepare("
+    SELECT evaluations.employee_id, 
+           CONCAT(first_name, ' ', last_name) AS full_name, 
+           SUM(rating) AS total_rating 
+    FROM evaluations 
+    JOIN staff ON evaluations.employee_id = staff.employee_id 
+    GROUP BY evaluations.employee_id
+");
+
+
+$leaderboard_stmt->execute();
+$leaderboard_result = $leaderboard_stmt->get_result();
+
+
+$max_rating = 0;
+$top_performers = [];
+
+if ($leaderboard_result->num_rows > 0) {
+    while ($row = $leaderboard_result->fetch_assoc()) {
+        if ($row['total_rating'] > $max_rating) {
+            
+            $max_rating = $row['total_rating'];
+            $top_performers = [$row]; 
+        } elseif ($row['total_rating'] == $max_rating) {
+           
+            $top_performers[] = $row;
+        }
+    }
+}
+
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPARK-Housekeeping Staff</title>
+   
+    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="housekeeping_dashboard.css?v=<?php echo filemtime('housekeeping_dashboard.css'); ?>">
+    
+</head>
+
+<body>
+
+  
+    <button class="btn btn-tertiary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
+        <i class="lni lni-menu"></i>
+    </button>
+
+   
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasSidebarLabel">MENU</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="sidebar-nav list-unstyled">
+                
+                <li class="sidebar-item">
+                    <a href="housekeepingdashboard.php" class="sidebar-link">
+                        <i class="lni lni-dashboard"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="housekeepingprofile.php" class="sidebar-link">
+                        <i class="lni lni-user"></i>
+                        <span>Account</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                   
+                    <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
+                        data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
+                        <i class="lni lni-agenda"></i>
+                        <span>Task</span>
+                        <i class="lni lni-chevron-down" style="margin-left: auto;"></i>
+                    </a>
+                    <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#offcanvasSidebar">
+                        <li class="sidebar-item">
+                            <a href="progressreport.php" class="sidebar-link">Progress Report</a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="progressassessment.php" class="sidebar-link">Progress Assessment</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="sidebar-item">
+                    <a href="housekeeping_leaderboard.php" class="sidebar-link">
+                        <i class="lni lni-crown"></i>
+                        <span>Leaderboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="housekeeping_history.php" class="sidebar-link">
+                        <i class="lni lni-timer"></i>
+                        <span>Supply Usage History</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="housekeeping_supplies_list.php" class="sidebar-link">
+                        <i class="lni lni-folder"></i>
+                        <span>Supplies List</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="housekeeping_request.php" class="sidebar-link">
+                        <i class="lni lni-reply"></i>
+                        <span>Supply Request</span>
+                    </a>
+                </li>
+
+                <div class="sidebar-item">
+                   
+                    <a href="index.php" class="sidebar-link" id="logout-link">
+                        <i class="lni lni-exit"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </ul>
+        </div>
+    </div>
+
+   
+    <div class="main p-9">
+        <div class="text-center">
+
+            <h1 class="mb-3">Welcome, <?php echo $first_name . ' ' . $last_name; ?></h1>
+
+
+            <div class="table-responsive container d-flex flex-wrap justify-content-between" style="max-width: 3200px; margin: 0;">
+
+                <div class="schedule-card flex-grow-1 flex-shrink-1 m-1" style="min-width: 45%;">
+                    
+                        <h3 class="card-title files-heading text-start">My Schedule</h3>
+                        <div class="card p-1">
+                        <div class="table-wrapper table-responsive" style="max-height: 300px; overflow-y: auto;">
+                            <table class="table table-striped table-hover " style="max-width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th style="width:10%;">Days</th>
+                                        <th style="width:10%;">Shift Time</th>
+                                        <th style="width:10%;">Location</th>
+                                        <th style="width:10%;">Break Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    
+                                    if ($schedule_result->num_rows > 0) {
+                                        while ($row = $schedule_result->fetch_assoc()) {
+                                            echo "<tr>
+                                <td>{$row['days']}</td>
+                                <td>{$row['shift_time']}</td>
+                                <td>{$row['location']}</td>
+                                <td>{$row['break_time']}</td>
+                            </tr>";
+                                        }
+                                    } else {
+                                        echo "<tr><td colspan='4'>No schedule found</td></tr>"; 
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+                
+                <div class="calendar-card flex-grow-1 flex-shrink-1 m-1 " style="max-width: 350px;">
+                    <div class="card p-2">
+                        <h3 class="card-title files-heading text-start">Calendar</h3>
+                        <div id='calendar' class="calendar-container" style="max-width: 100%; height: 100%;"></div>
+                    </div>
+                </div>
+
+
+               
+                <div class="recent-reports-card flex-grow-1 flex-shrink-1 m-1" style="min-width: 45%; margin-top: -20px;">
+    <h3 class="card-title files-heading text-start">Recent Reports</h3>
+    <div class="card p-1">
+        <div class="table-wrapper table-responsive" style="max-height: 200px; overflow-y: auto;">
+            <table class="table table-striped table-hover " style="max-width:100%;">
+                <thead>
+                    <tr>
+                        <th>Report</th>
+                        <th>Submitted At</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    require 'database.php'; 
+
+                    $employee_id = $_SESSION['employee_id']; 
+
+                    $stmt = $conn->prepare("SELECT report_image, created_at, description FROM progress_reports WHERE employee_id = ? ORDER BY created_at DESC LIMIT 10");
+                    $stmt->bind_param("s", $employee_id); 
+                    $stmt->execute();
+                    $reports_result = $stmt->get_result();
+                    $stmt->close();
+
+                    if ($reports_result->num_rows > 0) {
+                        while ($row = $reports_result->fetch_assoc()) {
+                            $formattedDate = date("F j, Y g:ia", strtotime($row["created_at"]));
+                            echo "<tr>
+                              <td><button class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#imageModal' onclick='previewImage(\"{$row['report_image']}\")'>View</button></td>
+                              <td>{$formattedDate}</td>
+                              <td>{$row['description']}</td>
+                          </tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='3'>No reports available</td></tr>"; 
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+                <!-- Leaderboard card -->
+                <div class="leaderboard-card flex-grow-1 flex-shrink-1 m-1" style="max-width: 340px;">
+                    <div class="card p-3">
+                        <h3 class="card-title files-heading text-start">Leaderboard</h3>
+                        <div class="card-body"  style="max-height: 100px; overflow-y: auto;">
+                            <?php if (!empty($top_performers)): ?>
+                                <p><strong>Top Performer:</strong></p>
+                                <?php foreach ($top_performers as $performer): ?>
+                                    <p>Name: <?php echo htmlspecialchars($performer['full_name']); ?></p>
+                                    <p>Total Rating: <?php echo htmlspecialchars($performer['total_rating']); ?></p>
+                                    <hr> <!-- Adds a separator between each top performer -->
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <p>No ratings available yet.</p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Modal for image preview -->
+        <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <img id="imagePreview" src="" alt="Report Image" style="width: 100%; height: auto;">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        z<div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="scheduleModalLabel">Schedule Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="scheduleModalBody">
+                <!-- Schedule details will be populated here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        
+
+
+
+
+
+        <!-- Bootstrap, FullCalendar, and custom scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+        <script src="script.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Initialize FullCalendar
+                const calendarEl = document.getElementById('calendar');
+                const calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                });
+                calendar.render();
+            });
+
+            // Confirm logout prompt
+            const logoutLink = document.getElementById('logout-link');
+            logoutLink.addEventListener('click', function(event) {
+                event.preventDefault();
+                const confirmLogout = confirm('Are you sure you want to log out?');
+                if (confirmLogout) {
+                    window.location.href = logoutLink.getAttribute('href');
+                }
+            });
+        </script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            function updateLeaderboard() {
+                $.ajax({
+                    url: 'leaderboard_card.php', // URL to the PHP script
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        const leaderboardCard = $('.leaderboard-card .card-body');
+                        leaderboardCard.empty(); // Clear existing content
+
+                        if (data.length > 0) {
+                            leaderboardCard.append('<p><strong>Top Performer:</strong></p>');
+                            data.forEach(performer => {
+                                leaderboardCard.append(`
+                            <p>Name: ${performer.full_name}</p>
+                            <p>Total Rating: ${performer.total_rating}</p>
+                            <hr>
+                        `);
+                            });
+                        } else {
+                            leaderboardCard.append('<p>No ratings available yet.</p>');
+                        }
+                    },
+                    error: function() {
+                        console.error('Error fetching leaderboard data');
+                    }
+                });
+            }
+
+            // Call the function on page load
+            $(document).ready(function() {
+                updateLeaderboard();
+
+                // Optionally, set an interval to refresh periodically
+                setInterval(updateLeaderboard, 60000); // Refresh every minute
+            });
+        </script>
+        <script>
+            // Function to update the image source in the modal
+            function previewImage(imageSrc) {
+                // Set the image preview src to the clicked report image
+                document.getElementById('imagePreview').src = imageSrc;
+            }
+        </script>
+
+        <script>
+           document.addEventListener('DOMContentLoaded', function () {
+    const calendarEl = document.getElementById('calendar');
+    const staffId = <?php echo json_encode($staff_id); ?>; // Pass PHP variable to JS
+
+    // Fetch all scheduled dates
+    function fetchScheduledDates() {
+        return fetch(`get_scheduled_dates.php?staff_id=${staffId}`)
+            .then(response => response.json())
+            .catch(error => console.error('Error fetching scheduled dates:', error));
+    }
+
+    // Initialize the calendar
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        dateClick: function (info) {
+            const selectedDate = info.dateStr;
+            fetchPastSchedules(selectedDate); // Fetch and display schedules for the selected date
+        },
+        eventDidMount: function (info) {
+    if (
+        info.event.display === 'background' &&
+        info.event.classNames.includes('schedule-highlight')
+    ) {
+        // Apply background color to event
+        info.el.style.backgroundColor = 'transparent';
+
+        // Get all day numbers
+        const dayNumbers = document.querySelectorAll('.fc .fc-daygrid-day-number');
+        
+        // Iterate through each day number
+        dayNumbers.forEach((dayNumber) => {
+            // Check if the day number matches the event's date
+            if (dayNumber.textContent === info.event.start.getDate().toString()) {
+                // Apply bold class to the matching day
+                dayNumber.classList.add('custom-bold');
+            }
+        });
+    }
+},
+
+events: [], // We'll dynamically populate events
+    });
+
+    // Highlight scheduled dates
+    fetchScheduledDates().then((scheduledDates) => {
+        if (Array.isArray(scheduledDates)) {
+            scheduledDates.forEach((date) => {
+                const event = {
+                    start: date, // Date string from the server
+                    display: 'background', // Makes the event act as a highlight
+                    classNames: ['schedule-highlight'], // Add custom class for styling
+                };
+                calendar.addEvent(event);
+            });
+        }
+        calendar.render();
+    });
+
+    // Fetch schedules for a specific date
+    function fetchPastSchedules(date) {
+        fetch(`get_past_schedules.php?date=${date}&staff_id=${staffId}`)
+            .then(response => response.json())
+            .then(data => {
+                displayScheduleModal(data, date);
+            })
+            .catch(error => console.error('Error fetching schedules:', error));
+    }
+
+    // Display schedules in a modal
+    function displayScheduleModal(schedules, selectedDate) {
+        const modalBody = document.getElementById('scheduleModalBody');
+        const modalTitle = document.getElementById('scheduleModalLabel');
+
+        modalTitle.textContent = `Schedule for ${selectedDate}`;
+        modalBody.innerHTML = '';
+
+        const filteredSchedules = schedules.filter(schedule => {
+            const createdAtDate = new Date(schedule.created_at);
+            const selectedDateObj = new Date(selectedDate);
+            return createdAtDate.toDateString() === selectedDateObj.toDateString();
+        });
+
+        if (filteredSchedules.length === 0) {
+            modalBody.innerHTML = '<p>No schedule found for this date.</p>';
+        } else {
+            const table = document.createElement('table');
+            table.className = 'table table-striped table-bordered';
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Days</th>
+                        <th>Shift Time</th>
+                        <th>Location</th>
+                        <th>Break Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${filteredSchedules.map(schedule => `
+                        <tr>
+                            <td>${schedule.days}</td>
+                            <td>${schedule.shift_time}</td>
+                            <td>${schedule.location}</td>
+                            <td>${schedule.break_time}</td>
+                        </tr>`).join('')}
+                </tbody>
+            `;
+            modalBody.appendChild(table);
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById('scheduleModal'));
+        modal.show();
+    }
+});
+
+        </script>
+
+
+    </div>
+    </div>
+</body>
+
+</html>

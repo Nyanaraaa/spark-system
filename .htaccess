@@ -1,0 +1,25 @@
+# BEGIN Basic Configuration
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+# Redirect to www (optional)
+RewriteCond %{HTTP_HOST} !^www\.
+RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R=301,L]
+
+# Exclude index.php from being rewritten
+RewriteRule ^index\.php$ - [L]
+
+# Allow directory listing for non-PHP files and directories
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^.* - [L]
+
+# Rewrite non-existing files and directories to index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+# END Basic Configuration
+
+# Enable Directory Listing
+Options +Indexes

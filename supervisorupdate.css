@@ -1,0 +1,415 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
+
+:root {
+  --maroon: #800000;
+  --maroon-light: #a52a2a;
+  --maroon-dark: #600000;
+  --gold: #ffd700;
+  --gold-light: #ffdf4f;
+  --gold-dark: #d4af37;
+  --gray-light: #f5f5f5;
+  --gray: #6c757d;
+  --gray-dark: #343a40;
+  --white: #ffffff;
+  --black: #000000;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--gray-light);
+  color: var(--gray-dark);
+}
+
+/* Main Content */
+.main {
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+}
+
+h1 {
+  color: var(--maroon);
+  font-weight: 700;
+  margin-bottom: 25px;
+  border-bottom: 2px solid var(--maroon);
+  padding-bottom: 10px;
+  text-align: center;
+}
+
+/* Cards Styling */
+.card {
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  border: none;
+  overflow: hidden;
+}
+
+.card-header {
+  background-color: var(--maroon);
+  color: var(--white);
+  font-weight: 600;
+  padding: 15px 20px;
+  border-bottom: none;
+}
+
+.card-title {
+  color: var(--white);
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+/* Table Styling */
+.table {
+  margin-bottom: 0;
+}
+
+.table thead th {
+  background-color: var(--maroon);
+  color: var(--white);
+  font-weight: 600;
+  border: none;
+  padding: 15px;
+  vertical-align: middle;
+}
+
+.table tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.table tbody tr:hover {
+  background-color: rgba(128, 0, 0, 0.05);
+}
+
+.table td {
+  padding: 15px;
+  vertical-align: middle;
+  word-break: break-word;
+  max-width: 250px; /* Optional: set a max width for better appearance */
+}
+
+/* Buttons */
+.btn-tertiary {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1030;
+  background-color: var(--maroon);
+  color: var(--white);
+  border: none;
+  border-radius: 5px;
+  padding: 8px 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn-tertiary:hover {
+  background-color: var(--maroon-dark);
+  color: var(--white);
+}
+
+.btn-primary {
+  background-color: var(--maroon);
+  border-color: var(--maroon);
+  color: var(--white);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--maroon-dark);
+  border-color: var(--maroon-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary {
+  background-color: var(--gray);
+  border-color: var(--gray);
+  color: var(--white);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--gray-dark);
+  border-color: var(--gray-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-gold {
+  background-color: var(--gold);
+  border-color: var(--gold-dark);
+  color: var(--black);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-gold:hover {
+  background-color: var(--gold-dark);
+  border-color: var(--gold-dark);
+  color: var(--black);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-update {
+  background-color: var(--maroon);
+  border-color: var(--maroon);
+  color: var(--white);
+  font-weight: 500;
+  padding: 8px 15px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  border: none;
+  margin-right: 5px;
+}
+
+.btn-update:hover {
+  background-color: var(--maroon-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: var(--white);
+  font-weight: 500;
+  padding: 8px 15px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.btn-delete:hover {
+  background-color: #c82333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Make update and delete buttons smaller and beside each other */
+.btn-update.btn-sm,
+.btn-delete.btn-sm {
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  min-width: unset;
+  line-height: 1.2;
+}
+
+.btn-update.btn-sm i,
+.btn-delete.btn-sm i {
+  vertical-align: middle;
+  margin-right: 4px;
+  display: inline-block;
+}
+.btn-update.btn-sm,
+.btn-delete.btn-sm {
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Prevent text color from changing on hover for update and delete buttons */
+.btn-update.btn-sm:hover,
+.btn-delete.btn-sm:hover {
+  color: var(--white) !important;
+}
+
+/* Search Bar Styling */
+.input-group-text {
+  background-color: var(--maroon);
+  color: var(--white);
+  border-color: var(--maroon);
+}
+
+.form-control:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 0.25rem rgba(128, 0, 0, 0.25);
+}
+
+.form-select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 0.25rem rgba(128, 0, 0, 0.25);
+}
+
+/* Modal Styling */
+.modal-header {
+  background-color: var(--maroon);
+  color: var(--white);
+  border-bottom: none;
+}
+
+.modal-title {
+  font-weight: 600;
+}
+
+.modal-content {
+  border-radius: 10px;
+  border: none;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-footer {
+  border-top: none;
+  background-color: var(--gray-light);
+}
+
+.btn-close {
+  color: var(--white);
+  opacity: 0.8;
+  filter: brightness(5);
+}
+
+.btn-close:hover {
+  opacity: 1;
+}
+
+/* Badge Styling */
+.brand-badge {
+  background-color: var(--gray-light);
+  color: var(--gray-dark);
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+.classification-badge {
+  background-color: var(--gold-light);
+  color: var(--black);
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* Stock Status Colors */
+.text-success {
+  color: #28a745 !important;
+}
+
+.text-warning {
+  color: #ffc107 !important;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  .btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .card-header {
+    padding: 10px 15px;
+  }
+
+  .card-body {
+    padding: 15px;
+  }
+
+  .table td {
+    max-width: 150px;
+  }
+}
+
+/* Sidebar Styling */
+.sidebar-nav {
+  padding-left: 0;
+}
+
+.sidebar-item {
+  margin-bottom: 5px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  color: var(--gray-dark);
+  text-decoration: none;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.sidebar-link i {
+  margin-right: 10px;
+  font-size: 18px;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+  background-color: var(--maroon);
+  color: var(--white);
+}
+
+.sidebar-dropdown {
+  padding-left: 30px;
+}
+
+.offcanvas-header {
+  background-color: var(--maroon);
+  color: var(--white);
+}
+
+.offcanvas-body {
+  padding: 20px 10px;
+}
+
+/* Form Styling */
+.form-check-input:checked {
+  background-color: var(--maroon);
+  border-color: var(--maroon);
+}
+
+.form-label {
+  font-weight: 500;
+}
+
+textarea.form-control:focus {
+  border-color: var(--maroon);
+  box-shadow: 0 0 0 0.25rem rgba(128, 0, 0, 0.25);
+}
+
+/* Alert Styling */
+.alert {
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 20px;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border-left: 4px solid #28a745;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+  border-left: 4px solid #dc3545;
+}
+
+/* Table Wrapper */
+.table-wrapper {
+  background-color: var(--white);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}

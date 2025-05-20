@@ -1,0 +1,90 @@
+.offcanvas-start {
+    width: 280px;
+    background-color: var(--white);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.offcanvas-header {
+    background-color: var(--maroon);
+    color: var(--white);
+    padding: 1.5rem;
+}
+
+.offcanvas-title {
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.sidebar-nav {
+    padding: 0;
+}
+
+.sidebar-item {
+    margin-bottom: 5px;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    color: var(--gray-dark);
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.sidebar-link:hover {
+    background-color: rgba(128, 0, 0, 0.1);
+    color: var(--maroon);
+}
+
+.sidebar-link i {
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.sidebar-dropdown {
+    padding-left: 30px;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-radius: 5px;
+}
+
+.has-dropdown {
+    position: relative;
+}
+
+.has-dropdown .lni-chevron-down {
+    transition: transform 0.3s ease;
+}
+
+.has-dropdown[aria-expanded="true"] .lni-chevron-down {
+    transform: rotate(180deg);
+}
+
+#logout-link {
+    color: var(--maroon);
+    font-weight: 500;
+    margin-top: 20px;
+}
+
+#logout-link:hover {
+    background-color: rgba(128, 0, 0, 0.1);
+}
+
+.btn-menu {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1030;
+    background-color: var(--maroon);
+    color: var(--white);
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn-menu:hover {
+    background-color: var(--maroon-dark);
+    color: var(--white);
+}
