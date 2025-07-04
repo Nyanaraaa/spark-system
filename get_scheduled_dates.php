@@ -1,6 +1,6 @@
 <?php
 // Database connection
-include 'database.php'; // Replace with your database connection file
+include 'config/database.php'; // Replace with your database connection file
 
 // Fetch the staff ID from the query parameters
 $staff_id = isset($_GET['staff_id']) ? intval($_GET['staff_id']) : 0;
@@ -12,7 +12,7 @@ if ($staff_id <= 0) {
 }
 
 // Query to get distinct dates with schedules for the specified staff member
-$query = "SELECT DISTINCT DATE_FORMAT(created_at, '%Y-%m-%d') AS scheduled_date 
+$query = "SELECT days AS scheduled_date 
           FROM staff_schedule 
           WHERE staff_id = ?";
 $stmt = $conn->prepare($query);

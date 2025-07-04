@@ -1,6 +1,6 @@
 <?php
 session_start(); 
-require 'database.php'; 
+require 'config/database.php'; 
 
 use PHPMailer\PHPMailer\PHPMailer; 
 use PHPMailer\PHPMailer\SMTP; 

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require 'database.php'; 
+require 'config/database.php'; 
 
 
 if (!isset($_SESSION['username'])) {
@@ -126,11 +126,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="housekeepingprofile.css?v=<?php echo filemtime('housekeepingprofile.css'); ?>">
+    <link rel="stylesheet" href="assets/css/housekeepingprofile.css?v=<?php echo filemtime('assets/css/housekeepingprofile.css'); ?>">
 </head>
 
 <body>
-    <?php include 'housekeeping_navbar.php'; ?>
+    <?php include 'components/navbar/housekeeping_navbar.php'; ?>
 
     <div class="main p-9">
         <div class="text-center">

@@ -1,5 +1,5 @@
 <?php
-require 'database.php'; 
+require 'config/database.php'; 
 
 
 $leaderboard_stmt = $conn->prepare("

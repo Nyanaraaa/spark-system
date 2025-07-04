@@ -1,6 +1,6 @@
 <?php
 session_start(); 
-require 'database.php'; 
+require 'config/database.php'; 
 
 $showModal = isset($_SESSION['session']);
 ?>
@@ -8,7 +8,6 @@ $showModal = isset($_SESSION['session']);
 <html lang="en">
 
 <head>
-    
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -20,7 +19,11 @@ $showModal = isset($_SESSION['session']);
     <link rel="stylesheet" href="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.css"> 
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
-    <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>">
+    <!-- Updated CSS paths -->
+    <link rel="stylesheet" href="assets/css/global.css?v=<?php echo filemtime('assets/css/global.css'); ?>">
+    <link rel="stylesheet" href="assets/css/components.css?v=<?php echo filemtime('assets/css/components.css'); ?>">
+    <link rel="stylesheet" href="assets/css/style.css?v=<?php echo filemtime('assets/css/style.css'); ?>">
+    <link rel="stylesheet" href="assets/css/responsive.css?v=<?php echo filemtime('assets/css/responsive.css'); ?>">
 
     <title>SPARK-Home</title>
 </head>
@@ -30,7 +33,7 @@ $showModal = isset($_SESSION['session']);
     <nav class="navbar navbar-expand-lg fixed-top ">
         <div class="container-fluid">
             <a class="navbar-brand me-auto" href="#">
-                <img src="spark_logo.png" alt="SPARK Logo" class="logo">
+                <img src="../../../assets/images/spark_logo.png" alt="SPARK Logo" class="logo">
             </a>
             <a href="#" class="login-button" data-bs-toggle="modal" data-bs-target="#loginModal">Log In</a>
             

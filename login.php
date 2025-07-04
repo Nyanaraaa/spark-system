@@ -1,6 +1,6 @@
 <?php
 session_start(); 
-require 'database.php'; 
+require 'config/database.php'; 
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -47,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     
                     if ($role == 'supervisor') {
-                        echo json_encode(['success' => true, 'redirect' => 'staff_list.php']);
+                        echo json_encode(['success' => true, 'redirect' => 'modules/supervisor/pages/staff_list.php']);
                     } else {
                         echo json_encode(['success' => true, 'redirect' => 'housekeepingdashboard.php']); 
                     }

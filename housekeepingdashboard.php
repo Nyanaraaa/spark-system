@@ -1,6 +1,6 @@
 <?php
 session_start();
-require 'database.php';
+require 'config/database.php';
 
 if (!isset($_SESSION['staff_id'])) {
     echo "Access denied. Please log in.";
@@ -82,18 +82,18 @@ if ($leaderboard_result->num_rows > 0) {
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
     <link rel="manifest" href="manifest.json">
-    <link href="housekeeping_dashboard.css" rel="stylesheet"/>
+    <link href="assets/css/housekeeping_dashboard.css" rel="assets/css/stylesheet"/>
 </head>
 
 <body>
-    <?php include 'housekeeping_navbar.php'; ?>
+    <?php include 'components/navbar/housekeeping_navbar.php'; ?>
 
     <!-- Main Content -->
     <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-12 col-xl-11">
                 <!-- Welcome Header -->
-                <h1 class="welcome-header">Welcome, <?php echo $first_name . ' ' . $last_name; ?></h1>
+                <h1 class="welcome-header">Welcome, <?php echo $first_name; ?></h1>
 
                 <!-- Dashboard Content -->
                 <div class="row">
@@ -117,7 +117,7 @@ if ($leaderboard_result->num_rows > 0) {
                                         </thead>
                                         <tbody>
                                             <?php
-                                            require 'database.php';
+                                            require 'config/database.php';
 
                                             $employee_id = $_SESSION['employee_id'];
 
@@ -134,10 +134,10 @@ if ($leaderboard_result->num_rows > 0) {
                                                     echo "<tr>
                                                         <td>
                                                             <button class='btn btn-primary btn-sm me-2' data-bs-toggle='modal' data-bs-target='#imageModal' onclick='previewImage(\"{$row['report_image']}\")'>
-                                                                <i class='lni lni-eye me-1'></i> View
+                                                                View
                                                             </button>
                                                             <button class='btn btn-info btn-sm view-assessment' data-report-id=\"{$row['report_id']}\" data-bs-toggle='modal' data-bs-target='#viewAssessmentModal'>
-                                                                <i class='lni lni-star-filled me-1'></i> Assessment
+                                                            Assessment
                                                             </button>
                                                         </td>
                                                         <td>{$formattedDate}</td>
@@ -184,9 +184,9 @@ if ($leaderboard_result->num_rows > 0) {
                                             <tr>
                                                 <th>Days</th>
                                                 <th>Shift Time</th>
+                                                <th>Break Time</th>
                                                 <th>Location</th>
                                                 <th>Building</th>
-                                                <th>Break Time</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -196,9 +196,9 @@ if ($leaderboard_result->num_rows > 0) {
                                                     echo "<tr>
                                                         <td>{$row['days']}</td>
                                                         <td>{$row['shift_time']}</td>
+                                                        <td>{$row['break_time']}</td>
                                                         <td>{$row['location']}</td>
                                                         <td>{$row['building']}</td>
-                                                        <td>{$row['break_time']}</td>
                                                     </tr>";
                                                 }
                                             } else {
@@ -491,6 +491,7 @@ if ($leaderboard_result->num_rows > 0) {
         document.addEventListener('DOMContentLoaded', function () {
             const calendarEl = document.getElementById('calendar');
             const staffId = <?php echo json_encode($staff_id); ?>;
+            let scheduledDaysSet = new Set(); // <-- Add this
 
             // Fetch all scheduled dates
             function fetchScheduledDates() {
@@ -508,8 +509,10 @@ if ($leaderboard_result->num_rows > 0) {
                     right: 'today'
                 },
                 dateClick: function (info) {
-                    const selectedDate = info.dateStr;
-                    fetchPastSchedules(selectedDate);
+                    // Only show modal if this date is scheduled
+                    if (scheduledDaysSet.has(info.dateStr)) {
+                        fetchPastSchedules(info.dateStr);
+                    }
                 },
                 eventDidMount: function (info) {
                     if (
@@ -517,10 +520,10 @@ if ($leaderboard_result->num_rows > 0) {
                         info.event.classNames.includes('schedule-highlight')
                     ) {
                         info.el.style.backgroundColor = 'rgba(128, 0, 0, 0.1)';
-                        
                         const dayNumbers = document.querySelectorAll('.fc .fc-daygrid-day-number');
                         dayNumbers.forEach((dayNumber) => {
-                            if (dayNumber.textContent === info.event.start.getDate().toString()) {
+                            const cell = dayNumber.closest('.fc-daygrid-day');
+                            if (cell && cell.getAttribute('data-date') === info.event.startStr) {
                                 dayNumber.classList.add('custom-bold');
                             }
                         });
@@ -531,22 +534,86 @@ if ($leaderboard_result->num_rows > 0) {
 
             // Highlight scheduled dates
             fetchScheduledDates().then((scheduledDates) => {
-                if (Array.isArray(scheduledDates)) {
-                    scheduledDates.forEach((date) => {
-                        const event = {
-                            start: date,
-                            display: 'background',
-                            classNames: ['schedule-highlight'],
-                        };
-                        calendar.addEvent(event);
+                if (!Array.isArray(scheduledDates)) return;
+
+                // Map short day names to JS day numbers (0=Sun, 1=Mon, ..., 6=Sat)
+                const dayMap = { 'S': 1, 'M': 2, 'T': 3, 'W': 4, 'Th': 5, 'F': 6, 'Sat': 0 };
+
+                // Helper to add background events for the visible month
+                function addScheduleHighlights(calendar, view) {
+                    // Remove previous background events
+                    calendar.getEvents().forEach(ev => {
+                        if (ev.display === 'background' && ev.classNames.includes('schedule-highlight')) {
+                            ev.remove();
+                        }
                     });
+
+                    // Get visible range
+                    const start = new Date(view.start);
+                    const end = new Date(view.end);
+
+                    // For each day in the visible range
+                    for (let d = new Date(start); d < end; d.setDate(d.getDate() + 1)) {
+                        const jsDay = d.getDay();
+                        const dateStr = d.toISOString().split('T')[0];
+
+                        scheduledDates.forEach((daysString) => {
+                            if (!daysString) return;
+                            const daysArr = daysString.split(',').map(day => day.trim());
+                            if (daysArr.some(day => dayMap[day] === jsDay)) {
+                                scheduledDaysSet.add(dateStr);
+                                calendar.addEvent({
+                                    start: dateStr,
+                                    display: 'background',
+                                    classNames: ['schedule-highlight'],
+                                });
+                            }
+                        });
+                    }
                 }
+
+                // Initialize the calendar
+                const calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    headerToolbar: {
+                        left: 'prev,next',
+                        center: 'title',
+                        right: 'today'
+                    },
+                    dateClick: function (info) {
+                        if (scheduledDaysSet.has(info.dateStr)) {
+                            fetchPastSchedules(info.dateStr);
+                        }
+                    },
+                    eventDidMount: function (info) {
+                        if (
+                            info.event.display === 'background' &&
+                            info.event.classNames.includes('schedule-highlight')
+                        ) {
+                            info.el.style.backgroundColor = 'rgba(128, 0, 0, 0.1)';
+                            const dayNumbers = document.querySelectorAll('.fc .fc-daygrid-day-number');
+                            dayNumbers.forEach((dayNumber) => {
+                                const cell = dayNumber.closest('.fc-daygrid-day');
+                                if (cell && cell.getAttribute('data-date') === info.event.startStr) {
+                                    dayNumber.classList.add('custom-bold');
+                                }
+                            });
+                        }
+                    },
+                    events: [],
+                    datesSet: function (view) {
+                        addScheduleHighlights(calendar, view);
+                    }
+                });
+
+                // Initial render and highlight
                 calendar.render();
+                addScheduleHighlights(calendar, calendar.view);
             });
 
             // Fetch schedules for a specific date
             function fetchPastSchedules(date) {
-                fetch(`get_past_schedules.php?date=${date}&staff_id=${staffId}`)
+                fetch(`get_past_schedules.php?&staff_id=${staffId}`)
                     .then(response => response.json())
                     .then(data => {
                         displayScheduleModal(data, date);
@@ -562,14 +629,10 @@ if ($leaderboard_result->num_rows > 0) {
                 modalTitle.innerHTML = `<i class="lni lni-calendar me-2"></i>Schedule for ${selectedDate}`;
                 modalBody.innerHTML = '';
 
-                const filteredSchedules = schedules.filter(schedule => {
-                    const createdAtDate = new Date(schedule.created_at);
-                    const selectedDateObj = new Date(selectedDate);
-                    return createdAtDate.toDateString() === selectedDateObj.toDateString();
-                });
-
-                if (filteredSchedules.length === 0) {
+                // Show all schedules without filtering
+                if (!schedules || schedules.length === 0) {
                     modalBody.innerHTML = '<div class="alert alert-info">No schedule found for this date.</div>';
+                                        console.log(schedules)
                 } else {
                     const table = document.createElement('table');
                     table.className = 'table table-striped table-bordered';
@@ -578,19 +641,19 @@ if ($leaderboard_result->num_rows > 0) {
                             <tr>
                                 <th>Days</th>
                                 <th>Shift Time</th>
+                                <th>Break Time</th>
                                 <th>Location</th>
                                 <th>Building</th>
-                                <th>Break Time</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${filteredSchedules.map(schedule => `
+                            ${schedules.map(schedule => `
                                 <tr>
                                     <td>${schedule.days}</td>
                                     <td>${schedule.shift_time}</td>
+                                    <td>${schedule.break_time}</td>
                                     <td>${schedule.location}</td>
                                     <td>${schedule.building}</td>
-                                    <td>${schedule.break_time}</td>
                                 </tr>`).join('')}
                         </tbody>
                     `;

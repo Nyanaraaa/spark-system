@@ -1,7 +1,7 @@
 <?php
 session_start(); 
 
-require 'database.php'; 
+require 'config/database.php'; 
 
 
 if (!isset($_SESSION['username'])) {
@@ -25,12 +25,12 @@ $employee_id = $_SESSION['employee_id'];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="progressassessment.css?v=<?php echo filemtime('progressassessment.css'); ?>">
+    <link rel="stylesheet" href="assets/css/progressassessment.css?v=<?php echo filemtime('assets/css/progressassessment.css'); ?>">
 
 </head>
 
 <body>
-    <?php include 'housekeeping_navbar.php'; ?>
+    <?php include 'components/navbar/housekeeping_navbar.php'; ?>
     <div class="main p-9">
         <div class="container">
             <h1 class="mb-4">Progress Assessment</h1>
@@ -53,7 +53,7 @@ $employee_id = $_SESSION['employee_id'];
                             </thead>
                             <tbody>
                                 <?php
-                                require 'database.php'; 
+                                require 'config/database.php'; 
 
                                 // Fetch all progress reports for the logged-in employee
                                 $sql = "SELECT report_id, report_image, employee_id, description, created_at 

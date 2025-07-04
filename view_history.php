@@ -1,5 +1,5 @@
 <?php
-require 'database.php';
+require 'config/database.php';
 
 
 $sql = "SELECT employee_id, supplies, quantity, transaction_date FROM supply_usage_history ORDER BY transaction_date DESC";

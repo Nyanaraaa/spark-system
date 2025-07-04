@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-require 'database.php';
+require 'config/database.php';
 
 $query = "SELECT location, COUNT(*) AS staff_count FROM staff_schedule GROUP BY location";
 $result = $conn->query($query);

@@ -1,6 +1,6 @@
 <?php
 // get_location_id.php
-include 'database.php';  // Include your database connection
+include 'config/database.php';  // Include your database connection
 
 if (isset($_GET['location'])) {
     $locationName = $_GET['location'];

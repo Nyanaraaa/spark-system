@@ -11,11 +11,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="housekeeping_request.css?v=<?php echo filemtime('housekeeping_request.css'); ?>">
+    <link rel="stylesheet" href="assets/css/housekeeping_request.css?v=<?php echo filemtime('assets/css/housekeeping_request.css'); ?>">
 </head>
 
 <body>
-    <?php include 'housekeeping_navbar.php'; ?>
+    <?php include 'components/navbar/housekeeping_navbar.php'; ?>
     
     <div class="main p-9">
         <div class="container">
@@ -51,7 +51,7 @@
                                     <select id="category-filter" class="form-select">
                                         <option value="">All Brands</option>
                                         <?php
-                                        require 'database.php';
+                                        require 'config/database.php';
                                         $categoryQuery = "SELECT DISTINCT brand FROM supplies";
                                         $categoryResult = $conn->query($categoryQuery);
                                         while ($categoryRow = $categoryResult->fetch_assoc()) {
@@ -119,7 +119,7 @@
                                     </thead>
                                     <tbody id="supplies-table-body">
                                     <?php
-                                    require 'database.php';
+                                    require 'config/database.php';
 
                                     // Assuming the employee ID is stored in the session when the user is logged in
                                     $employeeId = isset($_SESSION['employee_id']) ? $_SESSION['employee_id'] : ''; // Leave as string
@@ -138,17 +138,7 @@
                                             $formattedDate = date("F j, Y g:ia", strtotime($row["last_updated"]));
 
                                             $suppliesId = $row["supplies_id"];
-                                            // Make sure employee_id is properly enclosed in quotes to be treated as a string
-                                            $limitQuery = "SELECT SUM(quantity) AS total_requested 
-                                                        FROM supplies_usage_history 
-                                                        WHERE supplies_id = $suppliesId 
-                                                        AND employee_id = '$employeeId'  -- Keep employee_id as string
-                                                        AND DATE(transaction_date) = CURDATE()"; 
-                                            $limitResult = $conn->query($limitQuery);
-                                            $totalRequested = ($limitResult && $limitResult->num_rows > 0) ? $limitResult->fetch_assoc()['total_requested'] : 0;
-                                            $limitReached = ($totalRequested >= 2); 
 
-                                            // Determine stock level class
                                             $stockClass = '';
                                             $stockBadgeClass = '';
                                             $stockIcon = '';
@@ -195,22 +185,14 @@
                                                         </span>
                                                     </td>
                                                     <td>';
-                                        
-                                            if ($limitReached) {
-                                                echo '<button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#requestModal"
-                                                        data-supplies-id="' . htmlspecialchars($row["supplies_id"]) . '" 
-                                                        data-supplies="' . htmlspecialchars($row["supplies"]) . '" 
-                                                        data-stocks="' . htmlspecialchars($row["stocks"]) . '">
-                                                        <i class="lni lni-warning me-1"></i>Request
-                                                    </button>';
-                                            } else {
-                                                echo '<button class="btn btn-sm custom-btn-bg" data-bs-toggle="modal" data-bs-target="#requestModal" 
-                                                        data-supplies-id="' . htmlspecialchars($row["supplies_id"]) . '" 
-                                                        data-supplies="' . htmlspecialchars($row["supplies"]) . '" 
-                                                        data-stocks="' . htmlspecialchars($row["stocks"]) . '">
-                                                        <i class="lni lni-cart me-1"></i>Order
-                                                    </button>';
-                                            }
+
+                                            // Always show the order button, no limit
+                                            echo '<button class="btn btn-sm custom-btn-bg" data-bs-toggle="modal" data-bs-target="#requestModal" 
+                                                    data-supplies-id="' . htmlspecialchars($row["supplies_id"]) . '" 
+                                                    data-supplies="' . htmlspecialchars($row["supplies"]) . '" 
+                                                    data-stocks="' . htmlspecialchars($row["stocks"]) . '">
+                                                    <i class="lni lni-cart me-1"></i>Order
+                                                </button>';
 
                                             echo '</td>
                                                 </tr>';
@@ -223,47 +205,6 @@
                                     ?>
                                     </tbody>
                                 </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row mt-4">
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title">
-                                <i class="lni lni-information me-2"></i>
-                                Stock Level Information
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-4 mb-3 mb-md-0">
-                                    <div class="d-flex align-items-center">
-                                        <span class="stock-badge stock-high me-2">
-                                            <i class="lni lni-checkmark-circle"></i>
-                                        </span>
-                                        <span>High Stock (51-100): Good supply level</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-3 mb-md-0">
-                                    <div class="d-flex align-items-center">
-                                        <span class="stock-badge stock-medium me-2">
-                                            <i class="lni lni-reload"></i>
-                                        </span>
-                                        <span>Medium Stock (20-50): Consider reordering</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="d-flex align-items-center">
-                                        <span class="stock-badge stock-low me-2">
-                                            <i class="lni lni-warning"></i>
-                                        </span>
-                                        <span>Low Stock (0-19): Reorder immediately</span>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>

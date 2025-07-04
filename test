@@ -1,6 +1,6 @@
 <?php
 session_start();
-require 'database.php'; 
+require 'config/database.php'; 
 
 
 if (!isset($_SESSION['staff_id'])) {
@@ -232,7 +232,7 @@ if ($leaderboard_result->num_rows > 0) {
                 </thead>
                 <tbody>
                     <?php
-                    require 'database.php'; 
+                    require 'config/database.php'; 
 
                     $employee_id = $_SESSION['employee_id']; 
 

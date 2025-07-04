@@ -1,6 +1,6 @@
 <?php
 // Include database connection file
-require 'database.php';
+require 'config/database.php';
 
 // Check if staff_id is set and valid
 if (isset($_GET['staff_id']) && is_numeric($_GET['staff_id'])) {

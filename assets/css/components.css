@@ -1,0 +1,90 @@
+/* Button Base Styles */
+.btn-base {
+  border: none;
+  border-radius: 5px;
+  padding: 8px 12px;
+  transition: all 0.3s ease;
+  font-size: 0.875rem;
+  min-width: 100px;
+  white-space: nowrap;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-gold {
+  background-color: var(--gold);
+  border-color: var(--gold-dark);
+  color: var(--black);
+  font-weight: 600;
+}
+
+.btn-gold:hover {
+  background-color: var(--gold-dark);
+  border-color: var(--gold-dark);
+  color: var(--black);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-maroon {
+  background-color: var(--maroon);
+  border-color: var(--maroon);
+  color: var(--white);
+}
+
+.btn-maroon:hover {
+  background-color: var(--maroon-dark);
+  border-color: var(--maroon-dark);
+  color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Card Components */
+.card-custom {
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  border: none;
+  overflow: hidden;
+  background-color: var(--white);
+}
+
+.card-header-custom {
+  background-color: var(--maroon);
+  color: var(--white);
+  font-weight: 600;
+  padding: 15px 20px;
+  border-bottom: none;
+}
+
+/* Table Components */
+.table-custom {
+  margin-bottom: 0;
+}
+
+.table-custom thead th {
+  background-color: var(--maroon);
+  color: var(--white);
+  font-weight: 600;
+  border: none;
+  padding: 15px;
+  vertical-align: middle;
+}
+
+.table-custom tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.table-custom tbody tr:hover {
+  background-color: rgba(128, 0, 0, 0.05);
+}
+
+.table-custom td {
+  padding: 15px;
+  vertical-align: middle;
+}
