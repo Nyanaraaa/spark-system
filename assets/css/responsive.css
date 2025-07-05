@@ -1,0 +1,60 @@
+@media (max-width: 576px) {
+  .btn-base {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    min-width: 80px;
+  }
+
+  .card-custom {
+    margin: 10px;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 768px) {
+  .btn-base {
+    padding: 8px 12px;
+    font-size: 0.875rem;
+    min-width: 90px;
+  }
+
+  .table-custom {
+    font-size: 0.9rem;
+  }
+
+  .card-header-custom {
+    padding: 12px 15px;
+  }
+}
+
+@media (max-width: 992px) {
+  .container {
+    padding: 0 15px;
+  }
+}
+
+@media print {
+  .btn-base,
+  .navbar,
+  .modal {
+    display: none !important;
+  }
+
+  .card-custom {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+
+  .table-custom {
+    border-collapse: collapse;
+  }
+
+  .table-custom th,
+  .table-custom td {
+    border: 1px solid #000;
+  }
+}

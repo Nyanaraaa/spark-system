@@ -1,0 +1,117 @@
+spark/
+├── index.php                          # Main entry point
+├── manifest.json                      # PWA manifest
+├── README.md                          # Project documentation
+├── .gitignore                         # Git ignore file
+│
+├── config/
+│   ├── database.php                   # Database configuration
+│   └── session_config.php             # Session management config
+│
+├── assets/
+│   ├── css/
+│   │   ├── global.css                 # Global styles (variables, base styles)
+│   │   ├── components.css             # Reusable component styles
+│   │   ├── supervisor_leaderboard.css
+│   │   ├── supervisor_usage_history.css
+│   │   ├── supervisor_request.css
+│   │   ├── supervisorassessment.css
+│   │   └── responsive.css             # Global responsive styles
+│   │
+│   ├── js/
+│   │   ├── common.js                  # Common JavaScript functions
+│   │   ├── print-handler.js           # Centralized print functionality
+│   │   ├── table-utils.js             # Table filtering/search utilities
+│   │   └── form-validation.js         # Form validation scripts
+│   │
+│   ├── images/
+│   │   ├── spark_logo.png
+│   │   ├── icons/
+│   │   └── uploads/                   # User uploaded files
+│   │
+│   └── fonts/                         # Custom fonts if any
+│
+├── components/
+│   ├── navbar/
+│   │   ├── supervisor_navbar.php
+│   │   ├── staff_navbar.php
+│   │   └── navbar.css
+│   │
+│   ├── modals/
+│   │   ├── confirmation_modal.php
+│   │   └── edit_modal.php
+│   │
+│   └── tables/
+│       ├── data_table.php
+│       └── print_table.php
+│
+├── modules/
+│   ├── auth/
+│   │   ├── login.php
+│   │   ├── logout.php
+│   │   ├── register.php
+│   │   └── session_check.php
+│   │
+│   ├── supervisor/
+│   │   ├── pages/
+│   │   │   ├── supervisor_leaderboard.php
+│   │   │   ├── leaderboard_history.php
+│   │   │   ├── supervisor_usage_history.php
+│   │   │   ├── supervisor_request.php
+│   │   │   ├── supervisorassessment.php
+│   │   │   ├── supervisorupdate.php
+│   │   │   └── manage_schedule.php
+│   │   │
+│   │   └── api/
+│   │       ├── get_pending_requests.php
+│   │       ├── approve_request.php
+│   │       ├── get_leaderboard_data.php
+│   │       └── update_assessment.php
+│   │
+│   ├── staff/
+│   │   ├── pages/
+│   │   │   ├── staff.php
+│   │   │   ├── staff_list.php
+│   │   │   └── staff_dashboard.php
+│   │   │
+│   │   └── api/
+│   │       ├── submit_request.php
+│   │       └── get_staff_data.php
+│   │
+│   └── shared/
+│       ├── database_operations.php
+│       ├── validation_functions.php
+│       ├── utility_functions.php
+│       └── print_functions.php
+│
+├── api/
+│   ├── endpoints/
+│   │   ├── auth.php
+│   │   ├── users.php
+│   │   ├── requests.php
+│   │   └── reports.php
+│   │
+│   └── middleware/
+│       ├── cors.php
+│       └── rate_limiting.php
+│
+├── includes/
+│   ├── header.php                     # Common HTML head
+│   ├── footer.php                     # Common footer
+│   └── error_handler.php              # Global error handling
+│
+├── uploads/                           # File uploads directory
+│   ├── profiles/
+│   ├── reports/
+│   └── temp/
+│
+├── backup/                            # Database backups
+│
+├── logs/                              # Application logs
+│   ├── error.log
+│   └── access.log
+│
+└── docs/                              # Documentation
+    ├── api_documentation.md
+    ├── database_schema.sql
+    └── installation_guide.md
