@@ -1,4 +1,4 @@
-/* Button Base Styles */
+
 .btn-base {
   border: none;
   border-radius: 5px;
@@ -44,7 +44,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Card Components */
+
 .card-custom {
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -62,7 +62,7 @@
   border-bottom: none;
 }
 
-/* Table Components */
+
 .table-custom {
   margin-bottom: 0;
 }

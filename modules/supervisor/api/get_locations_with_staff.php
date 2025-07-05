@@ -3,7 +3,7 @@ header('Content-Type: application/json');
 require '../../../config/database.php';
 
 try {
-    // Query to fetch locations along with the building and assigned staff
+
     $sql = "
         SELECT 
             location.id AS location_id,
@@ -29,7 +29,7 @@ try {
             $locations[] = [
                 'location_name' => $row['location_name'],
                 'building' => $row['building'],
-                'assigned_staff' => $row['assigned_staff'] ? explode(', ', $row['assigned_staff']) : [] // Split staff names into an array
+                'assigned_staff' => $row['assigned_staff'] ? explode(', ', $row['assigned_staff']) : []
             ];
         }
 

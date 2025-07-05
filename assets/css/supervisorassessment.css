@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
-
 :root {
   --maroon: #800000;
   --maroon-light: #a52a2a;
@@ -20,7 +18,6 @@ body {
   color: var(--gray-dark);
 }
 
-/* Main Content */
 .main {
   padding: 20px;
   transition: margin-left 0.3s ease;
@@ -35,7 +32,6 @@ h1 {
   text-align: center;
 }
 
-/* Cards Styling */
 .card {
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -58,7 +54,6 @@ h1 {
   margin-bottom: 0;
 }
 
-/* Table Styling */
 .table {
   margin-bottom: 0;
 }
@@ -85,7 +80,6 @@ h1 {
   vertical-align: middle;
 }
 
-/* Buttons */
 .btn-tertiary {
   position: fixed;
   top: 15px;
@@ -184,7 +178,6 @@ h1 {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Add this CSS rule to make the action buttons consistent in size */
 .btn-evaluate,
 .btn-view-profile {
   display: inline-flex;
@@ -195,7 +188,6 @@ h1 {
   white-space: nowrap;
 }
 
-/* Search Bar Styling */
 .input-group-text {
   background-color: var(--maroon);
   color: var(--white);
@@ -207,7 +199,6 @@ h1 {
   box-shadow: 0 0 0 0.25rem rgba(128, 0, 0, 0.25);
 }
 
-/* Modal Styling */
 .modal-header {
   background-color: var(--maroon);
   color: var(--white);
@@ -244,7 +235,6 @@ h1 {
   opacity: 1;
 }
 
-/* Badge Styling */
 .employee-badge {
   background-color: var(--gray-light);
   color: var(--gray-dark);
@@ -280,7 +270,6 @@ h1 {
   color: white;
 }
 
-/* Rating Badges */
 .rating-badge {
   display: inline-flex;
   align-items: center;
@@ -309,7 +298,6 @@ h1 {
   background-color: var(--black);
 }
 
-/* Report Thumbnail */
 .report-thumbnail {
   max-width: 100px;
   height: auto;
@@ -323,7 +311,6 @@ h1 {
   transform: scale(1.05);
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .table-responsive {
     overflow-x: auto;
@@ -343,7 +330,6 @@ h1 {
   }
 }
 
-/* Sidebar Styling */
 .sidebar-nav {
   padding-left: 0;
 }
@@ -386,7 +372,6 @@ h1 {
   padding: 20px 10px;
 }
 
-/* Form Styling */
 .form-check-input:checked {
   background-color: var(--maroon);
   border-color: var(--maroon);
@@ -401,8 +386,6 @@ textarea.form-control:focus {
   box-shadow: 0 0 0 0.25rem rgba(128, 0, 0, 0.25);
 }
 
-/* Add these styles for the assessment modal */
-/* Assessment Modal */
 .criteria-list {
   list-style: none;
   padding: 0;
@@ -453,7 +436,6 @@ textarea.form-control:focus {
   font-style: italic;
 }
 
-/* Dashboard card for assessment modal */
 .dashboard-card {
   background-color: var(--white);
   border-radius: 10px;
@@ -463,7 +445,6 @@ textarea.form-control:focus {
   height: 100%;
 }
 
-/* Responsive adjustments for smaller screens */
 @media (max-width: 576px) {
   .btn-evaluate,
   .btn-view-profile {
@@ -473,7 +454,6 @@ textarea.form-control:focus {
   }
 }
 
-/* New CSS for the criteria grid */
 .criteria-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -513,7 +493,6 @@ textarea.form-control:focus {
   background-color: var(--black);
 }
 
-/* Rating options grid */
 .rating-options-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -547,13 +526,11 @@ textarea.form-control:focus {
   transform: scale(1.1);
 }
 
-/* Make criteria items display properly in mobile view */
 @media (max-width: 768px) {
   .rating-display {
     font-size: 2.5rem;
   }
 
-  /* Ensure criteria items in the view assessment modal display in one line */
   #viewAssessmentModal .criteria-item {
     display: flex;
     flex-direction: row;
@@ -563,7 +540,6 @@ textarea.form-control:focus {
     flex-wrap: nowrap;
   }
 
-  /* Make criteria label text smaller */
   .criteria-label {
     font-size: 0.85rem;
     white-space: nowrap;
@@ -572,7 +548,6 @@ textarea.form-control:focus {
     max-width: 70%;
   }
 
-  /* Ensure criteria score is visible */
   .criteria-score {
     font-size: 0.85rem;
     padding: 2px 8px;

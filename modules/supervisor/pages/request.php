@@ -11,7 +11,8 @@
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="../../../assets/css/supervisor_request.css?v=<?php echo filemtime('../../../assets/css/supervisor_request.css'); ?>">
+    <link rel="stylesheet"
+        href="../../../assets/css/supervisor_request.css?v=<?php echo filemtime('../../../assets/css/supervisor_request.css'); ?>">
 </head>
 
 <body>
@@ -25,7 +26,8 @@
             </h1>
 
             <?php if (isset($_SESSION['message'])): ?>
-                <div class="alert alert-<?= isset($_SESSION['msg_type']) ? $_SESSION['msg_type'] : 'info'; ?>" id="alert-message">
+                <div class="alert alert-<?= isset($_SESSION['msg_type']) ? $_SESSION['msg_type'] : 'info'; ?>"
+                    id="alert-message">
                     <?= htmlspecialchars($_SESSION['message']); ?>
                 </div>
                 <script>
@@ -80,14 +82,14 @@
         crossorigin="anonymous"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const logoutLink = document.getElementById('logout-link');
             if (logoutLink) {
-                logoutLink.addEventListener('click', function(event) {
+                logoutLink.addEventListener('click', function (event) {
                     event.preventDefault();
                     const confirmLogout = confirm('Are you sure you want to log out?');
                     if (confirmLogout) {
-                        window.location.href = logoutLink.href; 
+                        window.location.href = logoutLink.href;
                     }
                 });
             }
@@ -163,4 +165,5 @@
         fetchPendingRequests();
     </script>
 </body>
+
 </html>

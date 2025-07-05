@@ -17,7 +17,8 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="manifest" href="../../../manifest.json">
-    <link rel="stylesheet" href="../../../assets/css/manage_schedule.css?v=<?php echo filemtime('../../../assets/css/manage_schedule.css'); ?>">
+    <link rel="stylesheet"
+        href="../../../assets/css/manage_schedule.css?v=<?php echo filemtime('../../../assets/css/manage_schedule.css'); ?>">
 </head>
 
 <body>
@@ -332,23 +333,23 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
 
     <script>
         let allSchedulesData = [];
-let filteredSchedulesData = [];
-let currentPage = 1;
-const pageSize = 10;
+        let filteredSchedulesData = [];
+        let currentPage = 1;
+        const pageSize = 10;
 
-function renderSchedulesTable(page = 1, data = null) {
-    const allSchedulesBody = document.getElementById('allSchedulesBody');
-    allSchedulesBody.innerHTML = '';
+        function renderSchedulesTable(page = 1, data = null) {
+            const allSchedulesBody = document.getElementById('allSchedulesBody');
+            allSchedulesBody.innerHTML = '';
 
-    // Use filtered data if provided, else use allSchedulesData
-    const schedules = data || filteredSchedulesData || allSchedulesData;
-    const total = schedules.length;
-    const start = (page - 1) * pageSize;
-    const end = Math.min(start + pageSize, total);
+            // Use filtered data if provided, else use allSchedulesData
+            const schedules = data || filteredSchedulesData || allSchedulesData;
+            const total = schedules.length;
+            const start = (page - 1) * pageSize;
+            const end = Math.min(start + pageSize, total);
 
-    for (let i = start; i < end; i++) {
-        const schedule = schedules[i];
-        allSchedulesBody.innerHTML += `
+            for (let i = start; i < end; i++) {
+                const schedule = schedules[i];
+                allSchedulesBody.innerHTML += `
             <tr>
                 <td>
                     <i class="lni lni-map-marker me-2" style="color: var(--maroon);"></i>
@@ -379,66 +380,66 @@ function renderSchedulesTable(page = 1, data = null) {
                 </td>
             </tr>
         `;
-    }
+            }
 
-    document.getElementById('paginationInfo').innerHTML =
-        `Showing <strong>${total === 0 ? 0 : start + 1}-${end}</strong> of <strong>${total}</strong> schedules`;
+            document.getElementById('paginationInfo').innerHTML =
+                `Showing <strong>${total === 0 ? 0 : start + 1}-${end}</strong> of <strong>${total}</strong> schedules`;
 
-    document.getElementById('prevPageBtn').disabled = page === 1;
-    document.getElementById('nextPageBtn').disabled = end >= total;
+            document.getElementById('prevPageBtn').disabled = page === 1;
+            document.getElementById('nextPageBtn').disabled = end >= total;
 
-    document.getElementById('emptyState').style.display = total === 0 ? 'block' : 'none';
-}
+            document.getElementById('emptyState').style.display = total === 0 ? 'block' : 'none';
+        }
 
-// Update this event listener:
-document.getElementById('scheduleSearchInput').addEventListener('input', function () {
-    const searchValue = this.value.toLowerCase();
+        // Update this event listener:
+        document.getElementById('scheduleSearchInput').addEventListener('input', function () {
+            const searchValue = this.value.toLowerCase();
 
-    filteredSchedulesData = allSchedulesData.filter(schedule => {
-        return (
-            schedule.location.toLowerCase().includes(searchValue) ||
-            schedule.building.toLowerCase().includes(searchValue) ||
-            schedule.staff_name.toLowerCase().includes(searchValue) ||
-            schedule.position.toLowerCase().includes(searchValue) ||
-            schedule.days.toLowerCase().includes(searchValue) ||
-            schedule.shift_time.toLowerCase().includes(searchValue) ||
-            (schedule.break_time || '').toLowerCase().includes(searchValue)
-        );
-    });
+            filteredSchedulesData = allSchedulesData.filter(schedule => {
+                return (
+                    schedule.location.toLowerCase().includes(searchValue) ||
+                    schedule.building.toLowerCase().includes(searchValue) ||
+                    schedule.staff_name.toLowerCase().includes(searchValue) ||
+                    schedule.position.toLowerCase().includes(searchValue) ||
+                    schedule.days.toLowerCase().includes(searchValue) ||
+                    schedule.shift_time.toLowerCase().includes(searchValue) ||
+                    (schedule.break_time || '').toLowerCase().includes(searchValue)
+                );
+            });
 
-    currentPage = 1;
-    renderSchedulesTable(currentPage, filteredSchedulesData);
-});
-
-// When loading all schedules, set filteredSchedulesData = allSchedulesData
-document.getElementById('viewAllSchedulesBtn').addEventListener('click', function () {
-    fetch('../../../modules/supervisor/api/get_all_schedules.php')
-        .then(response => response.json())
-        .then(data => {
-            allSchedulesData = data;
-            filteredSchedulesData = data;
             currentPage = 1;
             renderSchedulesTable(currentPage, filteredSchedulesData);
-        })
-        .catch(error => {
-            console.error('Error fetching all schedules:', error);
-            document.getElementById('allSchedulesBody').innerHTML = '<tr><td colspan="7" class="text-center">Error fetching data</td></tr>';
         });
-});
 
-// Update pagination buttons to use filteredSchedulesData
-document.getElementById('prevPageBtn').addEventListener('click', function () {
-    if (currentPage > 1) {
-        currentPage--;
-        renderSchedulesTable(currentPage, filteredSchedulesData);
-    }
-});
-document.getElementById('nextPageBtn').addEventListener('click', function () {
-    if ((currentPage * pageSize) < filteredSchedulesData.length) {
-        currentPage++;
-        renderSchedulesTable(currentPage, filteredSchedulesData);
-    }
-});
+        // When loading all schedules, set filteredSchedulesData = allSchedulesData
+        document.getElementById('viewAllSchedulesBtn').addEventListener('click', function () {
+            fetch('../../../modules/supervisor/api/get_all_schedules.php')
+                .then(response => response.json())
+                .then(data => {
+                    allSchedulesData = data;
+                    filteredSchedulesData = data;
+                    currentPage = 1;
+                    renderSchedulesTable(currentPage, filteredSchedulesData);
+                })
+                .catch(error => {
+                    console.error('Error fetching all schedules:', error);
+                    document.getElementById('allSchedulesBody').innerHTML = '<tr><td colspan="7" class="text-center">Error fetching data</td></tr>';
+                });
+        });
+
+        // Update pagination buttons to use filteredSchedulesData
+        document.getElementById('prevPageBtn').addEventListener('click', function () {
+            if (currentPage > 1) {
+                currentPage--;
+                renderSchedulesTable(currentPage, filteredSchedulesData);
+            }
+        });
+        document.getElementById('nextPageBtn').addEventListener('click', function () {
+            if ((currentPage * pageSize) < filteredSchedulesData.length) {
+                currentPage++;
+                renderSchedulesTable(currentPage, filteredSchedulesData);
+            }
+        });
     </script>
 
     <script>
@@ -765,100 +766,100 @@ document.getElementById('nextPageBtn').addEventListener('click', function () {
 
     <script>
         document.getElementById('printLocationsBtn').addEventListener('click', function () {
-    const table = document.getElementById('scheduletable');
-    const tableClone = table.cloneNode(true);
+            const table = document.getElementById('scheduletable');
+            const tableClone = table.cloneNode(true);
 
-    const searchInput = document.getElementById('scheduleSearchInput').value.trim();
-    const headerRow = tableClone.querySelector('thead tr');
-    const bodyRows = tableClone.querySelectorAll('tbody tr');
+            const searchInput = document.getElementById('scheduleSearchInput').value.trim();
+            const headerRow = tableClone.querySelector('thead tr');
+            const bodyRows = tableClone.querySelectorAll('tbody tr');
 
-    // Identify the index of the "Staff Name" column
-    const headerColumns = Array.from(headerRow.children);
-    const staffNameIndex = headerColumns.findIndex(th => th.textContent.trim() === 'Staff Name');
+            // Identify the index of the "Staff Name" column
+            const headerColumns = Array.from(headerRow.children);
+            const staffNameIndex = headerColumns.findIndex(th => th.textContent.trim() === 'Staff Name');
 
-    // Collect all the Staff Names for the filtered rows
-    let staffNames = [];
-    if (searchInput !== '') {
-        staffNames = Array.from(bodyRows)
-            .filter(row => row.style.display !== 'none')
-            .map(row => row.children[staffNameIndex]?.textContent.trim())
-            .filter(name => name);
+            // Collect all the Staff Names for the filtered rows
+            let staffNames = [];
+            if (searchInput !== '') {
+                staffNames = Array.from(bodyRows)
+                    .filter(row => row.style.display !== 'none')
+                    .map(row => row.children[staffNameIndex]?.textContent.trim())
+                    .filter(name => name);
 
-        staffNames = [...new Set(staffNames)];
+                staffNames = [...new Set(staffNames)];
 
-        if (staffNameIndex > -1) {
-            headerRow.removeChild(headerRow.children[staffNameIndex]);
-            bodyRows.forEach(row => {
-                if (row.children[staffNameIndex]) {
-                    row.removeChild(row.children[staffNameIndex]);
+                if (staffNameIndex > -1) {
+                    headerRow.removeChild(headerRow.children[staffNameIndex]);
+                    bodyRows.forEach(row => {
+                        if (row.children[staffNameIndex]) {
+                            row.removeChild(row.children[staffNameIndex]);
+                        }
+                    });
                 }
-            });
-        }
-    }
+            }
 
-    // Open a new window for printing
-    const printWindow = window.open('', '', 'height=800,width=1000');
+            // Open a new window for printing
+            const printWindow = window.open('', '', 'height=800,width=1000');
 
-    // Write content to the new window
-    printWindow.document.write('<html><head><title>Staff Schedule</title>');
-    printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">');
-    printWindow.document.write('<style>');
-    printWindow.document.write('body { padding: 20px; font-family: Arial, sans-serif; }');
-    printWindow.document.write('.header { margin-bottom: 20px; }');
-    printWindow.document.write('.logo { width: 200px; height: auto; }');
-    printWindow.document.write('h1 { color: #800000; margin-top: 20px; }');
-    printWindow.document.write('table { width: 100%; border-collapse: collapse; margin-top: 20px; }');
-    printWindow.document.write('th, td { border: 1px solid #000; padding: 8px 12px; text-align: left; }');
-    printWindow.document.write('th { background-color: #800000; color: white; font-weight: bold; }');
-    printWindow.document.write('tr:nth-child(even) { background-color: #f9f9f9; }');
-    printWindow.document.write('tr:nth-child(odd) { background-color: #ffffff; }');
-    printWindow.document.write('.badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }');
-    printWindow.document.write('.bg-secondary { background-color: #6c757d !important; color: white; }');
-    printWindow.document.write('.staff-info { margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px; }');
-    printWindow.document.write('</style>');
-    printWindow.document.write('</head><body>');
+            // Write content to the new window
+            printWindow.document.write('<html><head><title>Staff Schedule</title>');
+            printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">');
+            printWindow.document.write('<style>');
+            printWindow.document.write('body { padding: 20px; font-family: Arial, sans-serif; }');
+            printWindow.document.write('.header { margin-bottom: 20px; }');
+            printWindow.document.write('.logo { width: 200px; height: auto; }');
+            printWindow.document.write('h1 { color: #800000; margin-top: 20px; }');
+            printWindow.document.write('table { width: 100%; border-collapse: collapse; margin-top: 20px; }');
+            printWindow.document.write('th, td { border: 1px solid #000; padding: 8px 12px; text-align: left; }');
+            printWindow.document.write('th { background-color: #800000; color: white; font-weight: bold; }');
+            printWindow.document.write('tr:nth-child(even) { background-color: #f9f9f9; }');
+            printWindow.document.write('tr:nth-child(odd) { background-color: #ffffff; }');
+            printWindow.document.write('.badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }');
+            printWindow.document.write('.bg-secondary { background-color: #6c757d !important; color: white; }');
+            printWindow.document.write('.staff-info { margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px; }');
+            printWindow.document.write('</style>');
+            printWindow.document.write('</head><body>');
 
-    printWindow.document.write('<div class="header">');
-    printWindow.document.write('<img src="../../../assets/images/spark_logo.png" alt="Spark Logo" class="logo"/>');
-    printWindow.document.write('<h1>Staff Schedule</h1>');
-    printWindow.document.write('</div>');
+            printWindow.document.write('<div class="header">');
+            printWindow.document.write('<img src="../../../assets/images/spark_logo.png" alt="Spark Logo" class="logo"/>');
+            printWindow.document.write('<h1>Staff Schedule</h1>');
+            printWindow.document.write('</div>');
 
-    if (searchInput !== '' && staffNames.length > 0) {
-        printWindow.document.write(`<div class="staff-info">`);
-        printWindow.document.write(`<h4 style="color: #800000; margin-bottom: 0;">Schedule for: <span style="font-weight: normal;">${staffNames.join(', ')}</span></h4>`);
-        printWindow.document.write('</div>');
-    }
+            if (searchInput !== '' && staffNames.length > 0) {
+                printWindow.document.write(`<div class="staff-info">`);
+                printWindow.document.write(`<h4 style="color: #800000; margin-bottom: 0;">Schedule for: <span style="font-weight: normal;">${staffNames.join(', ')}</span></h4>`);
+                printWindow.document.write('</div>');
+            }
 
-    printWindow.document.write('<table>' + tableClone.innerHTML + '</table>');
-    printWindow.document.write('<div style="margin-top: 20px; text-align: center; color: #666; font-size: 0.9rem;">Generated on ' + new Date().toLocaleString() + '</div>');
-    printWindow.document.write('</body></html>');
+            printWindow.document.write('<table>' + tableClone.innerHTML + '</table>');
+            printWindow.document.write('<div style="margin-top: 20px; text-align: center; color: #666; font-size: 0.9rem;">Generated on ' + new Date().toLocaleString() + '</div>');
+            printWindow.document.write('</body></html>');
 
-    printWindow.document.close();
+            printWindow.document.close();
 
-    // Fixed: Add timeout and error handling
-    const img = printWindow.document.querySelector('img');
-    let printExecuted = false;
+            // Fixed: Add timeout and error handling
+            const img = printWindow.document.querySelector('img');
+            let printExecuted = false;
 
-    function executePrint() {
-        if (!printExecuted) {
-            printExecuted = true;
-            printWindow.focus();
-            printWindow.print();
-            printWindow.close(); 
-        }
-    }
+            function executePrint() {
+                if (!printExecuted) {
+                    printExecuted = true;
+                    printWindow.focus();
+                    printWindow.print();
+                    printWindow.close();
+                }
+            }
 
-    if (img) {
-        img.onload = executePrint;
-        img.onerror = executePrint; // Handle image load error
-        
-        // Fallback timeout in case image never loads
-        setTimeout(executePrint, 2000);
-    } else {
-        // If no image found, execute immediately
-        setTimeout(executePrint, 100);
-    }
-});
+            if (img) {
+                img.onload = executePrint;
+                img.onerror = executePrint; // Handle image load error
+
+                // Fallback timeout in case image never loads
+                setTimeout(executePrint, 2000);
+            } else {
+                // If no image found, execute immediately
+                setTimeout(executePrint, 100);
+            }
+        });
     </script>
 </body>
 

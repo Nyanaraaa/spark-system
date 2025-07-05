@@ -5,7 +5,7 @@ require '../../../config/database.php';
 if (isset($_GET['supplies_id']) && is_numeric($_GET['supplies_id'])) {
     $supplies_id = intval($_GET['supplies_id']);
 
-    
+
     $sql = "DELETE FROM supplies WHERE supplies_id = ?";
     $stmt = $conn->prepare($sql);
 

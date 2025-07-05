@@ -10,7 +10,8 @@
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="manifest" href="../../../manifest.json">
-    <link rel="stylesheet" href="../../../assets/css/staff.css?v=<?php echo filemtime('../../../assets/css/staff.css'); ?>">
+    <link rel="stylesheet"
+        href="../../../assets/css/staff.css?v=<?php echo filemtime('../../../assets/css/staff.css'); ?>">
 
 </head>
 
@@ -342,7 +343,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>
-    <script src="../../../script.js"></script>
+    <script src="../../../assets/js/script.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -408,10 +409,10 @@
 
             function executePrint() {
                 if (printExecuted || attempts >= maxAttempts) return;
-                
+
                 attempts++;
                 printExecuted = true;
-                
+
                 try {
                     printWindow.focus();
                     printWindow.print();
@@ -419,7 +420,7 @@
                 } catch (error) {
                     console.warn('Print attempt failed:', error);
                     printExecuted = false; // Reset for retry
-                    
+
                     if (attempts < maxAttempts) {
                         setTimeout(executePrint, 500);
                     } else {
@@ -431,27 +432,27 @@
 
             // Multiple approaches to trigger print
             const img = printWindow.document.querySelector('img');
-            
+
             if (img) {
                 // Method 1: Image load event
                 img.onload = executePrint;
                 img.onerror = executePrint;
             }
-            
+
             // Method 2: Document ready state
             if (printWindow.document.readyState === 'complete') {
                 setTimeout(executePrint, 100);
             } else {
                 printWindow.document.addEventListener('DOMContentLoaded', executePrint);
             }
-            
+
             // Method 3: Fallback timers
             setTimeout(executePrint, 1000);  // 1 second fallback
             setTimeout(executePrint, 3000);  // 3 second fallback (final)
-            
+
             // Method 4: Window load event
             printWindow.addEventListener('load', executePrint);
-            
+
             // Emergency cleanup if window is still open after 10 seconds
             setTimeout(() => {
                 if (!printWindow.closed) {
@@ -471,7 +472,7 @@
 
             for (let i = 0; i < rows.length; i++) {
                 if (rows[i].id === 'no-record') continue;
-                
+
                 const cells = rows[i].getElementsByTagName('td');
                 let matchFound = false;
 
@@ -514,7 +515,7 @@
                 const staff_id = this.getAttribute('href').split('=')[1]; // Get staff_id from URL
 
                 // Use AJAX to fetch staff details based on staff_id
-                fetch('get_staff_details.php?staff_id=' + staff_id)
+                fetch('../api/get_staff_details.php?staff_id=' + staff_id)
                     .then(response => response.json())
                     .then(data => {
                         // Populate modal form fields with the fetched data

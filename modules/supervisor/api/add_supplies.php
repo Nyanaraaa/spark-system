@@ -6,7 +6,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $category = $_POST['category'];
     $classification = $_POST['classification'];
     $initial_stock = $_POST['initial_stock'];
-    $stock_limit = $_POST['stock_limit']; // Get user-defined limit
+    $stock_limit = $_POST['stock_limit']; 
 
     $sql = "INSERT INTO supplies (supplies, brand, classification, stocks, stock_limit) VALUES (?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
@@ -25,4 +25,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 }
 ?>
-

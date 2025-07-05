@@ -1,6 +1,6 @@
 <?php
-session_start(); 
-require '../../../config/database.php'; 
+session_start();
+require '../../../config/database.php';
 
 if (!isset($_SESSION['username'])) {
     header("Location: ../../../index.php");
@@ -10,11 +10,11 @@ if (!isset($_SESSION['username'])) {
 $username = $_SESSION['username'];
 
 $stmt = $conn->prepare("SELECT account_id, username, role, employee_id, email_address, password FROM account WHERE username = ?");
-$stmt->bind_param("s", $username); 
-$stmt->execute(); 
-$stmt->bind_result($account_id, $username, $role, $employee_id, $email_address, $password); 
-$stmt->fetch(); 
-$stmt->close(); 
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$stmt->bind_result($account_id, $username, $role, $employee_id, $email_address, $password);
+$stmt->fetch();
+$stmt->close();
 
 // Get staff details
 $stmt = $conn->prepare("SELECT s.staff_id, s.first_name, s.last_name, s.contact_no, s.profile_picture 
@@ -71,8 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $conn->commit();
 
             $_SESSION['update_msg'] = "Account details updated successfully.";
-            $_SESSION['username'] = $new_username; 
-            $_SESSION['email'] = $new_email; 
+            $_SESSION['username'] = $new_username;
+            $_SESSION['email'] = $new_email;
 
         } catch (Exception $e) {
             $conn->rollback();
@@ -97,12 +97,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="manifest" href="../../../manifest.json">
-    
+
     <!-- Updated CSS paths -->
-    <link rel="stylesheet" href="../../../assets/css/global.css?v=<?php echo filemtime('../../../assets/css/global.css'); ?>">
-    <link rel="stylesheet" href="../../../assets/css/components.css?v=<?php echo filemtime('../../../assets/css/components.css'); ?>">
-    <link rel="stylesheet" href="../../../assets/css/supervisor_profile.css?v=<?php echo filemtime('../../../assets/css/supervisor_profile.css'); ?>">
-    <link rel="stylesheet" href="../../../assets/css/responsive.css?v=<?php echo filemtime('../../../assets/css/responsive.css'); ?>">
+    <link rel="stylesheet"
+        href="../../../assets/css/global.css?v=<?php echo filemtime('../../../assets/css/global.css'); ?>">
+    <link rel="stylesheet"
+        href="../../../assets/css/components.css?v=<?php echo filemtime('../../../assets/css/components.css'); ?>">
+    <link rel="stylesheet"
+        href="../../../assets/css/supervisor_profile.css?v=<?php echo filemtime('../../../assets/css/supervisor_profile.css'); ?>">
+    <link rel="stylesheet"
+        href="../../../assets/css/responsive.css?v=<?php echo filemtime('../../../assets/css/responsive.css'); ?>">
 </head>
 
 
@@ -116,8 +120,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="container py-4">
             <?php if (isset($_SESSION['update_msg'])): ?>
-                <div id="update-alert" class="alert alert-<?php echo (strpos($_SESSION['update_msg'], 'Error') === 0) ? 'danger' : 'success'; ?>">
-                    <i class="lni <?php echo (strpos($_SESSION['update_msg'], 'Error') === 0) ? 'lni-close' : 'lni-checkmark-circle'; ?> me-2"></i>
+                <div id="update-alert"
+                    class="alert alert-<?php echo (strpos($_SESSION['update_msg'], 'Error') === 0) ? 'danger' : 'success'; ?>">
+                    <i
+                        class="lni <?php echo (strpos($_SESSION['update_msg'], 'Error') === 0) ? 'lni-close' : 'lni-checkmark-circle'; ?> me-2"></i>
                     <?php echo htmlspecialchars($_SESSION['update_msg']); ?>
                 </div>
                 <?php unset($_SESSION['update_msg']); ?>
@@ -145,10 +151,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         style="width: 150px; height: 150px; object-fit: cover; border: 3px solid var(--gold);">';
                                 }
                                 ?>
-                                <h3 class="mt-3" style="color: var(--maroon);"><?php echo htmlspecialchars($full_name); ?></h3>
+                                <h3 class="mt-3" style="color: var(--maroon);">
+                                    <?php echo htmlspecialchars($full_name); ?></h3>
                                 <p class="badge-role"><?php echo htmlspecialchars($role); ?></p>
                             </div>
-                            
+
                             <div class="profile-details mt-4">
                                 <div class="detail-item">
                                     <i class="lni lni-user detail-icon"></i>
@@ -157,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <div class="detail-value"><?php echo htmlspecialchars($username); ?></div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="detail-item">
                                     <i class="lni lni-envelope detail-icon"></i>
                                     <div class="detail-content">
@@ -165,7 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <div class="detail-value"><?php echo htmlspecialchars($email_address); ?></div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="detail-item">
                                     <i class="lni lni-lock-alt detail-icon"></i>
                                     <div class="detail-content">
@@ -194,32 +201,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         </label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="lni lni-user"></i></span>
-                                            <input type="text" name="username" id="username" class="form-control" required value="<?php echo htmlspecialchars($username); ?>">
+                                            <input type="text" name="username" id="username" class="form-control"
+                                                required value="<?php echo htmlspecialchars($username); ?>">
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-md-6 mb-3">
                                         <label for="email" class="form-label">
                                             <i class="lni lni-envelope me-1" style="color: var(--maroon);"></i> Email
                                         </label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="lni lni-envelope"></i></span>
-                                            <input type="email" name="email" id="email" class="form-control" required value="<?php echo htmlspecialchars($email_address); ?>">
+                                            <input type="email" name="email" id="email" class="form-control" required
+                                                value="<?php echo htmlspecialchars($email_address); ?>">
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="mb-4">
                                     <label for="password" class="form-label">
                                         <i class="lni lni-lock-alt me-1" style="color: var(--maroon);"></i> New Password
                                     </label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="lni lni-lock-alt"></i></span>
-                                        <input type="password" name="password" id="password" class="form-control" placeholder="Enter new password">
+                                        <input type="password" name="password" id="password" class="form-control"
+                                            placeholder="Enter new password">
                                     </div>
                                     <small class="text-muted mt-1">Leave blank to keep current password</small>
                                 </div>
-                                
+
                                 <div class="d-flex justify-content-center mt-4">
                                     <button type="submit" class="btn btn-save" style="width: 200px;">
                                         <i class="lni lni-save me-2"></i> Save Changes
@@ -235,13 +245,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Bootstrap JavaScript Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+        crossorigin="anonymous"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const logoutLink = document.getElementById('logout-link');
             if (logoutLink) {
-                logoutLink.addEventListener('click', function(event) {
+                logoutLink.addEventListener('click', function (event) {
                     event.preventDefault();
                     const confirmLogout = confirm('Are you sure you want to log out?');
                     if (confirmLogout) {
@@ -257,16 +268,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const alertElement = document.getElementById('update-alert');
             if (alertElement) {
                 alertElement.style.transition = "opacity 0.5s ease";
-                alertElement.style.opacity = "0"; 
-                setTimeout(() => alertElement.remove(), 500); 
+                alertElement.style.opacity = "0";
+                setTimeout(() => alertElement.remove(), 500);
             }
         }, 5000); 
     </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const settingsForm = document.querySelector('form');
-            settingsForm.addEventListener('submit', function(event) {
+            settingsForm.addEventListener('submit', function (event) {
                 const confirmUpdate = confirm('Are you sure you want to update your account details?');
                 if (!confirmUpdate) {
                     event.preventDefault();
@@ -275,4 +286,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         });
     </script>
 </body>
+
 </html>

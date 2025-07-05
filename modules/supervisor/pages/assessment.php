@@ -15,7 +15,8 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="manifest" href="../../../manifest.json">
-    <link rel="stylesheet" href="../../../assets/css/supervisorassessment.css?v=<?php echo filemtime('../../../assets/css/supervisorassessment.css'); ?>">
+    <link rel="stylesheet"
+        href="../../../assets/css/supervisorassessment.css?v=<?php echo filemtime('../../../assets/css/supervisorassessment.css'); ?>">
 </head>
 
 <body>
@@ -66,7 +67,8 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                                         <span class="input-group-text">
                                             <i class="lni lni-search"></i>
                                         </span>
-                                        <input type="text" id="search-input" class="form-control" placeholder="Search by name, ID or location" onkeyup="filterStaff()">
+                                        <input type="text" id="search-input" class="form-control"
+                                            placeholder="Search by name, ID or location" onkeyup="filterStaff()">
                                     </div>
                                 </div>
                                 <div class="col-md-4 mb-3 mb-md-0">
@@ -74,14 +76,18 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                                         <span class="input-group-text">
                                             <i class="lni lni-calendar"></i>
                                         </span>
-                                        <input type="date" id="date-filter" class="form-control" onchange="filterStaff()">
+                                        <input type="date" id="date-filter" class="form-control"
+                                            onchange="filterStaff()">
                                     </div>
                                 </div>
                                 <div class="col-md-4 mb-3 mb-md-0">
                                     <div class="btn-group w-100" id="status-filter-group">
-                                        <button type="button" class="btn btn-outline-secondary active" id="status-all" onclick="setStatusFilter('all')">All</button>
-                                        <button type="button" class="btn btn-outline-secondary" id="status-pending" onclick="setStatusFilter('pending')">Pending</button>
-                                        <button type="button" class="btn btn-outline-secondary" id="status-evaluated" onclick="setStatusFilter('evaluated')">Evaluated</button>
+                                        <button type="button" class="btn btn-outline-secondary active" id="status-all"
+                                            onclick="setStatusFilter('all')">All</button>
+                                        <button type="button" class="btn btn-outline-secondary" id="status-pending"
+                                            onclick="setStatusFilter('pending')">Pending</button>
+                                        <button type="button" class="btn btn-outline-secondary" id="status-evaluated"
+                                            onclick="setStatusFilter('evaluated')">Evaluated</button>
                                     </div>
                                 </div>
                             </div>
@@ -104,7 +110,8 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                             <div class="row">
                                 <div class="col-md-6">
                                     <h5 class="mb-1">Staff Name: <span id="summary-name" class="fw-normal"></span></h5>
-                                    <h6 class="mb-0 text-muted">Employee ID: <span id="summary-id" class="fw-normal"></span></h6>
+                                    <h6 class="mb-0 text-muted">Employee ID: <span id="summary-id"
+                                            class="fw-normal"></span></h6>
                                 </div>
                             </div>
                         </div>
@@ -151,7 +158,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                                         if ($result->num_rows > 0) {
                                             while ($row = $result->fetch_assoc()) {
                                                 $formattedReportDate = $row["report_created_at"] ? date("F j, Y g:ia", strtotime($row["report_created_at"])) : 'N/A';
-                                                
+
                                                 // Smart handling for base64 images and file paths
                                                 $imagePath = $row["report_image"];
                                                 if ($imagePath) {
@@ -191,9 +198,9 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                                                      </td>
                                                      <td>';
 
-                                                echo $row['is_evaluated'] == 1 ? 
-                                                     '<span class="status-badge status-evaluated">Evaluated</span>' : 
-                                                     '<span class="status-badge status-pending">Pending</span>';
+                                                echo $row['is_evaluated'] == 1 ?
+                                                    '<span class="status-badge status-evaluated">Evaluated</span>' :
+                                                    '<span class="status-badge status-pending">Pending</span>';
 
                                                 echo '</td>
                                                   <td>';
@@ -252,8 +259,10 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                 <div class="modal-body p-0">
                     <div class="row g-0">
                         <div class="col-md-8">
-                            <div class="p-3 d-flex justify-content-center align-items-center bg-light" style="min-height: 300px;">
-                                <img id="modalImage" src="/placeholder.svg" alt="Report Image" class="img-fluid rounded shadow-sm" />
+                            <div class="p-3 d-flex justify-content-center align-items-center bg-light"
+                                style="min-height: 300px;">
+                                <img id="modalImage" src="/placeholder.svg" alt="Report Image"
+                                    class="img-fluid rounded shadow-sm" />
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -325,31 +334,36 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                                     <ul class="criteria-list">
                                         <li class="criteria-item">
                                             <span class="criteria-label">
-                                                <i class="lni lni-checkmark me-2" style="color: var(--maroon);"></i>Task Completion
+                                                <i class="lni lni-checkmark me-2" style="color: var(--maroon);"></i>Task
+                                                Completion
                                             </span>
                                             <span class="criteria-score" id="criteria-task_completion">-</span>
                                         </li>
                                         <li class="criteria-item">
                                             <span class="criteria-label">
-                                                <i class="lni lni-eye me-2" style="color: var(--maroon);"></i>Attention to Detail
+                                                <i class="lni lni-eye me-2" style="color: var(--maroon);"></i>Attention
+                                                to Detail
                                             </span>
                                             <span class="criteria-score" id="criteria-attention_to_detail">-</span>
                                         </li>
                                         <li class="criteria-item">
                                             <span class="criteria-label">
-                                                <i class="lni lni-cart me-2" style="color: var(--maroon);"></i>Trash Management
+                                                <i class="lni lni-cart me-2" style="color: var(--maroon);"></i>Trash
+                                                Management
                                             </span>
                                             <span class="criteria-score" id="criteria-trash_management">-</span>
                                         </li>
                                         <li class="criteria-item">
                                             <span class="criteria-label">
-                                                <i class="lni lni-brush me-2" style="color: var(--maroon);"></i>Floor Care
+                                                <i class="lni lni-brush me-2" style="color: var(--maroon);"></i>Floor
+                                                Care
                                             </span>
                                             <span class="criteria-score" id="criteria-floor_care">-</span>
                                         </li>
                                         <li class="criteria-item">
                                             <span class="criteria-label">
-                                                <i class="lni lni-grid-alt me-2" style="color: var(--maroon);"></i>Organization
+                                                <i class="lni lni-grid-alt me-2"
+                                                    style="color: var(--maroon);"></i>Organization
                                             </span>
                                             <span class="criteria-score" id="criteria-organization">-</span>
                                         </li>
@@ -407,7 +421,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
 
                         <div class="bg-light p-4 rounded shadow-sm mb-4">
                             <h6 style="color: var(--maroon);" class="text-start mb-3">Standards Criteria</h6>
-                            
+
                             <!-- Modified criteria grid for better mobile display -->
                             <div class="criteria-grid mb-4 border-bottom pb-3">
                                 <div class="criteria-cell excellent">4<br><small>Excellent</small></div>
@@ -417,111 +431,146 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                             </div>
 
                             <div class="form-group mb-4">
-                                <label class="form-label"><strong style="color: var(--maroon);">Task Completion</strong></label>
+                                <label class="form-label"><strong style="color: var(--maroon);">Task
+                                        Completion</strong></label>
                                 <div class="rating-options-grid">
                                     <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="task_completion" value="Excellent" id="taskCompletionExcellent" required>
+                                        <input class="form-check-input" type="radio" name="task_completion"
+                                            value="Excellent" id="taskCompletionExcellent" required>
                                         <label class="rating-badge excellent" for="taskCompletionExcellent">4</label>
                                     </div>
                                     <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="task_completion" value="Good" id="taskCompletionGood">
+                                        <input class="form-check-input" type="radio" name="task_completion" value="Good"
+                                            id="taskCompletionGood">
                                         <label class="rating-badge good" for="taskCompletionGood">3</label>
                                     </div>
                                     <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="task_completion" value="Needs Improvement" id="taskCompletionNeedsImprovement">
-                                        <label class="rating-badge needs-improvement" for="taskCompletionNeedsImprovement">2</label>
+                                        <input class="form-check-input" type="radio" name="task_completion"
+                                            value="Needs Improvement" id="taskCompletionNeedsImprovement">
+                                        <label class="rating-badge needs-improvement"
+                                            for="taskCompletionNeedsImprovement">2</label>
                                     </div>
                                     <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="task_completion" value="Unsatisfactory" id="taskCompletionUnsatisfactory">
-                                        <label class="rating-badge unsatisfactory" for="taskCompletionUnsatisfactory">1</label>
+                                        <input class="form-check-input" type="radio" name="task_completion"
+                                            value="Unsatisfactory" id="taskCompletionUnsatisfactory">
+                                        <label class="rating-badge unsatisfactory"
+                                            for="taskCompletionUnsatisfactory">1</label>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group mb-4">
-                                <label class="form-label"><strong style="color: var(--maroon);">Attention To Detail</strong></label>
+                                <label class="form-label"><strong style="color: var(--maroon);">Attention To
+                                        Detail</strong></label>
                                 <div class="rating-options-grid">
                                     <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="attention_to_detail" value="Excellent" id="attentionToDetailExcellent" required>
+                                        <input class="form-check-input" type="radio" name="attention_to_detail"
+                                            value="Excellent" id="attentionToDetailExcellent" required>
                                         <label class="rating-badge excellent" for="attentionToDetailExcellent">4</label>
                                     </div>
                                     <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="attention_to_detail" value="Good" id="attentionToDetailGood">
+                                        <input class="form-check-input" type="radio" name="attention_to_detail"
+                                            value="Good" id="attentionToDetailGood">
                                         <label class="rating-badge good" for="attentionToDetailGood">3</label>
                                     </div>
                                     <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="attention_to_detail" value="Needs Improvement" id="attentionToDetailNeedsImprovement">
-                                        <label class="rating-badge needs-improvement" for="attentionToDetailNeedsImprovement">2</label>
+                                        <input class="form-check-input" type="radio" name="attention_to_detail"
+                                            value="Needs Improvement" id="attentionToDetailNeedsImprovement">
+                                        <label class="rating-badge needs-improvement"
+                                            for="attentionToDetailNeedsImprovement">2</label>
                                     </div>
                                     <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="attention_to_detail" value="Unsatisfactory" id="attentionToDetailUnsatisfactory">
-                                        <label class="rating-badge unsatisfactory" for="attentionToDetailUnsatisfactory">1</label>
+                                        <input class="form-check-input" type="radio" name="attention_to_detail"
+                                            value="Unsatisfactory" id="attentionToDetailUnsatisfactory">
+                                        <label class="rating-badge unsatisfactory"
+                                            for="attentionToDetailUnsatisfactory">1</label>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group mb-4">
-                                <label class="form-label"><strong style="color: var(--maroon);">Trash Management</strong></label>
+                                <label class="form-label"><strong style="color: var(--maroon);">Trash
+                                        Management</strong></label>
                                 <div class="rating-options-grid">
                                     <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="trash_management" value="Excellent" id="trashManagementExcellent" required>
+                                        <input class="form-check-input" type="radio" name="trash_management"
+                                            value="Excellent" id="trashManagementExcellent" required>
                                         <label class="rating-badge excellent" for="trashManagementExcellent">4</label>
                                     </div>
                                     <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="trash_management" value="Good" id="trashManagementGood">
+                                        <input class="form-check-input" type="radio" name="trash_management"
+                                            value="Good" id="trashManagementGood">
                                         <label class="rating-badge good" for="trashManagementGood">3</label>
                                     </div>
                                     <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="trash_management" value="Needs Improvement" id="trashManagementNeedsImprovement">
-                                        <label class="rating-badge needs-improvement" for="trashManagementNeedsImprovement">2</label>
+                                        <input class="form-check-input" type="radio" name="trash_management"
+                                            value="Needs Improvement" id="trashManagementNeedsImprovement">
+                                        <label class="rating-badge needs-improvement"
+                                            for="trashManagementNeedsImprovement">2</label>
                                     </div>
                                     <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="trash_management" value="Unsatisfactory" id="trashManagementUnsatisfactory">
-                                        <label class="rating-badge unsatisfactory" for="trashManagementUnsatisfactory">1</label>
+                                        <input class="form-check-input" type="radio" name="trash_management"
+                                            value="Unsatisfactory" id="trashManagementUnsatisfactory">
+                                        <label class="rating-badge unsatisfactory"
+                                            for="trashManagementUnsatisfactory">1</label>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group mb-4">
-                                <label class="form-label"><strong style="color: var(--maroon);">Floor Care</strong></label>
+                                <label class="form-label"><strong style="color: var(--maroon);">Floor
+                                        Care</strong></label>
                                 <div class="rating-options-grid">
                                     <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="floor_care" value="Excellent" id="floorCareExcellent" required>
+                                        <input class="form-check-input" type="radio" name="floor_care" value="Excellent"
+                                            id="floorCareExcellent" required>
                                         <label class="rating-badge excellent" for="floorCareExcellent">4</label>
                                     </div>
                                     <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="floor_care" value="Good" id="floorCareGood">
+                                        <input class="form-check-input" type="radio" name="floor_care" value="Good"
+                                            id="floorCareGood">
                                         <label class="rating-badge good" for="floorCareGood">3</label>
                                     </div>
                                     <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="floor_care" value="Needs Improvement" id="floorCareNeedsImprovement">
-                                        <label class="rating-badge needs-improvement" for="floorCareNeedsImprovement">2</label>
+                                        <input class="form-check-input" type="radio" name="floor_care"
+                                            value="Needs Improvement" id="floorCareNeedsImprovement">
+                                        <label class="rating-badge needs-improvement"
+                                            for="floorCareNeedsImprovement">2</label>
                                     </div>
                                     <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="floor_care" value="Unsatisfactory" id="floorCareUnsatisfactory">
-                                        <label class="rating-badge unsatisfactory" for="floorCareUnsatisfactory">1</label>
+                                        <input class="form-check-input" type="radio" name="floor_care"
+                                            value="Unsatisfactory" id="floorCareUnsatisfactory">
+                                        <label class="rating-badge unsatisfactory"
+                                            for="floorCareUnsatisfactory">1</label>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group mb-4">
-                                <label class="form-label"><strong style="color: var(--maroon);">Organization</strong></label>
+                                <label class="form-label"><strong
+                                        style="color: var(--maroon);">Organization</strong></label>
                                 <div class="rating-options-grid">
                                     <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="organization" value="Excellent" id="organizationExcellent" required>
+                                        <input class="form-check-input" type="radio" name="organization"
+                                            value="Excellent" id="organizationExcellent" required>
                                         <label class="rating-badge excellent" for="organizationExcellent">4</label>
                                     </div>
                                     <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="organization" value="Good" id="organizationGood">
+                                        <input class="form-check-input" type="radio" name="organization" value="Good"
+                                            id="organizationGood">
                                         <label class="rating-badge good" for="organizationGood">3</label>
                                     </div>
                                     <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="organization" value="Needs Improvement" id="organizationNeedsImprovement">
-                                        <label class="rating-badge needs-improvement" for="organizationNeedsImprovement">2</label>
+                                        <input class="form-check-input" type="radio" name="organization"
+                                            value="Needs Improvement" id="organizationNeedsImprovement">
+                                        <label class="rating-badge needs-improvement"
+                                            for="organizationNeedsImprovement">2</label>
                                     </div>
                                     <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="organization" value="Unsatisfactory" id="organizationUnsatisfactory">
-                                        <label class="rating-badge unsatisfactory" for="organizationUnsatisfactory">1</label>
+                                        <input class="form-check-input" type="radio" name="organization"
+                                            value="Unsatisfactory" id="organizationUnsatisfactory">
+                                        <label class="rating-badge unsatisfactory"
+                                            for="organizationUnsatisfactory">1</label>
                                     </div>
                                 </div>
                             </div>
@@ -549,18 +598,18 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>
-    <script src="../../../script.js"></script>
+    <script src="../../../assets/js/script.js"></script>
 
     <script>
-        // Function to show image modal
+
         function showImageModal(imageUrl, description) {
             document.getElementById('modalImage').src = imageUrl;
             document.getElementById('modalDescription').textContent = description || 'No description available';
             new bootstrap.Modal(document.getElementById('imageModal')).show();
         }
-        
+
         document.addEventListener('DOMContentLoaded', function () {
-            // Logout confirmation
+
             const logoutLink = document.getElementById('logout-link');
             if (logoutLink) {
                 logoutLink.addEventListener('click', function (event) {
@@ -572,7 +621,6 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                 });
             }
 
-            // Evaluate button functionality
             const evaluateButtons = document.querySelectorAll('.evaluate-btn');
             evaluateButtons.forEach(button => {
                 button.addEventListener('click', function () {
@@ -588,7 +636,6 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                 });
             });
 
-            // Save evaluation functionality
             document.getElementById('saveEvaluation').addEventListener('click', function () {
                 const form = document.getElementById('evaluationForm');
                 let totalScore = 0;
@@ -623,13 +670,12 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                 form.submit();
             });
 
-            // View assessment functionality
             const viewAssessmentButtons = document.querySelectorAll('.view-assessment');
             viewAssessmentButtons.forEach(button => {
                 button.addEventListener('click', function () {
                     const reportId = this.getAttribute('data-report-id');
 
-                    fetch(`../api/fetch_assessment.php?report_id=${reportId}`)
+                    fetch(`../../api/fetch_assessment.php?report_id=${reportId}`)
                         .then(response => response.json())
                         .then(data => {
                             document.getElementById('ratingDisplay').textContent = data.rating || '';
@@ -647,7 +693,6 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                             }
                             document.getElementById('remarksText').textContent = data.remark || '';
 
-                            // Set each criteria value using the mapping
                             document.getElementById('criteria-task_completion').textContent = displayCriteriaScore(data.task_completion);
                             document.getElementById('criteria-attention_to_detail').textContent = displayCriteriaScore(data.attention_to_detail);
                             document.getElementById('criteria-trash_management').textContent = displayCriteriaScore(data.trash_management);
@@ -666,11 +711,9 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
             const headerRow = document.querySelector('#assessment-table thead tr');
             let recordFound = false;
 
-            // Collect unique names and IDs for summary
             let fullNames = [];
             let employeeIDs = [];
 
-            // Find column indexes
             const headerColumns = Array.from(headerRow.children);
             const fullNameIndex = headerColumns.findIndex(th => th.textContent.trim() === 'Full Name');
             const employeeidIndex = headerColumns.findIndex(th => th.textContent.trim() === 'Employee ID');
@@ -682,20 +725,19 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                 const statusText = row.querySelector('td:nth-child(6)')?.textContent.trim().toLowerCase() || '';
                 const location = row.querySelector('td:nth-child(5)')?.textContent.toLowerCase() || '';
 
-                // --- Robust Date filter fix ---
                 let reportDate = '';
                 if (reportDateText && reportDateText !== 'N/A') {
-                    // Example: "May 20, 2025 3:45pm"
+
                     const match = reportDateText.match(/^([A-Za-z]+) (\d{1,2}), (\d{4})/);
                     if (match) {
-                        const monthNames = ["january","february","march","april","may","june","july","august","september","october","november","december"];
+                        const monthNames = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
                         const month = monthNames.indexOf(match[1].toLowerCase()) + 1;
                         const day = match[2].padStart(2, '0');
                         const year = match[3];
                         reportDate = `${year}-${month.toString().padStart(2, '0')}-${day}`;
                     }
                 }
-                // -----------------------
+
 
                 const matchesSearch = fullName.includes(searchInput) || employeeID.includes(searchInput) || location.includes(searchInput);
                 const matchesDate = !dateFilter || reportDate === dateFilter;
@@ -720,37 +762,36 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                 }
             });
 
-            // Show/hide summary and columns
+
             const staffSummary = document.getElementById('staff-summary');
             const summaryName = document.getElementById('summary-name');
             const summaryId = document.getElementById('summary-id');
 
-            // Only show summary if search matches exactly one name or one ID (not location)
             const isNameOrIdSearch =
-    searchInput !== '' &&
-    (
-        (fullNames.length === 1 && fullNames[0].toLowerCase().includes(searchInput)) ||
-        (employeeIDs.length === 1 && employeeIDs[0].toLowerCase().includes(searchInput))
-    );
+                searchInput !== '' &&
+                (
+                    (fullNames.length === 1 && fullNames[0].toLowerCase().includes(searchInput)) ||
+                    (employeeIDs.length === 1 && employeeIDs[0].toLowerCase().includes(searchInput))
+                );
 
             if (isNameOrIdSearch) {
                 staffSummary.style.display = '';
                 summaryName.textContent = fullNames[0] || '';
                 summaryId.textContent = employeeIDs[0] || '';
-                // Hide columns in header
+
                 if (headerRow.children[employeeidIndex]) headerRow.children[employeeidIndex].style.display = 'none';
                 if (headerRow.children[fullNameIndex]) headerRow.children[fullNameIndex].style.display = 'none';
-                // Hide columns in body
+
                 rows.forEach(row => {
                     if (row.children[employeeidIndex]) row.children[employeeidIndex].style.display = 'none';
                     if (row.children[fullNameIndex]) row.children[fullNameIndex].style.display = 'none';
                 });
             } else {
                 staffSummary.style.display = 'none';
-                // Show columns in header
+
                 if (headerRow.children[employeeidIndex]) headerRow.children[employeeidIndex].style.display = '';
                 if (headerRow.children[fullNameIndex]) headerRow.children[fullNameIndex].style.display = '';
-                // Show columns in body
+
                 rows.forEach(row => {
                     if (row.children[employeeidIndex]) row.children[employeeidIndex].style.display = '';
                     if (row.children[fullNameIndex]) row.children[fullNameIndex].style.display = '';
@@ -760,12 +801,11 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
             const noRecordMessage = document.getElementById('no-record');
             noRecordMessage.style.display = recordFound ? 'none' : '';
         }
-        
+
         document.getElementById('print-button').addEventListener('click', function () {
             const table = document.getElementById('assessment-table');
             const tableClone = table.cloneNode(true);
 
-            // Remove hidden rows (those filtered out)
             const bodyRows = tableClone.querySelectorAll('tbody tr');
             bodyRows.forEach((row, idx) => {
                 const originalRow = table.querySelector(`tbody tr:nth-child(${idx + 1})`);
@@ -774,13 +814,11 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                 }
             });
 
-            // Detect if staff summary is visible
             const staffSummary = document.getElementById('staff-summary');
             const isStaffSummaryVisible = staffSummary && staffSummary.style.display !== 'none';
             let staffName = '';
             let staffId = '';
 
-            // Remove columns if staff summary is visible
             const headerRow = tableClone.querySelector('thead tr');
             const headerColumns = Array.from(headerRow.children);
             const fullNameIndex = headerColumns.findIndex(th => th.textContent.trim() === 'Full Name');
@@ -788,11 +826,10 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
             const actionIndex = headerColumns.findIndex(th => th.textContent.trim() === 'Action');
 
             if (isStaffSummaryVisible) {
-                // Get staff name and id from summary
+
                 staffName = document.getElementById('summary-name')?.textContent.trim() || '';
                 staffId = document.getElementById('summary-id')?.textContent.trim() || '';
 
-                // Remove columns in descending order to avoid index shift
                 const removeIndexes = [actionIndex, employeeIdIndex, fullNameIndex].filter(i => i > -1).sort((a, b) => b - a);
                 removeIndexes.forEach(idx => {
                     if (headerRow.children[idx]) headerRow.removeChild(headerRow.children[idx]);
@@ -803,118 +840,111 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                     });
                 });
             } else {
-                // Remove only the Action column
+              
                 if (actionIndex > -1) headerRow.removeChild(headerRow.children[actionIndex]);
                 tableClone.querySelectorAll('tbody tr').forEach(row => {
                     if (actionIndex > -1 && row.children[actionIndex]) row.removeChild(row.children[actionIndex]);
                 });
             }
 
-            // Open a new window for printing
             const printWindow = window.open('', '', 'height=800,width=1000');
-            
-    printWindow.document.write('<html><head><title>Progress Assessment</title>');
-    printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">');
-    printWindow.document.write('<style>');
-    printWindow.document.write('body { padding: 20px; font-family: Arial, sans-serif; }');
-    printWindow.document.write('.header { margin-bottom: 20px; }');
+
+            printWindow.document.write('<html><head><title>Progress Assessment</title>');
+            printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">');
+            printWindow.document.write('<style>');
+            printWindow.document.write('body { padding: 20px; font-family: Arial, sans-serif; }');
+            printWindow.document.write('.header { margin-bottom: 20px; }');
             printWindow.document.write('.logo { width: 200px; height: auto; }');
             printWindow.document.write('h1 { color: #800000; margin-top: 20px; }');
-    printWindow.document.write('table { width: 100%; border-collapse: collapse; margin-top: 20px; }');
-    printWindow.document.write('th, td { border: 1px solid #000; padding: 8px 12px; text-align: left; }');
-    printWindow.document.write('th { background-color: #800000; color: white; font-weight: bold; }');
-    printWindow.document.write('tr:nth-child(even) { background-color: #f9f9f9; }');
-    printWindow.document.write('tr:nth-child(odd) { background-color: #ffffff; }');
-    printWindow.document.write('.badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }');
-    printWindow.document.write('.employee-badge { background-color: #f8f9fa; color: #495057; }');
-    printWindow.document.write('.location-badge { background-color: #fff3cd; color: #856404; }');
-    printWindow.document.write('.status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }');
-    printWindow.document.write('.status-evaluated { background-color: #28a745; color: white; }');
-    printWindow.document.write('.status-pending { background-color: #ffc107; color: black; }');
-    printWindow.document.write('td img.report-thumbnail { max-width: 80px !important; max-height: 80px !important; width: auto !important; height: auto !important; display: block; margin: 0 auto; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }');
-    printWindow.document.write('</style>');
-    printWindow.document.write('</head><body>');
+            printWindow.document.write('table { width: 100%; border-collapse: collapse; margin-top: 20px; }');
+            printWindow.document.write('th, td { border: 1px solid #000; padding: 8px 12px; text-align: left; }');
+            printWindow.document.write('th { background-color: #800000; color: white; font-weight: bold; }');
+            printWindow.document.write('tr:nth-child(even) { background-color: #f9f9f9; }');
+            printWindow.document.write('tr:nth-child(odd) { background-color: #ffffff; }');
+            printWindow.document.write('.badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }');
+            printWindow.document.write('.employee-badge { background-color: #f8f9fa; color: #495057; }');
+            printWindow.document.write('.location-badge { background-color: #fff3cd; color: #856404; }');
+            printWindow.document.write('.status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }');
+            printWindow.document.write('.status-evaluated { background-color: #28a745; color: white; }');
+            printWindow.document.write('.status-pending { background-color: #ffc107; color: black; }');
+            printWindow.document.write('td img.report-thumbnail { max-width: 80px !important; max-height: 80px !important; width: auto !important; height: auto !important; display: block; margin: 0 auto; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }');
+            printWindow.document.write('</style>');
+            printWindow.document.write('</head><body>');
 
-    printWindow.document.write('<div class="header">');
-    printWindow.document.write('<img src="../../../assets/images/spark_logo.png" alt="Spark Logo" class="logo"/>');
-    if (isStaffSummaryVisible) {
-        printWindow.document.write('<h1>Progress Reports of ' + staffName + ' (' + staffId + ')</h1>');
-    } else {
-        printWindow.document.write('<h1>Progress Assessment</h1>');
-    }
-    printWindow.document.write('</div>');
-
-    // Add the filtered table
-    printWindow.document.write('<table class="table table-bordered">' + tableClone.innerHTML + '</table>');
-    printWindow.document.write('<div style="margin-top: 20px; text-align: center; color: #666; font-size: 0.9rem;">Generated on ' + new Date().toLocaleString() + '</div>');
-    printWindow.document.write('</body></html>');
-
-    printWindow.document.close();
-
-    // Enhanced print handling with multiple fallbacks
-    let printExecuted = false;
-    let attempts = 0;
-    const maxAttempts = 3;
-
-    function executePrint() {
-        if (printExecuted || attempts >= maxAttempts) return;
-        
-        attempts++;
-        printExecuted = true;
-        
-        try {
-            printWindow.focus();
-            printWindow.print();
-            printWindow.close(); // Auto-close after print dialog
-        } catch (error) {
-            console.warn('Print attempt failed:', error);
-            printExecuted = false; // Reset for retry
-            
-            if (attempts < maxAttempts) {
-                setTimeout(executePrint, 500);
+            printWindow.document.write('<div class="header">');
+            printWindow.document.write('<img src="../../../assets/images/spark_logo.png" alt="Spark Logo" class="logo"/>');
+            if (isStaffSummaryVisible) {
+                printWindow.document.write('<h1>Progress Reports of ' + staffName + ' (' + staffId + ')</h1>');
             } else {
-                printWindow.close();
-                alert('Print failed. Please try again.');
+                printWindow.document.write('<h1>Progress Assessment</h1>');
             }
-        }
-    }
+            printWindow.document.write('</div>');
 
-    // Multiple approaches to trigger print
-    const img = printWindow.document.querySelector('img');
-    
-    if (img) {
-        // Method 1: Image load event
-        img.onload = executePrint;
-        img.onerror = executePrint;
-    }
-    
-    // Method 2: Document ready state
-    if (printWindow.document.readyState === 'complete') {
-        setTimeout(executePrint, 100);
-    } else {
-        printWindow.document.addEventListener('DOMContentLoaded', executePrint);
-    }
-    
-    // Method 3: Fallback timers
-    setTimeout(executePrint, 1000);  // 1 second fallback
-    setTimeout(executePrint, 3000);  // 3 second fallback (final)
-    
-    // Method 4: Window load event
-    printWindow.addEventListener('load', executePrint);
-    
-    // Emergency cleanup if window is still open after 10 seconds
-    setTimeout(() => {
-        if (!printWindow.closed) {
-            printWindow.close();
-        }
-    }, 10000);
-});
+            printWindow.document.write('<table class="table table-bordered">' + tableClone.innerHTML + '</table>');
+            printWindow.document.write('<div style="margin-top: 20px; text-align: center; color: #666; font-size: 0.9rem;">Generated on ' + new Date().toLocaleString() + '</div>');
+            printWindow.document.write('</body></html>');
+
+            printWindow.document.close();
+
+            let printExecuted = false;
+            let attempts = 0;
+            const maxAttempts = 3;
+
+            function executePrint() {
+                if (printExecuted || attempts >= maxAttempts) return;
+
+                attempts++;
+                printExecuted = true;
+
+                try {
+                    printWindow.focus();
+                    printWindow.print();
+                    printWindow.close(); 
+                } catch (error) {
+                    console.warn('Print attempt failed:', error);
+                    printExecuted = false; 
+
+                    if (attempts < maxAttempts) {
+                        setTimeout(executePrint, 500);
+                    } else {
+                        printWindow.close();
+                        alert('Print failed. Please try again.');
+                    }
+                }
+            }
+
+            const img = printWindow.document.querySelector('img');
+
+            if (img) {
+
+                img.onload = executePrint;
+                img.onerror = executePrint;
+            }
+
+            if (printWindow.document.readyState === 'complete') {
+                setTimeout(executePrint, 100);
+            } else {
+                printWindow.document.addEventListener('DOMContentLoaded', executePrint);
+            }
+
+
+            setTimeout(executePrint, 1000);  
+            setTimeout(executePrint, 3000); 
+
+            printWindow.addEventListener('load', executePrint);
+
+            setTimeout(() => {
+                if (!printWindow.closed) {
+                    printWindow.close();
+                }
+            }, 10000);
+        });
 
         window.currentStatusFilter = 'all';
 
         function setStatusFilter(status) {
             currentStatusFilter = status;
-            // Update button styles
+
             document.querySelectorAll('#status-filter-group button').forEach(btn => {
                 btn.classList.remove('active');
                 btn.classList.remove('btn-primary');
@@ -936,8 +966,9 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
 
         function displayCriteriaScore(val) {
             if (!val) return "-";
-            return scoreMap[val] || val; // If already a number, just show it
+            return scoreMap[val] || val; 
         }
     </script>
 </body>
+
 </html>

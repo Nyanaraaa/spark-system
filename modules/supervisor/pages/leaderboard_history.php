@@ -1,6 +1,6 @@
 <?php
-session_start(); 
-require '../../../config/database.php'; 
+session_start();
+require '../../../config/database.php';
 
 $selected_month = isset($_POST['month']) ? $_POST['month'] : '';
 $selected_year = isset($_POST['year']) ? $_POST['year'] : '';
@@ -19,24 +19,24 @@ if (!empty($filters)) {
     $sql .= " WHERE " . implode(' AND ', $filters);
 }
 
-$sql .= " ORDER BY total_rating DESC, created_at DESC"; 
+$sql .= " ORDER BY total_rating DESC, created_at DESC";
 
 $stmt = $conn->prepare($sql);
 
 $params = [];
 if ($selected_month) {
-    $params[] = $selected_month; 
+    $params[] = $selected_month;
 }
 if ($selected_year) {
-    $params[] = $selected_year; 
+    $params[] = $selected_year;
 }
 
 if (!empty($params)) {
-    $stmt->bind_param(str_repeat("i", count($params)), ...$params); 
+    $stmt->bind_param(str_repeat("i", count($params)), ...$params);
 }
 
 $stmt->execute();
-$result = $stmt->get_result(); 
+$result = $stmt->get_result();
 ?>
 
 <!DOCTYPE html>
@@ -46,12 +46,13 @@ $result = $stmt->get_result();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SPARK - Leaderboard History</title>
-    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="manifest" href="../../../manifest.json">
-    <link rel="stylesheet" href="../../../assets/css/supervisor_leaderboard.css?v=<?php echo filemtime('../../../assets/css/supervisor_leaderboard.css'); ?>">
+    <link href="https:
+    <link href=" https: integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ"
+        crossorigin="anonymous">
+    <link href="https:
+    <link rel=" manifest" href="../../../manifest.json">
+    <link rel="stylesheet"
+        href="../../../assets/css/supervisor_leaderboard.css?v=<?php echo filemtime('../../../assets/css/supervisor_leaderboard.css'); ?>">
 </head>
 
 <body>
@@ -119,12 +120,8 @@ $result = $stmt->get_result();
                                     <span class="input-group-text">
                                         <i class="lni lni-search"></i>
                                     </span>
-                                    <input 
-                                        type="text" 
-                                        id="search-input" 
-                                        class="form-control" 
-                                        placeholder="Search by name or ID" 
-                                        onkeyup="filterStaff()">
+                                    <input type="text" id="search-input" class="form-control"
+                                        placeholder="Search by name or ID" onkeyup="filterStaff()">
                                 </div>
                             </div>
                         </div>
@@ -157,11 +154,11 @@ $result = $stmt->get_result();
                                     <tbody>
                                         <?php
                                         if ($result && $result->num_rows > 0) {
-                                            $rank = 1; 
+                                            $rank = 1;
                                             while ($row = $result->fetch_assoc()) {
                                                 $rankClass = '';
                                                 $rankBadge = '';
-                                                
+
                                                 if ($rank === 1) {
                                                     $rankClass = 'rank-1';
                                                     $rankBadge = '<span class="badge badge-gold me-2"><i class="lni lni-crown"></i> 1st</span>';
@@ -172,18 +169,18 @@ $result = $stmt->get_result();
                                                     $rankClass = 'rank-3';
                                                     $rankBadge = '<span class="badge badge-bronze me-2">3rd</span>';
                                                 }
-                                                
+
                                                 echo "<tr>";
                                                 echo "<td class='{$rankClass}'>{$rankBadge}{$rank}</td>";
                                                 echo "<td>{$row['employee_id']}</td>";
                                                 echo "<td>{$row['full_name']}</td>";
 
                                                 $totalRating = $row['total_rating'];
-                                                $textClass = ''; 
+                                                $textClass = '';
                                                 $ratingIcon = '';
 
                                                 if ($totalRating >= 100) {
-                                                    $textClass = 'text-success'; 
+                                                    $textClass = 'text-success';
                                                     $ratingIcon = '<i class="bi bi-star-fill me-1 trophy-icon"></i>';
                                                 } elseif ($totalRating >= 50) {
                                                     $textClass = 'text-warning';
@@ -197,13 +194,13 @@ $result = $stmt->get_result();
                                                 echo "<td>" . date("Y", strtotime($row['created_at'])) . "</td>";
 
                                                 echo "</tr>";
-                                                $rank++; 
+                                                $rank++;
                                             }
                                         } else {
                                             echo "<tr><td colspan='6' class='text-center py-4'><i class='lni lni-information me-2'></i>No history available</td></tr>";
                                         }
-                                        $stmt->close(); 
-                                        $conn->close(); 
+                                        $stmt->close();
+                                        $conn->close();
                                         ?>
                                         <tr id="no-record" style="display:none;">
                                             <td colspan="6" class="text-center py-4">
@@ -221,8 +218,8 @@ $result = $stmt->get_result();
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+    <script src="https:
+        integrity=" sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>
     <script>
         function filterStaff() {
@@ -232,23 +229,23 @@ $result = $stmt->get_result();
 
             rows.forEach(row => {
                 if (row.id === 'no-record') return;
-                
+
                 const employeeID = row.querySelector('td:nth-child(2)')?.textContent.toLowerCase() || '';
                 const fullName = row.querySelector('td:nth-child(3)')?.textContent.toLowerCase() || '';
-                
+
                 if (employeeID.includes(searchInput) || fullName.includes(searchInput)) {
-                    row.style.display = ''; 
+                    row.style.display = '';
                     recordFound = true;
                 } else {
-                    row.style.display = 'none'; 
+                    row.style.display = 'none';
                 }
             });
 
             const noRecordMessage = document.getElementById('no-record');
             if (recordFound) {
-                noRecordMessage.style.display = 'none'; 
+                noRecordMessage.style.display = 'none';
             } else {
-                noRecordMessage.style.display = ''; 
+                noRecordMessage.style.display = '';
             }
         }
     </script>
@@ -258,7 +255,7 @@ $result = $stmt->get_result();
             const tableClone = table.cloneNode(true);
 
             const printWindow = window.open('', '', 'height=800,width=1000');
-            
+
             printWindow.document.write('<html><head><title>Staff Performance Assessment, Recording and Keeping</title>');
             printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">');
             printWindow.document.write('<style>');
@@ -293,25 +290,25 @@ $result = $stmt->get_result();
 
             printWindow.document.close();
 
-            // Enhanced print handling with multiple fallbacks
+
             let printExecuted = false;
             let attempts = 0;
             const maxAttempts = 3;
 
             function executePrint() {
                 if (printExecuted || attempts >= maxAttempts) return;
-                
+
                 attempts++;
                 printExecuted = true;
-                
+
                 try {
                     printWindow.focus();
                     printWindow.print();
-                    printWindow.close(); // Auto-close after print dialog
+                    printWindow.close();
                 } catch (error) {
                     console.warn('Print attempt failed:', error);
-                    printExecuted = false; // Reset for retry
-                    
+                    printExecuted = false;
+
                     if (attempts < maxAttempts) {
                         setTimeout(executePrint, 500);
                     } else {
@@ -321,30 +318,30 @@ $result = $stmt->get_result();
                 }
             }
 
-            // Multiple approaches to trigger print
+
             const img = printWindow.document.querySelector('img');
-            
+
             if (img) {
-                // Method 1: Image load event
+
                 img.onload = executePrint;
                 img.onerror = executePrint;
             }
-            
-            // Method 2: Document ready state
+
+
             if (printWindow.document.readyState === 'complete') {
                 setTimeout(executePrint, 100);
             } else {
                 printWindow.document.addEventListener('DOMContentLoaded', executePrint);
             }
-            
-            // Method 3: Fallback timers
-            setTimeout(executePrint, 1000);  // 1 second fallback
-            setTimeout(executePrint, 3000);  // 3 second fallback (final)
-            
-            // Method 4: Window load event
+
+
+            setTimeout(executePrint, 1000);
+            setTimeout(executePrint, 3000);
+
+
             printWindow.addEventListener('load', executePrint);
-            
-            // Emergency cleanup if window is still open after 10 seconds
+
+
             setTimeout(() => {
                 if (!printWindow.closed) {
                     printWindow.close();
@@ -353,4 +350,5 @@ $result = $stmt->get_result();
         });
     </script>
 </body>
+
 </html>

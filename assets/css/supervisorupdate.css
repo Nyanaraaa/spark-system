@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
-
 :root {
   --maroon: #800000;
   --maroon-light: #a52a2a;
@@ -20,7 +18,6 @@ body {
   color: var(--gray-dark);
 }
 
-/* Main Content */
 .main {
   padding: 20px;
   transition: margin-left 0.3s ease;
@@ -35,7 +32,6 @@ h1 {
   text-align: center;
 }
 
-/* Cards Styling */
 .card {
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -58,7 +54,6 @@ h1 {
   margin-bottom: 0;
 }
 
-/* Table Styling */
 .table {
   margin-bottom: 0;
 }
@@ -84,10 +79,9 @@ h1 {
   padding: 15px;
   vertical-align: middle;
   word-break: break-word;
-  max-width: 250px; /* Optional: set a max width for better appearance */
+  max-width: 250px;
 }
 
-/* Buttons */
 .btn-tertiary {
   position: fixed;
   top: 15px;
@@ -187,7 +181,6 @@ h1 {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-
 .btn-update {
   background-color: var(--gold);
   border-color: var(--gold-dark);
@@ -242,13 +235,11 @@ h1 {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Prevent text color from changing on hover for update and delete buttons */
 .btn-update.btn-sm:hover,
 .btn-delete.btn-sm:hover {
   color: var(--white) !important;
 }
 
-/* Search Bar Styling */
 .input-group-text {
   background-color: var(--maroon);
   color: var(--white);
@@ -265,7 +256,6 @@ h1 {
   box-shadow: 0 0 0 0.25rem rgba(128, 0, 0, 0.25);
 }
 
-/* Modal Styling */
 .modal-header {
   background-color: var(--maroon);
   color: var(--white);
@@ -302,7 +292,6 @@ h1 {
   opacity: 1;
 }
 
-/* Badge Styling */
 .brand-badge {
   background-color: var(--gray-light);
   color: var(--gray-dark);
@@ -321,7 +310,6 @@ h1 {
   display: inline-block;
 }
 
-/* Stock Status Colors */
 .text-success {
   color: #28a745 !important;
 }
@@ -334,7 +322,6 @@ h1 {
   color: #dc3545 !important;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .table-responsive {
     overflow-x: auto;
@@ -346,7 +333,6 @@ h1 {
     font-size: 0.875rem;
   }
 
-   /* Responsive button styling for mobile */
   .btn-update,
   .btn-delete {
     width: 80px;
@@ -364,7 +350,6 @@ h1 {
     padding: 15px;
   }
 
-  /* Table responsive styling */
   .table td {
     max-width: 120px;
     padding: 10px 8px;
@@ -398,7 +383,7 @@ h1 {
     white-space: nowrap;
   }
 
-   .table td:nth-child(6),
+  .table td:nth-child(6),
   .table th:nth-child(6) {
     min-width: 180px;
     white-space: nowrap;
@@ -411,7 +396,6 @@ h1 {
   }
 }
 
-/* Extra small devices (phones, 576px and down) */
 @media (max-width: 576px) {
   .btn-update,
   .btn-delete {
@@ -422,7 +406,6 @@ h1 {
     margin: 1px 0;
   }
 
-  /* Table styling for mobile */
   .table td {
     padding: 8px 5px;
     font-size: 0.75rem;
@@ -441,14 +424,11 @@ h1 {
     white-space: nowrap;
   }
 
-  /* Hide less important columns on mobile if needed */
   .table .d-none-mobile {
     display: none !important;
   }
 }
 
-
-/* Large screens - make buttons slightly larger */
 @media (min-width: 1200px) {
   .btn-update,
   .btn-delete {
@@ -467,7 +447,6 @@ h1 {
   }
 }
 
-/* Sidebar Styling */
 .sidebar-nav {
   padding-left: 0;
 }
@@ -510,7 +489,6 @@ h1 {
   padding: 20px 10px;
 }
 
-/* Form Styling */
 .form-check-input:checked {
   background-color: var(--maroon);
   border-color: var(--maroon);
@@ -525,7 +503,6 @@ textarea.form-control:focus {
   box-shadow: 0 0 0 0.25rem rgba(128, 0, 0, 0.25);
 }
 
-/* Alert Styling */
 .alert {
   border-radius: 10px;
   padding: 15px;
@@ -546,7 +523,6 @@ textarea.form-control:focus {
   border-left: 4px solid #dc3545;
 }
 
-/* Table Wrapper */
 .table-wrapper {
   background-color: var(--white);
   border-radius: 10px;
@@ -554,27 +530,26 @@ textarea.form-control:focus {
   overflow: hidden;
 }
 
-/* Stock Badge Styling */
 .stock-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.35em 0.75em;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.95em;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35em 0.75em;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.95em;
 }
 
 .stock-high {
-    background-color: #e6f7e6;
-    color: #218838;
+  background-color: #e6f7e6;
+  color: #218838;
 }
 
 .stock-medium {
-    background-color: #fffbe6;
-    color: #856404;
+  background-color: #fffbe6;
+  color: #856404;
 }
 
 .stock-low {
-    background-color: #fbeaea;
-    color: #c82333;
+  background-color: #fbeaea;
+  color: #c82333;
 }

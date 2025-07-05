@@ -10,16 +10,16 @@ $floor_care = $_POST['floor_care'] ?? '';
 $organization = $_POST['organization'] ?? '';
 $remark = $_POST['remark'] ?? '';
 $total_score = $_POST['total_score'] ?? '';
-$rating = $total_score; // Or calculate as needed
+$rating = $total_score;
 
-// Check if an evaluation already exists for this report
+
 $stmt = $conn->prepare("SELECT evaluation_id FROM evaluations WHERE report_id = ?");
 $stmt->bind_param("s", $report_id);
 $stmt->execute();
 $stmt->store_result();
 
 if ($stmt->num_rows > 0) {
-    // Update existing evaluation
+
     $stmt->close();
     $update = $conn->prepare("UPDATE evaluations SET 
         employee_id=?, 
@@ -36,7 +36,7 @@ if ($stmt->num_rows > 0) {
     $update->execute();
     $update->close();
 } else {
-    // Insert new evaluation
+
     $stmt->close();
     $insert = $conn->prepare("INSERT INTO evaluations 
         (employee_id, report_id, task_completion, attention_to_detail, trash_management, floor_care, organization, remark, rating, created_at) 
@@ -46,7 +46,7 @@ if ($stmt->num_rows > 0) {
     $insert->close();
 }
 
-// Mark the report as evaluated
+
 $update_report = $conn->prepare("UPDATE progress_reports SET is_evaluated=1 WHERE report_id=?");
 $update_report->bind_param("s", $report_id);
 $update_report->execute();

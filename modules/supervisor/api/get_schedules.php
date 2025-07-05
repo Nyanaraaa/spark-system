@@ -1,7 +1,7 @@
 <?php
 include '../../../config/database.php';
 
-// Get the staff_id from the query parameter
+
 $staff_id = isset($_GET['staff_id']) ? $_GET['staff_id'] : null;
 
 if ($staff_id) {
@@ -23,15 +23,15 @@ $result = $stmt->get_result();
 
 $schedules = [];
 while ($row = $result->fetch_assoc()) {
-    // Add each schedule to the array, including break_time and building
+
     $schedules[] = [
         'schedule_id' => $row['schedule_id'],
         'staff_id' => $row['staff_id'],
         'days' => $row['days'],
         'shift_time' => $row['shift_time'],
         'location' => $row['location'],
-        'break_time' => $row['break_time'], // Include break_time
-        'building' => $row['building'] // Include building from the location table
+        'break_time' => $row['break_time'],
+        'building' => $row['building']
     ];
 }
 

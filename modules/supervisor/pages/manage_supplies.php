@@ -13,7 +13,8 @@ session_start();
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="manifest" href="../../../manifest.json">
-    <link rel="stylesheet" href="../../../assets/css/supervisorupdate.css?v=<?php echo filemtime('../../../assets/css/supervisorupdate.css'); ?>">
+    <link rel="stylesheet"
+        href="../../../assets/css/supervisorupdate.css?v=<?php echo filemtime('../../../assets/css/supervisorupdate.css'); ?>">
 </head>
 
 <body>
@@ -439,7 +440,7 @@ session_start();
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
             crossorigin="anonymous"></script>
-        <script src="script.js"></script>
+        <script src="../../../assets/js/script.js"></script>
 
         <script>
             document.querySelectorAll('[data-bs-target="#updateModal"]').forEach(button => {

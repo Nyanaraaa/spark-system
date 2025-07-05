@@ -10,7 +10,8 @@
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="../../../assets/css/supervisor_usage_history.css?v=<?php echo filemtime('../../../assets/css/supervisor_usage_history.css'); ?>">
+    <link rel="stylesheet"
+        href="../../../assets/css/supervisor_usage_history.css?v=<?php echo filemtime('../../../assets/css/supervisor_usage_history.css'); ?>">
 </head>
 
 <body>
@@ -42,12 +43,8 @@
                                         <span class="input-group-text">
                                             <i class="lni lni-search"></i>
                                         </span>
-                                        <input 
-                                            type="text" 
-                                            id="search-input" 
-                                            class="form-control" 
-                                            placeholder="Search by name, ID or supplies" 
-                                            onkeyup="filterStaff()">
+                                        <input type="text" id="search-input" class="form-control"
+                                            placeholder="Search by name, ID or supplies" onkeyup="filterStaff()">
                                     </div>
                                 </div>
                                 <div class="col-md-4 mb-3 mb-md-0">
@@ -92,7 +89,8 @@
                         <div class="row">
                             <div class="col-md-6 text-start">
                                 <h5 class="mb-1">Staff Name: <span id="summary-name" class="fw-normal"></span></h5>
-                                <h6 class="mb-0 text-muted">Employee ID: <span id="summary-id" class="fw-normal"></span></h6>
+                                <h6 class="mb-0 text-muted">Employee ID: <span id="summary-id" class="fw-normal"></span>
+                                </h6>
                             </div>
                         </div>
                     </div>
@@ -122,7 +120,7 @@
                                     </thead>
                                     <tbody>
                                         <?php
-                                        require '../../../config/database.php'; 
+                                        require '../../../config/database.php';
 
                                         $sql = "SELECT full_name, employee_id, supplies, quantity, transaction_date FROM supplies_usage_history ORDER BY transaction_date DESC";
                                         $result = $conn->query($sql);
@@ -164,7 +162,8 @@
                                         ?>
                                         <tr id="no-record" style="display:none;">
                                             <td colspan="5" class="text-center py-4">
-                                                <i class="lni lni-search-alt" style="font-size: 2rem; color: var(--maroon-light);"></i>
+                                                <i class="lni lni-search-alt"
+                                                    style="font-size: 2rem; color: var(--maroon-light);"></i>
                                                 <p class="mt-2 mb-0">No matching records found</p>
                                             </td>
                                         </tr>
@@ -217,19 +216,19 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>
-    <script src="script.js"></script>
+    <script src="../../../assets/js/script.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const logoutLink = document.getElementById('logout-link');
-            logoutLink.addEventListener('click', function(event) {
-                event.preventDefault(); 
-                const confirmLogout = confirm('Are you sure you want to log out?'); 
+            logoutLink.addEventListener('click', function (event) {
+                event.preventDefault();
+                const confirmLogout = confirm('Are you sure you want to log out?');
                 if (confirmLogout) {
-                    window.location.href = logoutLink.href; 
+                    window.location.href = logoutLink.href;
                 }
             });
-            
+
             // Highlight active sidebar link
             const currentPage = window.location.pathname.split('/').pop();
             const sidebarLinks = document.querySelectorAll('.sidebar-link');
@@ -240,7 +239,7 @@
             });
         });
     </script>
-    
+
     <script>
         document.getElementById('print-button').addEventListener('click', function () {
             const table = document.getElementById('Supplies-usage-history-table');
@@ -258,7 +257,7 @@
             // Collect all the Full Names and Employee IDs for the filtered rows
             let fullNames = [];
             let employeeIDs = [];
-            
+
             if (searchInput !== '') {
                 fullNames = Array.from(bodyRows)
                     .filter(row => row.style.display !== 'none') // Only consider visible rows
@@ -283,14 +282,14 @@
                         }
                     });
                 }
-                
+
                 // Remove the "Employee ID" column if there is a search input
                 if (employeeidIndex > -1) {
                     // Adjust index if we've already removed Full Name column
-                    const adjustedEmployeeIdIndex = fullNameIndex > -1 && employeeidIndex > fullNameIndex 
-                        ? employeeidIndex - 1 
+                    const adjustedEmployeeIdIndex = fullNameIndex > -1 && employeeidIndex > fullNameIndex
+                        ? employeeidIndex - 1
                         : employeeidIndex;
-                        
+
                     headerRow.removeChild(headerRow.children[adjustedEmployeeIdIndex]);
                     bodyRows.forEach(row => {
                         if (row.children[adjustedEmployeeIdIndex]) {
@@ -344,7 +343,7 @@
 
             // Fixed: Add timeout and error handling
             printWindow.document.close();
-            
+
             const img = printWindow.document.querySelector('img');
             let printExecuted = false;
 
@@ -353,15 +352,15 @@
                     printExecuted = true;
                     printWindow.focus();
                     printWindow.print();
-                    printWindow.close(); 
-                    
+                    printWindow.close();
+
                 }
             }
 
             if (img) {
                 img.onload = executePrint;
                 img.onerror = executePrint; // Handle image load error
-                
+
                 // Fallback timeout in case image never loads
                 setTimeout(executePrint, 2000);
             } else {
@@ -390,14 +389,14 @@
 
             rows.forEach(row => {
                 if (row.id === 'no-record') return; // Skip the no-record row
-                
+
                 const fullName = row.children[fullNameIndex]?.textContent.toLowerCase() || '';
                 const employeeID = row.children[employeeidIndex]?.textContent.toLowerCase() || '';
                 const supplies = row.children[suppliesIndex]?.textContent.toLowerCase() || '';
-                
-                const matchesSearch = fullName.includes(searchInput) || 
-                                     employeeID.includes(searchInput) || 
-                                     supplies.includes(searchInput);
+
+                const matchesSearch = fullName.includes(searchInput) ||
+                    employeeID.includes(searchInput) ||
+                    supplies.includes(searchInput);
 
                 if (matchesSearch) {
                     row.style.display = '';
@@ -463,7 +462,7 @@
             function populateYearDropdown() {
                 const yearFilter = document.getElementById('year-filter');
                 const currentYear = new Date().getFullYear();
-                
+
                 for (let year = currentYear; year >= currentYear - 10; year--) {
                     const option = document.createElement('option');
                     option.value = year;
@@ -481,7 +480,7 @@
 
             rows.forEach(row => {
                 if (row.id === 'no-record') return; // Skip the no-record row
-                
+
                 const transactionDateText = row.querySelector('td:nth-child(5)')?.textContent.trim();
                 if (transactionDateText) {
                     const dateParts = transactionDateText.split(", ");
@@ -490,22 +489,22 @@
                         const [monthName, day] = monthDay.split(" ");
                         const [yearParsed] = yearTime.split(" ");
                         const rowYear = parseInt(yearParsed, 10);
-                        const rowMonth = new Date(`${monthName} 1, 2000`).getMonth() + 1; 
+                        const rowMonth = new Date(`${monthName} 1, 2000`).getMonth() + 1;
                         const rowMonthStr = rowMonth.toString().padStart(2, "0");
-                        
+
                         const matchesYear = !year || rowYear.toString() === year;
                         const matchesMonth = !month || rowMonthStr === month;
 
                         if (matchesYear && matchesMonth) {
-                            row.style.display = ""; 
+                            row.style.display = "";
                             recordFound = true;
                         } else {
-                            row.style.display = "none"; 
+                            row.style.display = "none";
                         }
                     }
                 }
             });
-            
+
             const noRecordMessage = document.getElementById("no-record");
             if (recordFound) {
                 noRecordMessage.style.display = "none";
@@ -515,4 +514,5 @@
         }
     </script>
 </body>
+
 </html>

@@ -3,7 +3,7 @@ header('Content-Type: application/json');
 
 include '../../../config/database.php';
 
-// Fetch locations
+
 $sql = "SELECT location_name FROM location";
 $result = $conn->query($sql);
 

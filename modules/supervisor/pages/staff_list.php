@@ -16,11 +16,12 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="manifest" href="../../../manifest.json">
-    <link rel="stylesheet" href="../../../assets/css/staff_list.css?v=<?php echo filemtime('../../../assets/css/staff_list.css'); ?>">
+    <link rel="stylesheet"
+        href="../../../assets/css/staff_list.css?v=<?php echo filemtime('../../../assets/css/staff_list.css'); ?>">
 </head>
 
 <body>
-<?php include '../../../components/navbar/supervisor_navbar.php'; ?>
+    <?php include '../../../components/navbar/supervisor_navbar.php'; ?>
 
     <div class="main p-9">
         <div class="container">
@@ -47,12 +48,8 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                                     <span class="input-group-text">
                                         <i class="lni lni-search"></i>
                                     </span>
-                                    <input 
-                                        type="text" 
-                                        id="search-input" 
-                                        class="form-control" 
-                                        placeholder="Search by name, employee ID or position" 
-                                        onkeyup="filterStaff()">
+                                    <input type="text" id="search-input" class="form-control"
+                                        placeholder="Search by name, employee ID or position" onkeyup="filterStaff()">
                                 </div>
                             </div>
                         </div>
@@ -88,7 +85,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                                         // SQL query to fetch staff information from the database
                                         $sql = "SELECT staff_id, first_name, last_name, employee_id, position FROM staff";
                                         $result = $conn->query($sql); // Execute the query and store the result
-
+                                        
                                         // Check if there are any staff records returned from the query
                                         if ($result->num_rows > 0) {
                                             // Loop through the results and display each staff member in a table row
@@ -142,7 +139,8 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
     </div>
 
     <!-- Profile Modal -->
-    <div class="modal fade" id="profileModal" tabindex="-1" role="dialog" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal fade" id="profileModal" tabindex="-1" role="dialog" aria-labelledby="profileModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -165,22 +163,22 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>
-    <script src="../../../script.js"></script>
+    <script src="../../../assets/js/script.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const logoutLink = document.getElementById('logout-link');
-            logoutLink.addEventListener('click', function(event) {
-                event.preventDefault(); 
-                const confirmLogout = confirm('Are you sure you want to log out?'); 
+            logoutLink.addEventListener('click', function (event) {
+                event.preventDefault();
+                const confirmLogout = confirm('Are you sure you want to log out?');
                 if (confirmLogout) {
-                    window.location.href = logoutLink.href; 
+                    window.location.href = logoutLink.href;
                 }
             });
 
-            document.getElementById('print-button').addEventListener('click', function() {
+            document.getElementById('print-button').addEventListener('click', function () {
                 const table = document.getElementById('staff-list-table');
                 const tableClone = table.cloneNode(true);
 
@@ -237,14 +235,14 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                         printExecuted = true;
                         printWindow.focus();
                         printWindow.print();
-                        printWindow.close(); 
+                        printWindow.close();
                     }
                 }
 
                 if (img) {
                     img.onload = executePrint;
                     img.onerror = executePrint; // Handle image load error
-                    
+
                     // Fallback timeout in case image never loads
                     setTimeout(executePrint, 2000);
                 } else {
@@ -261,16 +259,16 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
 
             rows.forEach(row => {
                 if (row.id === 'no-record') return;
-                
+
                 const fullName = row.querySelector('td:nth-child(1)')?.textContent.toLowerCase() || '';
                 const employeeID = row.querySelector('td:nth-child(2)')?.textContent.toLowerCase() || '';
                 const position = row.querySelector('td:nth-child(3)')?.textContent.toLowerCase() || '';
-                
+
                 if (fullName.includes(searchInput) || employeeID.includes(searchInput) || position.includes(searchInput)) {
-                    row.style.display = ''; 
+                    row.style.display = '';
                     recordFound = true;
                 } else {
-                    row.style.display = 'none'; 
+                    row.style.display = 'none';
                 }
             });
 
@@ -282,8 +280,8 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
 
         function viewProfile(staffId) {
             const xhr = new XMLHttpRequest();
-            xhr.open('GET', '../../../get_staff_profile.php?staff_id=' + staffId, true);
-            xhr.onreadystatechange = function() {
+            xhr.open('GET', '../api/get_staff_profile.php?staff_id=' + staffId, true);
+            xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     const data = JSON.parse(xhr.responseText);
 
@@ -334,7 +332,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                             </div>
                         `;
                         document.getElementById('profile-details').innerHTML = profileHtml;
-                        
+
                         // Use Bootstrap 5 modal
                         const profileModal = new bootstrap.Modal(document.getElementById('profileModal'));
                         profileModal.show();
@@ -347,4 +345,5 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
         }
     </script>
 </body>
+
 </html>

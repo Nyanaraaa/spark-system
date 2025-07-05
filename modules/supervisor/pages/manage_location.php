@@ -16,7 +16,8 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="manifest" href="../../../manifest.json">
-    <link rel="stylesheet" href="../../../assets/css/manage_location.css?v=<?php echo filemtime('../../../assets/css/manage_location.css'); ?>">
+    <link rel="stylesheet"
+        href="../../../assets/css/manage_location.css?v=<?php echo filemtime('../../../assets/css/manage_location.css'); ?>">
 </head>
 
 <body>
@@ -39,7 +40,8 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                             </h5>
                         </div>
                         <div class="card-body">
-                            <button class="btn btn-primary" id="viewLocationsBtn" data-bs-toggle="modal" data-bs-target="#viewLocationsModal">
+                            <button class="btn btn-primary" id="viewLocationsBtn" data-bs-toggle="modal"
+                                data-bs-target="#viewLocationsModal">
                                 <i class="lni lni-eye me-2"></i>View All Locations
                             </button>
                             <div id="errorMessageContainer" class="mt-3"></div>
@@ -65,7 +67,8 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                                         <span class="input-group-text">
                                             <i class="lni lni-apartment"></i>
                                         </span>
-                                        <input type="text" class="form-control" id="newBuildingInput" name="building" placeholder="Enter building name">
+                                        <input type="text" class="form-control" id="newBuildingInput" name="building"
+                                            placeholder="Enter building name">
                                     </div>
                                 </div>
                                 <div class="mb-3">
@@ -74,7 +77,8 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                                         <span class="input-group-text">
                                             <i class="lni lni-map-marker"></i>
                                         </span>
-                                        <input type="text" class="form-control" id="newLocationInput" name="location" placeholder="Enter location name" required>
+                                        <input type="text" class="form-control" id="newLocationInput" name="location"
+                                            placeholder="Enter location name" required>
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary" id="saveNewLocation">
@@ -107,7 +111,8 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
     </div>
 
     <!-- View Locations Modal -->
-    <div class="modal fade" id="viewLocationsModal" tabindex="-1" aria-labelledby="viewLocationsModalLabel" aria-hidden="true">
+    <div class="modal fade" id="viewLocationsModal" tabindex="-1" aria-labelledby="viewLocationsModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
@@ -115,7 +120,8 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                         <i class="lni lni-map me-2"></i>
                         Locations and Staff
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -123,12 +129,8 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                             <span class="input-group-text">
                                 <i class="lni lni-search"></i>
                             </span>
-                            <input
-                                type="text"
-                                id="searchInput"
-                                class="form-control"
-                                placeholder="Search by building, location or staff"
-                                onkeyup="filterLocations()">
+                            <input type="text" id="searchInput" class="form-control"
+                                placeholder="Search by building, location or staff" onkeyup="filterLocations()">
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -166,9 +168,9 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
         crossorigin="anonymous"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const logoutLink = document.getElementById('logout-link');
-            logoutLink.addEventListener('click', function(event) {
+            logoutLink.addEventListener('click', function (event) {
                 event.preventDefault();
                 const confirmLogout = confirm('Are you sure you want to log out?');
                 if (confirmLogout) {
@@ -191,9 +193,9 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
             fetchLocations();
 
             // Add event listener for form submission
-            document.getElementById('addLocationForm').addEventListener('submit', function(event) {
+            document.getElementById('addLocationForm').addEventListener('submit', function (event) {
                 event.preventDefault();
-                
+
                 const newLocation = newLocationInput.value.trim();
                 const newBuilding = newBuildingInput.value.trim();
 
@@ -226,7 +228,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
 
             // Fetch and display locations
             function fetchLocations() {
-                fetch('../api/get_locations.php')
+                fetch('../../api/get_locations.php')
                     .then(response => response.json())
                     .then(data => {
                         locationList.innerHTML = '';
@@ -248,7 +250,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
             function createLocationListItem(id, name, building) {
                 const li = document.createElement('li');
                 li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
-                
+
                 const locationInfo = document.createElement('div');
                 locationInfo.innerHTML = `
                     <i class="lni lni-map-marker me-2" style="color: var(--maroon);"></i>
@@ -318,7 +320,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                                 const staffCell = document.createElement('td');
                                 const staffList = document.createElement('ul');
                                 staffList.classList.add('list-unstyled', 'mb-0');
-                                
+
                                 if (location.assigned_staff.length > 0) {
                                     location.assigned_staff.forEach(staff => {
                                         const listItem = document.createElement('li');
@@ -333,7 +335,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                                     listItem.innerHTML = '<em>No staff assigned</em>';
                                     staffList.appendChild(listItem);
                                 }
-                                
+
                                 staffCell.appendChild(staffList);
                                 row.appendChild(staffCell);
 
@@ -369,7 +371,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                 const building = row.querySelector('td:nth-child(1)')?.textContent.toLowerCase() || '';
                 const locationName = row.querySelector('td:nth-child(2)')?.textContent.toLowerCase() || '';
                 const assignedStaff = row.querySelector('td:nth-child(3)')?.textContent.toLowerCase() || '';
-                
+
                 if (
                     building.includes(searchInput) ||
                     locationName.includes(searchInput) ||
@@ -421,12 +423,12 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
             printWindow.document.write('li { margin-bottom: 5px; }');
             printWindow.document.write('</style>');
             printWindow.document.write('</head><body>');
-            
+
             printWindow.document.write('<div class="header">');
             printWindow.document.write('<img src="../../../assets/images/spark_logo.png" alt="Spark Logo" class="logo"/>');
             printWindow.document.write('<h1>Locations and Staff</h1>');
             printWindow.document.write('</div>');
-            
+
             printWindow.document.write('<table>' + tableClone.innerHTML + '</table>');
             printWindow.document.write('<div style="margin-top: 20px; text-align: center; color: #666; font-size: 0.9rem;">Generated on ' + new Date().toLocaleString() + '</div>');
             printWindow.document.write('</body></html>');
@@ -442,14 +444,14 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                     printExecuted = true;
                     printWindow.focus();
                     printWindow.print();
-                    printWindow.close(); 
+                    printWindow.close();
                 }
             }
 
             if (img) {
                 img.onload = executePrint;
                 img.onerror = executePrint; // Handle image load error
-                
+
                 // Fallback timeout in case image never loads
                 setTimeout(executePrint, 2000);
             } else {
@@ -459,4 +461,5 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
         });
     </script>
 </body>
+
 </html>
