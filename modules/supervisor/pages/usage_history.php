@@ -1,3 +1,10 @@
+<?php
+require_once '../../../includes/bootstrap.php';
+
+// Require supervisor authentication
+AuthMiddleware::init('supervisor');
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,7 +16,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="../../../manifest.json">
     <link rel="stylesheet"
         href="../../../assets/css/supervisor_usage_history.css?v=<?php echo filemtime('../../../assets/css/supervisor_usage_history.css'); ?>">
 </head>
@@ -120,10 +127,8 @@
                                     </thead>
                                     <tbody>
                                         <?php
-                                        require '../../../config/database.php';
-
                                         $sql = "SELECT full_name, employee_id, supplies, quantity, transaction_date FROM supplies_usage_history ORDER BY transaction_date DESC";
-                                        $result = $conn->query($sql);
+                                        $result = $db->query($sql);
 
                                         if ($result->num_rows > 0) {
                                             while ($row = $result->fetch_assoc()) {
@@ -158,7 +163,7 @@
                                             echo '<tr><td colspan="5" class="text-center py-4">No Record Found</td></tr>';
                                         }
 
-                                        $conn->close();
+                                        $db->close();
                                         ?>
                                         <tr id="no-record" style="display:none;">
                                             <td colspan="5" class="text-center py-4">

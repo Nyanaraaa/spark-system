@@ -1,8 +1,9 @@
 <?php
-require '../../../config/database.php';
+require_once '../../../includes/bootstrap.php';
 
+$db = Database::getInstance();
 
-$leaderboard_stmt = $conn->prepare("
+$leaderboard_stmt = $db->prepare("
     SELECT evaluations.employee_id, 
            CONCAT(first_name, ' ', last_name) AS full_name, 
            SUM(rating) AS total_rating 

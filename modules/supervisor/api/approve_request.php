@@ -1,88 +1,157 @@
 <?php
-session_start();
-require '../../../config/database.php';
+/**
+ * Supervisor API - Approve/Reject Supply Request
+ * Uses new security components and authentication
+ */
 
+// Include bootstrap for security components
+require_once dirname(dirname(dirname(__DIR__))) . '/includes/bootstrap.php';
 
-date_default_timezone_set('Asia/Manila'); 
+// Check authentication and authorization
+SessionManager::requireAuth();
+SessionManager::requireRole('supervisor');
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $request_id = $_POST['request_id'];
-    $action = $_POST['action'];
+try {
+    // Validate request method
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        throw new Exception('Only POST method allowed.');
+    }
 
-    if ($action == 'approve') {
-        
-        $stmt = $conn->prepare("SELECT staff_id, supplies_id, quantity FROM requests WHERE request_id = ?");
-        $stmt->bind_param("i", $request_id);
-        $stmt->execute();
-        $stmt->bind_result($staff_id, $supplies_id, $quantity);
-        $stmt->fetch();
-        $stmt->close();
+    // Validate CSRF token
+    CSRFProtection::validateRequest();
 
-        
-        $stmt = $conn->prepare("SELECT CONCAT(first_name, ' ', last_name) AS full_name, employee_id FROM staff WHERE staff_id = ?");
-        $stmt->bind_param("i", $staff_id);
-        $stmt->execute();
-        $stmt->bind_result($full_name, $employee_id);
-        $stmt->fetch();
-        $stmt->close();
+    // Define validation rules
+    $validationRules = [
+        'request_id' => 'required|integer|min:1',
+        'action' => 'required|string|in:approve,reject'
+    ];
 
-        
-        $stmt = $conn->prepare("SELECT supplies FROM supplies WHERE supplies_id = ?");
-        $stmt->bind_param("i", $supplies_id);
-        $stmt->execute();
-        $stmt->bind_result($supply_name);
-        $stmt->fetch();
-        $stmt->close();
+    // Validate input
+    $validatedData = InputValidator::validate($_POST, $validationRules);
+    
+    if (!$validatedData) {
+        throw new Exception(InputValidator::getFirstError());
+    }
 
-        
-        $stmt = $conn->prepare("SELECT stocks FROM supplies WHERE supplies_id = ?");
-        $stmt->bind_param("i", $supplies_id);
-        $stmt->execute();
-        $stmt->bind_result($current_stocks);
-        $stmt->fetch();
-        $stmt->close();
+    $request_id = $validatedData['request_id'];
+    $action = $validatedData['action'];
 
-        if ($current_stocks >= $quantity) {
+    // Get database connection
+    $db = Database::getInstance();
+    /** @var MySQLiCompatibility $conn */
+    $conn = $db->getConnection();
+
+    $conn->begin_transaction();
+
+    try {
+        if ($action === 'approve') {
+            // Get request details
+            $stmt = $conn->prepare("SELECT staff_id, supplies_id, quantity FROM requests WHERE request_id = ?");
+            $stmt->bind_param("i", $request_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
             
+            if (!$requestData = $result->fetch_assoc()) {
+                throw new Exception('Request not found.');
+            }
+            
+            $stmt->close();
+            
+            $staff_id = $requestData['staff_id'];
+            $supplies_id = $requestData['supplies_id'];
+            $quantity = $requestData['quantity'];
+
+            // Get staff details
+            $stmt = $conn->prepare("SELECT CONCAT(first_name, ' ', last_name) AS full_name, employee_id FROM staff WHERE staff_id = ?");
+            $stmt->bind_param("i", $staff_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if (!$staffData = $result->fetch_assoc()) {
+                throw new Exception('Staff member not found.');
+            }
+            
+            $stmt->close();
+            
+            $full_name = $staffData['full_name'];
+            $employee_id = $staffData['employee_id'];
+
+            // Get supply details
+            $stmt = $conn->prepare("SELECT supplies, stocks FROM supplies WHERE supplies_id = ?");
+            $stmt->bind_param("i", $supplies_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if (!$supplyData = $result->fetch_assoc()) {
+                throw new Exception('Supply item not found.');
+            }
+            
+            $stmt->close();
+            
+            $supply_name = $supplyData['supplies'];
+            $current_stocks = $supplyData['stocks'];
+
+            // Check if enough stock is available
+            if ($current_stocks < $quantity) {
+                throw new Exception('Not enough stock available to fulfill this request.');
+            }
+
+            // Update stock
             $new_stocks = $current_stocks - $quantity;
-            $update_stmt = $conn->prepare("UPDATE supplies SET stocks = ? WHERE supplies_id = ?");
-            $update_stmt->bind_param("ii", $new_stocks, $supplies_id);
-            $update_stmt->execute();
-            $update_stmt->close();
+            $stmt = $conn->prepare("UPDATE supplies SET stocks = ? WHERE supplies_id = ?");
+            $stmt->bind_param("ii", $new_stocks, $supplies_id);
+            $stmt->execute();
+            $stmt->close();
 
-            
-            $transaction_date = date('Y-m-d H:i:s'); 
-            $history_stmt = $conn->prepare(
+            // Record usage history
+            $transaction_date = date('Y-m-d H:i:s');
+            $stmt = $conn->prepare(
                 "INSERT INTO supplies_usage_history (full_name, employee_id, supplies, quantity, transaction_date, supplies_id) 
                  VALUES (?, ?, ?, ?, ?, ?)"
             );
-            $history_stmt->bind_param("sssisi", $full_name, $employee_id, $supply_name, $quantity, $transaction_date, $supplies_id);
-            $history_stmt->execute();
-            $history_stmt->close();
+            $stmt->bind_param("sssisi", $full_name, $employee_id, $supply_name, $quantity, $transaction_date, $supplies_id);
+            $stmt->execute();
+            $stmt->close();
 
-            
+            // Update request status
             $stmt = $conn->prepare("UPDATE requests SET status = 'approved' WHERE request_id = ?");
             $stmt->bind_param("i", $request_id);
             $stmt->execute();
             $stmt->close();
 
-            $_SESSION['message'] = 'Request approved, stock updated, and usage history recorded.';
-            $_SESSION['alert_type'] = 'success';
-        } else {
-            $_SESSION['message'] = 'Not enough stock available to fulfill this request.';
-            $_SESSION['alert_type'] = 'danger';
-        }
-    } else {
-        
-        $stmt = $conn->prepare("UPDATE requests SET status = 'rejected' WHERE request_id = ?");
-        $stmt->bind_param("i", $request_id);
-        $stmt->execute();
-        $stmt->close();
+            $conn->commit();
+            
+            SessionManager::setFlashMessage('Request approved, stock updated, and usage history recorded.', 'success');
+            
+        } else { // reject
+            // Update request status to rejected
+            $stmt = $conn->prepare("UPDATE requests SET status = 'rejected' WHERE request_id = ?");
+            $stmt->bind_param("i", $request_id);
+            $stmt->execute();
+            $stmt->close();
 
-        $_SESSION['message'] = 'Request rejected.';
-        $_SESSION['alert_type'] = 'danger';
+            $conn->commit();
+            
+            SessionManager::setFlashMessage('Request rejected.', 'info');
+        }
+
+        // Return success response - redirect to request page
+        header("Location: ../pages/request.php");
+        exit();
+
+    } catch (Exception $e) {
+        $conn->rollback();
+        throw $e;
     }
 
+} catch (Exception $e) {
+    ErrorHandler::logError('Supervisor approve request error: ' . $e->getMessage(), [
+        'request_id' => $request_id ?? 'unknown',
+        'action' => $action ?? 'unknown',
+        'user' => SessionManager::getCurrentUser()['username'] ?? 'unknown'
+    ]);
+    
+    SessionManager::setFlashMessage($e->getMessage(), 'error');
     header("Location: ../pages/request.php");
     exit();
 }

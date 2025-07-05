@@ -1,6 +1,7 @@
 <?php
-require '../../../config/database.php';
+require_once '../../../includes/bootstrap.php';
 
+$db = Database::getInstance();
 
 $sql = "SELECT staff.first_name, staff.last_name, staff.position, 
                staff_schedule.days, staff_schedule.shift_time, 
@@ -10,7 +11,7 @@ $sql = "SELECT staff.first_name, staff.last_name, staff.position,
         JOIN staff ON staff_schedule.staff_id = staff.staff_id
         JOIN location ON staff_schedule.location = location.location_name";
 
-$result = $conn->query($sql);
+$result = $db->query($sql);
 
 
 $schedules = [];
@@ -29,7 +30,7 @@ if ($result->num_rows > 0) {
     }
 }
 
-$conn->close();
+$db->close();
 
 
 echo json_encode($schedules);

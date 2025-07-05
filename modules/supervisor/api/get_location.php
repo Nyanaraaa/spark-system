@@ -1,11 +1,12 @@
 <?php
+require_once '../../../includes/bootstrap.php';
+
+$db = Database::getInstance();
+
 header('Content-Type: application/json');
 
-include '../../../config/database.php';
-
-
 $sql = "SELECT location_name FROM location";
-$result = $conn->query($sql);
+$result = $db->query($sql);
 
 if ($result && $result->num_rows > 0) {
     $locations = [];
@@ -17,5 +18,5 @@ if ($result && $result->num_rows > 0) {
     echo json_encode([]);
 }
 
-$conn->close();
+$db->close();
 ?>

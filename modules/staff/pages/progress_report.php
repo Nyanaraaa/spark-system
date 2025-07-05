@@ -1,4 +1,8 @@
-<?php session_start();
+<?php 
+require_once '../../../includes/bootstrap.php';
+
+// Require staff authentication
+AuthMiddleware::init('housekeeping_staff');
 ?>
 
 <!DOCTYPE html>
@@ -12,7 +16,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="../../../manifest.json">
     <link rel="stylesheet"
         href="../../../assets/css/progress_report.css?v=<?php echo filemtime('../../../assets/css/progress_report.css'); ?>">
 
@@ -38,6 +42,7 @@
                             <div class="card-body p-4">
                                 <form id="reportForm" action="../../../modules/staff/api/submit_report.php"
                                     method="POST" enctype="multipart/form-data">
+                                    <?php echo CSRFProtection::getTokenField(); ?>
                                     <!-- Image Capture Section -->
                                     <div class="form-group mb-4">
                                         <label for="reportImage" class="section-title">
@@ -58,7 +63,7 @@
                                     <!-- Image Preview Section -->
                                     <div id="imagePreviewContainer" class="mb-4 text-center" style="display: none;">
                                         <h6 class="mb-3" style="color: var(--maroon);">Image Preview:</h6>
-                                        <img id="imagePreview" src="/placeholder.svg" alt="Captured Image"
+                                        <img id="imagePreview" src="../../../assets/images/spark_logo.png" alt="Captured Image"
                                             class="img-fluid">
                                     </div>
 
@@ -157,20 +162,38 @@
         document.addEventListener('DOMContentLoaded', function () {
             const locationSelect = document.getElementById('updateLocation');
 
-            fetch('../../api/get_locations.php')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        data.locations.forEach(location => {
+            fetch('/spark/modules/api/get_locations.php', {
+                method: 'GET',
+                credentials: 'same-origin'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.text(); // Get as text first to debug
+                })
+                .then(text => {
+                    try {
+                        const data = JSON.parse(text);
+                        if (data.status === 'success') {
+                            data.locations.forEach(location => {
+                                const option = document.createElement('option');
+                                option.value = location.location_name;
+                                option.textContent = location.location_name;
+                                locationSelect.appendChild(option);
+                            });
+                        } else {
                             const option = document.createElement('option');
-                            option.value = location.location_name;
-                            option.textContent = location.location_name;
+                            option.value = '';
+                            option.textContent = 'No locations available';
                             locationSelect.appendChild(option);
-                        });
-                    } else {
+                        }
+                    } catch (parseError) {
+                        console.error('JSON parse error:', parseError);
+                        console.error('Response text:', text);
                         const option = document.createElement('option');
                         option.value = '';
-                        option.textContent = 'No locations available';
+                        option.textContent = 'Error parsing location data';
                         locationSelect.appendChild(option);
                     }
                 })

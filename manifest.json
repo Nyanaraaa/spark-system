@@ -8,19 +8,19 @@
     "description": "A staff management system for housekeeping.",
     "icons": [
         {
-          "src": "favicon/web-app-manifest-192x192.png",
+          "src": "assets/images/favicon/web-app-manifest-192x192.png",
           "sizes": "192x192",
           "type": "image/png",
           "purpose": "maskable "
         },
         {
-          "src": "favicon/web-app-manifest-512x512.png",
+          "src": "assets/images/favicon/web-app-manifest-512x512.png",
           "sizes": "512x512",
           "type": "image/png",
           "purpose": "maskable"
         },
         {
-            "src": "favicon/web-app-manifest-144x144.png",
+            "src": "assets/images/favicon/web-app-manifest-144x144.png",
             "sizes": "144x144",
             "type": "image/png",
             "purpose": "any"
@@ -28,13 +28,13 @@
       ],
       "screenshots": [
         {
-          "src": "screenshots/desktop-screenshot.png",
+          "src": "assets/images/screenshots/desktop-screenshot.png",
           "sizes": "1896x903",
           "type": "image/png",
           "form_factor": "wide"
         },
         {
-          "src": "screenshots/mobile-screenshot.jpg",
+          "src": "assets/images/screenshots/mobile-screenshot.jpg",
           "sizes": "1039x2048",
           "type": "image/jpg",
           "form_factor": "narrow"

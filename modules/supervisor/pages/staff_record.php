@@ -1,3 +1,10 @@
+<?php
+require_once '../../../includes/bootstrap.php';
+
+// Require supervisor authentication
+AuthMiddleware::init('supervisor');
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -123,10 +130,8 @@
                                     </thead>
                                     <tbody>
                                         <?php
-                                        require '../../../config/database.php';
-
                                         $sql = "SELECT staff_id, first_name, last_name, contact_no, email_address, employee_id, position FROM staff";
-                                        $result = $conn->query($sql);
+                                        $result = $db->query($sql);
 
                                         if ($result->num_rows > 0) {
                                             while ($row = $result->fetch_assoc()) {
@@ -170,7 +175,7 @@
                                             echo '<tr><td colspan="7" class="text-center py-4">No staff records found</td></tr>';
                                         }
 
-                                        $conn->close();
+                                        $db->close();
                                         ?>
                                         <tr id="no-record" style="display:none;">
                                             <td colspan="7" class="text-center py-4">

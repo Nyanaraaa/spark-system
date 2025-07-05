@@ -1,6 +1,7 @@
 <?php
+require_once '../../../includes/bootstrap.php';
 
-require '../../../config/database.php';
+$db = Database::getInstance();
 
 
 if (isset($_GET['staff_id']) && is_numeric($_GET['staff_id'])) {
@@ -8,7 +9,7 @@ if (isset($_GET['staff_id']) && is_numeric($_GET['staff_id'])) {
 
 
     $sql = "SELECT first_name, last_name, profile_picture, email_address, contact_no, employee_id FROM staff WHERE staff_id = ?";
-    $stmt = $conn->prepare($sql);
+    $stmt = $db->prepare($sql);
     $stmt->bind_param("i", $staff_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -31,7 +32,7 @@ if (isset($_GET['staff_id']) && is_numeric($_GET['staff_id'])) {
 
 
     $stmt->close();
-    $conn->close();
+    $db->close();
 } else {
 
     echo json_encode(['error' => 'Invalid staff ID']);

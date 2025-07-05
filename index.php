@@ -1,7 +1,34 @@
 <?php
-session_start();
-require 'config/database.php';
+require_once 'includes/bootstrap.php';
 
+// Ensure session is started
+SessionManager::init();
+
+// Handle logout if requested
+if (isset($_GET['logout'])) {
+    SessionManager::destroySession();
+    header('Location: index.php');
+    exit;
+}
+
+// Check if user is already logged in
+if (SessionManager::isAuthenticated()) {
+    // Redirect logged-in users to their dashboard
+    $userData = SessionManager::getCurrentUser();
+    if ($userData && isset($userData['role'])) {
+        if ($userData['role'] === 'supervisor') {
+            header('Location: modules/supervisor/pages/staff_list.php');
+        } else {
+            header('Location: modules/staff/pages/dashboard.php');
+        }
+        exit;
+    } else {
+        // If we have invalid session data, clear it
+        SessionManager::destroySession();
+    }
+}
+
+// Check for password reset modal display
 $showModal = isset($_SESSION['session']);
 ?>
 <!DOCTYPE html>
@@ -15,7 +42,13 @@ $showModal = isset($_SESSION['session']);
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Favicon and manifest -->
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon/favicon.svg">
+    <link rel="apple-touch-icon" href="assets/images/favicon/apple-touch-icon.png">
     <link rel="manifest" href="manifest.json">
+    
     <link rel="stylesheet" href="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.css">
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
@@ -34,7 +67,7 @@ $showModal = isset($_SESSION['session']);
             <a class="navbar-brand me-auto" href="#">
                 <img src="assets/images/spark_logo.png" alt="SPARK Logo" class="logo">
             </a>
-            <a href="#" class="login-button" data-bs-toggle="modal" data-bs-target="#loginModal">Log In</a>
+            <button type="button" class="login-button" data-bs-toggle="modal" data-bs-target="#loginModal">Log In</button>
 
         </div>
     </nav>
@@ -66,11 +99,9 @@ $showModal = isset($_SESSION['session']);
                         background-color="transparent" disable-zoom>
                     </model-viewer>
                 </div>
-
-
                 <div class="cta-buttons">
-                    <a href="#" class="cta-button primary-cta" data-bs-toggle="modal" data-bs-target="#loginModal">LET'S
-                        GET STARTED</a>
+                    <button type="button" class="cta-button primary-cta" data-bs-toggle="modal" data-bs-target="#loginModal">LET'S
+                        GET STARTED</button>
                 </div>
             </div>
         </div>
@@ -106,8 +137,6 @@ $showModal = isset($_SESSION['session']);
         </div>
     </div>
 
-
-
     <div class="modal fade" id="supervisorLoginModal" tabindex="-1" aria-labelledby="supervisorLoginModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -119,6 +148,7 @@ $showModal = isset($_SESSION['session']);
                 <div class="modal-body">
                     <div id="message-alert" style="display:none;" class="alert" role="alert"></div>
                     <form id="supervisorLoginForm" method="post">
+                        <?php echo CSRFProtection::getTokenField(); ?>
                         <div class="mb-3 input-group">
                             <span class="input-group-text" id="username-icon"><i class="bi bi-person-fill"></i></span>
                             <input type="text" class="form-control" id="username1" placeholder="Username"
@@ -156,6 +186,7 @@ $showModal = isset($_SESSION['session']);
                 <div class="modal-body">
                     <div id="staff-message-alert" style="display:none;" class="alert" role="alert"></div>
                     <form id="staffloginForm" method="post">
+                        <?php echo CSRFProtection::getTokenField(); ?>
 
                         <div class="mb-3 input-group">
                             <span class="input-group-text" id="username-icon"><i class="bi bi-person-fill"></i></span>
@@ -190,8 +221,6 @@ $showModal = isset($_SESSION['session']);
         </div>
     </div>
 
-
-
     <div class="modal fade" id="createnewaccountLoginModal" tabindex="-1"
         aria-labelledby="createnewaccountLoginModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -205,6 +234,7 @@ $showModal = isset($_SESSION['session']);
                     <div id="account-message-alert" style="display:none;" class="alert alert-success" role="alert">
                     </div>
                     <form id="createAccountForm" method="post">
+                        <?php echo CSRFProtection::getTokenField(); ?>
                         <div class="mb-3 input-group">
                             <span class="input-group-text" id="employee-id-icon">
                                 <i class="bi bi-person-badge"></i>
@@ -269,6 +299,7 @@ $showModal = isset($_SESSION['session']);
                         </div>
                     <?php endif; ?>
                     <form action="modules/auth/password-reset-code.php" id="forgotPasswordForm" method="post">
+                        <?php echo CSRFProtection::getTokenField(); ?>
                         <div class="mb-3 input-group">
                             <span class="input-group-text" id="employee-id-icon">
                                 <i class="bi bi-person-badge"></i>
@@ -298,25 +329,42 @@ $showModal = isset($_SESSION['session']);
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 
-
-
+    <!-- CSRF Token for JavaScript -->
     <script>
-        const navLinks = document.querySelectorAll('.nav-link');
-        navLinks.forEach(link => {
-            link.addEventListener('click', function () {
-                navLinks.forEach(link => link.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
+        const csrfToken = '<?php echo CSRFProtection::generateToken(); ?>';
     </script>
 
     <script>
         document.getElementById('createAccountForm').addEventListener('submit', function (event) {
             event.preventDefault();
 
-            const formData = new FormData(this);
+            // Get fresh CSRF token before submitting
+            fetch('/spark/api/get_csrf_token.php')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.text();
+                })
+                .then(text => {
+                    let tokenData;
+                    try {
+                        tokenData = JSON.parse(text);
+                    } catch (e) {
+                        console.error('Failed to parse token response:', text);
+                        throw new Error('Invalid JSON response from token endpoint');
+                    }
+                    
+                    if (tokenData.error) {
+                        throw new Error(tokenData.error);
+                    }
+                    
+                    const formData = new FormData(this);
+                    formData.append('csrf_token', tokenData.token);
 
-            fetch('create_new_account.php', {
+                    const createAccountUrl = '/spark/modules/api/create_new_account_secure.php';
+            
+            fetch(createAccountUrl, {
                 method: 'POST',
                 body: formData
             })
@@ -353,6 +401,50 @@ $showModal = isset($_SESSION['session']);
                 .catch(error => {
                     console.error('Error:', error);
                 });
+            })
+            .catch(error => {
+                console.error('Error getting CSRF token:', error);
+                
+                // Fallback to original token
+                const formData = new FormData(this);
+                formData.append('csrf_token', csrfToken);
+
+                const createAccountUrl = '/spark/modules/api/create_new_account_secure.php';
+                
+                fetch(createAccountUrl, {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.text())
+                    .then(data => {
+                        const messageAlert = document.getElementById('account-message-alert');
+                        messageAlert.innerHTML = data;
+                        messageAlert.style.display = 'block';
+
+                        if (data.trim() === "Account created successfully!") {
+                            messageAlert.classList.remove('alert-danger');
+                            messageAlert.classList.add('alert-success');
+
+                            setTimeout(() => {
+                                const createAccountModal = bootstrap.Modal.getInstance(document.getElementById('createnewaccountLoginModal'));
+                                createAccountModal.hide();
+
+                                const staffLoginModal = new bootstrap.Modal(document.getElementById('staffLoginModal'));
+                                staffLoginModal.show();
+                            }, 2000);
+                        } else {
+                            messageAlert.classList.remove('alert-success');
+                            messageAlert.classList.add('alert-danger');
+                        }
+
+                        setTimeout(() => {
+                            messageAlert.style.display = 'none';
+                        }, 5000);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            });
         });
     </script>
 
@@ -361,24 +453,38 @@ $showModal = isset($_SESSION['session']);
 
         document.getElementById('supervisorLoginForm').addEventListener('submit', function (event) {
             event.preventDefault();
-            console.log('Supervisor login form submitted');
-            const formData = new FormData(this);
-            formData.append('modalType', 'supervisor');
-
-            console.log('Sending request to modules/auth/login.php');
-            fetch('modules/auth/login.php', {
-                method: 'POST',
-                body: formData
-            })
+            
+            // Get fresh CSRF token before submitting
+            fetch('/spark/get_csrf_token.php')
+                .then(response => response.json())
+                .then(tokenData => {
+                    const formData = new FormData(this);
+                    formData.append('modalType', 'supervisor');
+                    formData.append('csrf_token', tokenData.token);
+                    
+                    const loginUrl = '/spark/modules/auth/login.php';
+                    
+                    fetch(loginUrl, {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'same-origin'
+                    })
                 .then(response => {
-                    console.log('Response received:', response.status);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
+                    return response.text().then(text => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status} - ${text}`);
+                        }
+                        
+                        try {
+                            return JSON.parse(text);
+                        } catch (e) {
+                            console.error('JSON parse error:', e);
+                            console.error('Response text that failed to parse:', text);
+                            throw new Error('Invalid JSON response from server');
+                        }
+                    });
                 })
                 .then(data => {
-                    console.log('Response data:', data);
                     const messageAlert = document.getElementById('message-alert');
                     messageAlert.style.display = 'block';
 
@@ -389,10 +495,15 @@ $showModal = isset($_SESSION['session']);
                         messageAlert.innerHTML = 'Login successful! Redirecting...';
 
                         setTimeout(() => {
-                            window.location.href = data.redirect;
+                            let redirectUrl = data.redirect;
+                            if (!redirectUrl.startsWith('http')) {
+                                const currentHost = window.location.host.replace('www.localhost', 'localhost');
+                                const protocol = window.location.protocol;
+                                redirectUrl = protocol + '//' + currentHost + '/spark/' + redirectUrl;
+                            }
+                            window.location.href = redirectUrl;
                         }, 2000);
                     } else {
-
                         messageAlert.classList.add('alert-danger');
                         messageAlert.innerHTML = data.message;
                     }
@@ -408,6 +519,10 @@ $showModal = isset($_SESSION['session']);
                     messageAlert.classList.add('alert-danger');
                     messageAlert.innerHTML = 'Connection error. Please try again.';
                 });
+            })
+            .catch(error => {
+                console.error('Error getting CSRF token:', error);
+            });
         });
     </script>
 
@@ -415,25 +530,38 @@ $showModal = isset($_SESSION['session']);
 
         document.getElementById('staffloginForm').addEventListener('submit', function (event) {
             event.preventDefault();
-            console.log('Staff login form submitted');
 
-            const formData = new FormData(this);
-            formData.append('modalType', 'staff');
-
-            console.log('Sending request to modules/auth/login.php');
-            fetch('modules/auth/login.php', {
+            // Get fresh CSRF token before submitting
+            fetch('/spark/get_csrf_token.php')
+                .then(response => response.json())
+                .then(tokenData => {
+                    const formData = new FormData(this);
+                    formData.append('modalType', 'staff');
+                    formData.append('csrf_token', tokenData.token);
+                    
+                    const loginUrl = '/spark/modules/auth/login.php';
+            
+            fetch(loginUrl, {
                 method: 'POST',
-                body: formData
+                body: formData,
+                credentials: 'same-origin'
             })
                 .then(response => {
-                    console.log('Response received:', response.status);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
+                    return response.text().then(text => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status} - ${text}`);
+                        }
+                        
+                        try {
+                            return JSON.parse(text);
+                        } catch (e) {
+                            console.error('JSON parse error:', e);
+                            console.error('Response text that failed to parse:', text);
+                            throw new Error('Invalid JSON response from server');
+                        }
+                    });
                 })
                 .then(data => {
-                    console.log('Response data:', data);
                     const messageAlert = document.getElementById('staff-message-alert');
                     messageAlert.style.display = 'block';
 
@@ -446,10 +574,15 @@ $showModal = isset($_SESSION['session']);
 
 
                         setTimeout(() => {
-                            window.location.href = data.redirect;
+                            let redirectUrl = data.redirect;
+                            if (!redirectUrl.startsWith('http')) {
+                                const currentHost = window.location.host.replace('www.localhost', 'localhost');
+                                const protocol = window.location.protocol;
+                                redirectUrl = protocol + '//' + currentHost + '/spark/' + redirectUrl;
+                            }
+                            window.location.href = redirectUrl;
                         }, 2000);
                     } else {
-
                         messageAlert.classList.add('alert-danger');
                         messageAlert.innerHTML = data.message;
                     }
@@ -465,66 +598,69 @@ $showModal = isset($_SESSION['session']);
                     messageAlert.classList.add('alert-danger');
                     messageAlert.innerHTML = 'Connection error. Please try again.';
                 });
+            })
+            .catch(error => {
+                console.error('Error getting CSRF token:', error);
+            });
         });
     </script>
 
     <script>
-
-        let staff_password = document.getElementById("staff-password");
-        let staff_checkbox = document.getElementById("staff-checkbox");
-
-        staff_checkbox.onclick = function () {
-            staff_password.type = staff_checkbox.checked ? 'text' : 'password';
+        // Password toggle functionality
+        function setupPasswordToggle(passwordId, checkboxId) {
+            const passwordField = document.getElementById(passwordId);
+            const checkbox = document.getElementById(checkboxId);
+            
+            if (passwordField && checkbox) {
+                checkbox.onclick = function() {
+                    passwordField.type = checkbox.checked ? 'text' : 'password';
+                }
+            }
         }
-    </script>
 
-    <script>
-
-        let supervisor_password = document.getElementById("supervisor-password");
-        let supervisor_checkbox = document.getElementById("supervisor-checkbox");
-
-        supervisor_checkbox.onclick = function () {
-            supervisor_password.type = supervisor_checkbox.checked ? 'text' : 'password';
-        }
-    </script>
-
-    <script>
-
-        let account_password = document.getElementById("account-password");
-        let account_checkbox = document.getElementById("account-checkbox");
-
-        account_checkbox.onclick = function () {
-            account_password.type = account_checkbox.checked ? 'text' : 'password';
-        }
+        // Initialize password toggles
+        setupPasswordToggle("staff-password", "staff-checkbox");
+        setupPasswordToggle("supervisor-password", "supervisor-checkbox");
+        setupPasswordToggle("account-password", "account-checkbox");
     </script>
 
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function () {
-
-            <?php if (isset($_SESSION['session'])): ?>
-                $('#modalMessage').text("<?php echo $_SESSION['session']; ?>");
-                $('#myModal').modal('show');
-                <?php unset($_SESSION['session']); ?>
-            <?php endif; ?>
-        });
-    </script>
-
-    <script>
-        $(document).ready(function () {
-
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle password reset modal display
             <?php if ($showModal): ?>
-                $('#forgotPasswordModal').modal('show');
+                const forgotPasswordModal = new bootstrap.Modal(document.getElementById('forgotPasswordModal'));
+                forgotPasswordModal.show();
             <?php endif; ?>
 
-
-            var alertElement = $('#session-alert');
-            if (alertElement.length) {
+            // Handle session alert fade out
+            const alertElement = document.getElementById('session-alert');
+            if (alertElement) {
                 setTimeout(function () {
-                    alertElement.fadeOut();
+                    alertElement.style.opacity = '0';
+                    setTimeout(() => alertElement.style.display = 'none', 300);
                 }, 7000);
             }
+
+            // Fix aria-hidden accessibility issues for all modals
+            const modals = ['loginModal', 'supervisorLoginModal', 'staffLoginModal', 'createnewaccountLoginModal', 'forgotPasswordModal'];
+            
+            modals.forEach(modalId => {
+                const modalElement = document.getElementById(modalId);
+                if (modalElement) {
+                    modalElement.addEventListener('show.bs.modal', function() {
+                        this.removeAttribute('aria-hidden');
+                    });
+                    
+                    modalElement.addEventListener('shown.bs.modal', function() {
+                        this.setAttribute('aria-hidden', 'false');
+                    });
+                    
+                    modalElement.addEventListener('hide.bs.modal', function() {
+                        this.setAttribute('aria-hidden', 'true');
+                    });
+                }
+            });
         });
     </script>
 

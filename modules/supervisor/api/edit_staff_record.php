@@ -1,5 +1,12 @@
 <?php
-require '../../../config/database.php';
+require_once '../../../includes/bootstrap.php';
+
+$db = Database::getInstance();
+
+// Verify CSRF token for POST requests
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    CSRFProtection::verifyToken($_POST['csrf_token'] ?? '');
+}
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
@@ -13,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
     $getOriginalId = "SELECT employee_id FROM staff WHERE staff_id = ?";
-    $stmtOriginal = $conn->prepare($getOriginalId);
+    $stmtOriginal = $db->prepare($getOriginalId);
     $stmtOriginal->bind_param("i", $staff_id);
     $stmtOriginal->execute();
     $stmtOriginal->bind_result($original_employee_id);
@@ -22,12 +29,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
     $sql1 = "UPDATE staff SET first_name = ?, last_name = ?, contact_no = ?, email_address = ?, employee_id = ?, position = ? WHERE staff_id = ?";
-    $stmt1 = $conn->prepare($sql1);
+    $stmt1 = $db->prepare($sql1);
     $stmt1->bind_param("ssssssi", $first_name, $last_name, $contact_no, $email_address, $employee_id, $job_position, $staff_id);
 
 
     $sql2 = "UPDATE account SET email_address = ?, employee_id = ? WHERE employee_id = ?";
-    $stmt2 = $conn->prepare($sql2);
+    $stmt2 = $db->prepare($sql2);
     $stmt2->bind_param("sss", $email_address, $employee_id, $original_employee_id);
 
 
@@ -40,6 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $stmt1->close();
     $stmt2->close();
-    $conn->close();
+    $db->close();
 }
 ?>

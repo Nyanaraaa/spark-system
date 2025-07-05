@@ -1,13 +1,14 @@
 <?php
-session_start();
-require '../../../config/database.php';
+require_once '../../../includes/bootstrap.php';
+
+$db = Database::getInstance();
 
 if (isset($_GET['supplies_id']) && is_numeric($_GET['supplies_id'])) {
     $supplies_id = intval($_GET['supplies_id']);
 
 
     $sql = "DELETE FROM supplies WHERE supplies_id = ?";
-    $stmt = $conn->prepare($sql);
+    $stmt = $db->prepare($sql);
 
     if ($stmt) {
         $stmt->bind_param("i", $supplies_id);
@@ -25,7 +26,7 @@ if (isset($_GET['supplies_id']) && is_numeric($_GET['supplies_id'])) {
 }
 
 
-$conn->close();
+$db->close();
 
 header("Location: ../pages/manage_supplies.php");
 exit();

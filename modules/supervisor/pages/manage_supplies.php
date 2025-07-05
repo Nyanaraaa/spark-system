@@ -1,5 +1,21 @@
 <?php
-session_start();
+/**
+ * Supervisor Manage Supplies Page
+ * Uses new security components and authentication
+ */
+
+// Include bootstrap for security components
+require_once dirname(dirname(dirname(__DIR__))) . '/includes/bootstrap.php';
+
+// Check authentication
+SessionManager::requireAuth();
+SessionManager::requireRole('supervisor');
+
+try {
+    // Get database connection
+    $db = Database::getInstance();
+    /** @var MySQLiCompatibility $conn */
+    $conn = $db->getConnection();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -27,9 +43,12 @@ session_start();
                 Manage Supplies
             </h1>
 
-            <?php if (isset($_SESSION['success'])): ?>
-                <div class="alert alert-success" id="alert-message">
-                    <?= htmlspecialchars($_SESSION['success']); ?>
+            <?php 
+            // Check for flash messages
+            $flashMessage = SessionManager::getFlashMessage();
+            if ($flashMessage): ?>
+                <div class="alert alert-<?= $flashMessage['type'] === 'success' ? 'success' : 'danger'; ?>" id="alert-message">
+                    <?= htmlspecialchars($flashMessage['message']); ?>
                 </div>
                 <script>
                     setTimeout(function () {
@@ -39,22 +58,6 @@ session_start();
                         }
                     }, 5000);
                 </script>
-                <?php unset($_SESSION['success']); ?>
-            <?php endif; ?>
-
-            <?php if (isset($_SESSION['error'])): ?>
-                <div class="alert alert-danger" id="alert-message">
-                    <?= htmlspecialchars($_SESSION['error']); ?>
-                </div>
-                <script>
-                    setTimeout(function () {
-                        const alertMessage = document.getElementById('alert-message');
-                        if (alertMessage) {
-                            alertMessage.style.display = 'none';
-                        }
-                    }, 5000);
-                </script>
-                <?php unset($_SESSION['error']); ?>
             <?php endif; ?>
 
             <!-- Filter Controls -->
@@ -85,7 +88,6 @@ session_start();
                                     <select id="category-filter" class="form-select">
                                         <option value="">All Brands</option>
                                         <?php
-                                        require '../../../config/database.php';
                                         $categoryQuery = "SELECT DISTINCT brand FROM supplies";
                                         $categoryResult = $conn->query($categoryQuery);
                                         while ($categoryRow = $categoryResult->fetch_assoc()) {
@@ -145,7 +147,6 @@ session_start();
                                     </thead>
                                     <tbody>
                                         <?php
-                                        require '../../../config/database.php';
                                         $sql = "SELECT supplies_id, supplies, classification, brand, stocks, last_updated, stock_limit FROM supplies";
                                         $result = $conn->query($sql);
 
@@ -206,7 +207,6 @@ session_start();
                                         } else {
                                             echo '<tr><td colspan="7" class="text-center">No Record Found</td></tr>';
                                         }
-                                        $conn->close();
                                         ?>
 
                                         <tr id="no-record" style="display:none;">
@@ -277,6 +277,7 @@ session_start();
                     </div>
                     <div class="modal-body">
                         <form action="../api/update_stock.php" method="post">
+                            <?php echo CSRFProtection::getTokenField(); ?>
                             <input type="hidden" id="update-supplies-id" name="supplies_id">
 
                             <div class="mb-4">
@@ -331,6 +332,7 @@ session_start();
                     </div>
                     <div class="modal-body">
                         <form action="../api/add_supplies.php" method="post">
+                            <?php echo CSRFProtection::getTokenField(); ?>
                             <div class="mb-3">
                                 <label for="supply-name" class="form-label fw-bold" style="color: var(--maroon);">Supply
                                     Name</label>
@@ -642,3 +644,12 @@ session_start();
 </body>
 
 </html>
+
+<?php
+} catch (Exception $e) {
+    ErrorHandler::logError('Supervisor manage supplies error: ' . $e->getMessage());
+    SessionManager::setFlashMessage('An error occurred loading the supplies page. Please try again.', 'error');
+    header('Location: ../../../index.php');
+    exit();
+}
+?>

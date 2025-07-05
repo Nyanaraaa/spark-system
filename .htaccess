@@ -3,10 +3,6 @@
 RewriteEngine On
 RewriteBase /
 
-# Redirect to www (optional)
-RewriteCond %{HTTP_HOST} !^www\.
-RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R=301,L]
-
 # Exclude index.php from being rewritten
 RewriteRule ^index\.php$ - [L]
 
@@ -14,10 +10,10 @@ RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^.* - [L]
 
-# Rewrite non-existing files and directories to index.php
+# Rewrite non-existing files and directories to index.php (but allow direct access to existing PHP files)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /index.php [L]
+RewriteRule . /spark/index.php [L]
 </IfModule>
 # END Basic Configuration
 

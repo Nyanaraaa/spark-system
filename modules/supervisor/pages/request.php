@@ -1,4 +1,20 @@
-<?php session_start(); ?>
+<?php
+/**
+ * Supervisor Request Management Page
+ * Uses new security components and authentication
+ */
+
+// Include bootstrap for security components
+require_once dirname(dirname(dirname(__DIR__))) . '/includes/bootstrap.php';
+
+// Initialize authentication middleware
+$userData = AuthMiddleware::configurePage([
+    'role' => 'supervisor',
+    'permissions' => ['approve_requests'],
+    'csrf' => true,
+    'log_access' => true
+]);
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,7 +26,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="../../../manifest.json">
     <link rel="stylesheet"
         href="../../../assets/css/supervisor_request.css?v=<?php echo filemtime('../../../assets/css/supervisor_request.css'); ?>">
 </head>
@@ -25,10 +41,12 @@
                 Supplies Request
             </h1>
 
-            <?php if (isset($_SESSION['message'])): ?>
-                <div class="alert alert-<?= isset($_SESSION['msg_type']) ? $_SESSION['msg_type'] : 'info'; ?>"
-                    id="alert-message">
-                    <?= htmlspecialchars($_SESSION['message']); ?>
+            <?php 
+            // Check for flash messages
+            $flashMessage = SessionManager::getFlashMessage();
+            if ($flashMessage): ?>
+                <div class="alert alert-<?= $flashMessage['type'] === 'success' ? 'success' : ($flashMessage['type'] === 'error' ? 'danger' : 'info'); ?>" id="alert-message">
+                    <?= htmlspecialchars($flashMessage['message']); ?>
                 </div>
                 <script>
                     setTimeout(function () {
@@ -38,10 +56,6 @@
                         }
                     }, 5000);
                 </script>
-                <?php
-                unset($_SESSION['message']);
-                unset($_SESSION['msg_type']);
-                ?>
             <?php endif; ?>
 
             <div class="row">
@@ -77,6 +91,11 @@
         </div>
     </div>
 
+    <!-- CSRF Token for JavaScript -->
+    <script>
+        const csrfToken = '<?php echo CSRFProtection::generateToken(); ?>';
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>
@@ -98,9 +117,19 @@
         function fetchPendingRequests() {
             fetch('../api/get_pending_requests.php')
                 .then(response => response.json())
-                .then(data => {
+                .then(result => {
                     const tableBody = document.getElementById('requestsTableBody');
                     tableBody.innerHTML = ''; // Clear the table body
+
+                    // Check if the API call was successful
+                    if (!result.success) {
+                        const errorRow = document.createElement('tr');
+                        errorRow.innerHTML = '<td colspan="5" class="text-center py-4 text-danger"><i class="lni lni-warning me-2"></i>Error loading requests</td>';
+                        tableBody.appendChild(errorRow);
+                        return;
+                    }
+
+                    const data = result.data || [];
 
                     if (data.length === 0) {
                         const noRecordRow = document.createElement('tr');
@@ -139,6 +168,7 @@
                                 <td>${formattedDate}</td>
                                 <td>
                                     <form method="POST" action="../api/approve_request.php" class="action-buttons">
+                                        <input type="hidden" name="csrf_token" value="${csrfToken}">
                                         <input type="hidden" name="request_id" value="${request.request_id}">
                                         <button type="submit" name="action" value="approve" class="btn-approve">
                                             <i class="lni lni-checkmark me-1"></i> Approve
@@ -155,7 +185,11 @@
                         });
                     }
                 })
-                .catch(error => console.error('Error fetching requests:', error));
+                .catch(error => {
+                    console.error('Error fetching requests:', error);
+                    const tableBody = document.getElementById('requestsTableBody');
+                    tableBody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-danger"><i class="lni lni-warning me-2"></i>Failed to load requests. Please refresh the page.</td></tr>';
+                });
         }
 
         // Refresh the table every 5 seconds

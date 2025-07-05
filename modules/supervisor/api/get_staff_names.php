@@ -1,10 +1,12 @@
 <?php
+require_once '../../../includes/bootstrap.php';
+
+$db = Database::getInstance();
+
 header('Content-Type: application/json');
 
-include '../../../config/database.php';
-
 $sql = "SELECT staff_id, first_name, last_name FROM staff";
-$result = $conn->query($sql);
+$result = $db->query($sql);
 
 $staff = [];
 
@@ -19,5 +21,5 @@ if ($result->num_rows > 0) {
 
 echo json_encode($staff);
 
-$conn->close();
+$db->close();
 ?>

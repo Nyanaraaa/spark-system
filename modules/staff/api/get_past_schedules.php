@@ -1,5 +1,7 @@
 <?php
-require '../../../config/database.php';
+require_once '../../../includes/bootstrap.php';
+
+$db = Database::getInstance();
 
 if (!isset($_GET['staff_id'])) {
     echo json_encode([]);
@@ -8,7 +10,7 @@ if (!isset($_GET['staff_id'])) {
 
 $staff_id = $_GET['staff_id'];
 
-$stmt = $conn->prepare("
+$stmt = $db->prepare("
     SELECT 
         staff_schedule.days, 
         staff_schedule.shift_time, 
@@ -39,5 +41,5 @@ if ($result->num_rows > 0) {
 
 echo json_encode($schedules);
 $stmt->close();
-$conn->close();
+$db->close();
 ?>

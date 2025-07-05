@@ -1,6 +1,15 @@
 <?php
+require_once '../../../includes/bootstrap.php';
 
-require_once '../../../config/database.php';
+$db = Database::getInstance();
+
+// Verify CSRF token for POST requests
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    CSRFProtection::verifyToken($_POST['csrf_token'] ?? '');
+}
+
+
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $location = trim($_POST['location']);
@@ -11,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $stmt = $conn->prepare("INSERT INTO location (location_name, building) VALUES (?, ?)");
+    $stmt = $db->prepare("INSERT INTO location (location_name, building) VALUES (?, ?)");
     $stmt->bind_param("ss", $location, $building);
 
     if ($stmt->execute()) {
@@ -21,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $stmt->close();
-    $conn->close();
+    $db->close();
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
 }

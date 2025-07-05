@@ -1,13 +1,17 @@
 <?php
-session_start();
-require '../../../config/database.php';
+require_once '../../../includes/bootstrap.php';
+
+// Require supervisor authentication
+AuthMiddleware::init('supervisor');
+
+$db = Database::getInstance();
 
 $current_month = date("Y-m");
 $current_date = date("Y-m-d");
 $last_day_of_month = date("Y-m-t", strtotime($current_date));
 
 $check_sql = "SELECT COUNT(*) AS count FROM leaderboard_history WHERE month = '$current_month'";
-$check_result = $conn->query($check_sql);
+$check_result = $db->query($check_sql);
 $check_row = $check_result->fetch_assoc();
 
 if ($current_date === $last_day_of_month && $check_row['count'] == 0) {
@@ -18,10 +22,10 @@ if ($current_date === $last_day_of_month && $check_row['count'] == 0) {
         INNER JOIN staff s ON e.employee_id = s.employee_id
         GROUP BY e.employee_id
     ";
-    $conn->query($archive_sql);
+    $db->query($archive_sql);
 
     $delete_sql = "DELETE FROM evaluations WHERE MONTH(created_at) = MONTH(CURRENT_DATE())";
-    $conn->query($delete_sql);
+    $db->query($delete_sql);
 }
 
 $sql = "
@@ -39,7 +43,7 @@ $sql = "
     GROUP BY e.employee_id, full_name
     ORDER BY total_rating DESC
 ";
-$result = $conn->query($sql);
+$result = $db->query($sql);
 ?>
 
 <!DOCTYPE html>
@@ -53,7 +57,7 @@ $result = $conn->query($sql);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="../../../manifest.json">
     <link rel="stylesheet"
         href="../../../assets/css/supervisor_leaderboard.css?v=<?php echo filemtime('../../../assets/css/supervisor_leaderboard.css'); ?>">
 </head>
@@ -150,7 +154,7 @@ $result = $conn->query($sql);
                                         } else {
                                             echo "<tr><td colspan='4' class='text-center py-4'><i class='lni lni-information me-2'></i>No data available</td></tr>";
                                         }
-                                        $conn->close();
+                                        // Database connection is managed by the Database singleton
                                         ?>
                                         <tr id="no-record" style="display:none;">
                                             <td colspan="4" class="text-center py-4">
