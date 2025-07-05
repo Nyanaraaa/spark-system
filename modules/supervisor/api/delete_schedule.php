@@ -1,14 +1,16 @@
 <?php
-require '../../../config/database.php';
+require_once '../../../includes/bootstrap.php';
+
+$db = Database::getInstance();
 
 if (isset($_GET['schedule_id']) && is_numeric($_GET['schedule_id'])) {
     $schedule_id = (int) $_GET['schedule_id'];
 
     $sql = "DELETE FROM staff_schedule WHERE schedule_id = ?";
-    $stmt = $conn->prepare($sql);
+    $stmt = $db->prepare($sql);
 
     if ($stmt === false) {
-        die('Error preparing the statement: ' . htmlspecialchars($conn->error));
+        die('Error preparing the statement: ' . htmlspecialchars($db->error));
     }
 
     $stmt->bind_param("i", $schedule_id);
@@ -25,5 +27,5 @@ if (isset($_GET['schedule_id']) && is_numeric($_GET['schedule_id'])) {
     echo json_encode(['success' => false, 'message' => 'Invalid schedule ID provided.']);
 }
 
-$conn->close();
+$db->close();
 ?>

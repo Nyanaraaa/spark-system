@@ -1,7 +1,19 @@
 <?php
-session_start();
-if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
-}
+/**
+ * Supervisor Manage Schedule Page
+ * Uses new security components and authentication
+ */
+
+// Include bootstrap for security components
+require_once dirname(dirname(dirname(__DIR__))) . '/includes/bootstrap.php';
+
+// Initialize authentication middleware
+$userData = AuthMiddleware::configurePage([
+    'role' => 'supervisor',
+    'permissions' => ['manage_schedules'],
+    'csrf' => true,
+    'log_access' => true
+]);
 ?>
 
 <!DOCTYPE html>

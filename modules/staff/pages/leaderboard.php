@@ -1,7 +1,10 @@
 <?php
-session_start();
-require '../../../config/database.php';
+require_once '../../../includes/bootstrap.php';
 
+// Require staff authentication
+AuthMiddleware::init('housekeeping_staff');
+
+$db = Database::getInstance();
 
 $current_month = date("Y-m");
 $current_date = date("Y-m-d");
@@ -11,7 +14,7 @@ $last_day_of_month = date("Y-m-t", strtotime($current_date));
 
 
 $check_sql = "SELECT COUNT(*) AS count FROM leaderboard_history WHERE month = '$current_month'";
-$check_result = $conn->query($check_sql);
+$check_result = $db->query($check_sql);
 $check_row = $check_result->fetch_assoc();
 
 
@@ -24,11 +27,11 @@ if ($current_date === $last_day_of_month && $check_row['count'] == 0) {
         INNER JOIN staff s ON e.employee_id = s.employee_id
         GROUP BY e.employee_id
     ";
-    $conn->query($archive_sql);
+    $db->query($archive_sql);
 
 
     $delete_sql = "DELETE FROM evaluations WHERE MONTH(created_at) = MONTH(CURRENT_DATE())";
-    $conn->query($delete_sql);
+    $db->query($delete_sql);
 }
 
 
@@ -47,7 +50,7 @@ $sql = "
     GROUP BY e.employee_id, full_name
     ORDER BY total_rating DESC
 ";
-$result = $conn->query($sql);
+$result = $db->query($sql);
 ?>
 
 <!DOCTYPE html>
@@ -60,8 +63,8 @@ $result = $conn->query($sql);
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="../../../assets/css/housekeeping_leaderboard.css?v=1">
+    <link rel="manifest" href="../../../manifest.json">
+    <link rel="stylesheet" href="../../../assets/css/staff_leaderboard.css?v=1">
 </head>
 
 <body>
@@ -154,7 +157,7 @@ $result = $conn->query($sql);
                                         } else {
                                             echo "<tr><td colspan='4' class='text-center py-4'>No data available</td></tr>";
                                         }
-                                        $conn->close();
+                                        // Database connection is managed by the Database singleton
                                         ?>
                                         <tr id="no-record" style="display:none;">
                                             <td colspan="4" class="text-center py-4">

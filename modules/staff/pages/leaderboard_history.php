@@ -1,9 +1,19 @@
 <?php
-session_start();
-require '../../../config/database.php';
+require_once '../../../includes/bootstrap.php';
 
-$selected_month = isset($_POST['month']) ? $_POST['month'] : '';
-$selected_year = isset($_POST['year']) ? $_POST['year'] : '';
+// Require staff authentication
+AuthMiddleware::init('housekeeping_staff');
+
+// Handle form submission with CSRF protection
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    CSRFProtection::verifyToken($_POST['csrf_token'] ?? '');
+}
+
+$selected_month = isset($_POST['month']) ? InputValidator::sanitizeString($_POST['month']) : '';
+$selected_year = isset($_POST['year']) ? InputValidator::sanitizeString($_POST['year']) : '';
+
+// Get database connection
+$db = Database::getInstance();
 
 $sql = "SELECT * FROM leaderboard_history";
 
@@ -21,7 +31,7 @@ if (!empty($filters)) {
 
 $sql .= " ORDER BY total_rating DESC, created_at DESC";
 
-$stmt = $conn->prepare($sql);
+$stmt = $db->prepare($sql);
 
 $params = [];
 if ($selected_month) {
@@ -50,7 +60,7 @@ $result = $stmt->get_result();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="../../../manifest.json">
     <link rel="stylesheet"
         href="../../../assets/css/supervisor_leaderboard.css?v=<?php echo filemtime('../../../assets/css/supervisor_leaderboard.css'); ?>">
 </head>
@@ -82,6 +92,7 @@ $result = $stmt->get_result();
                         </div>
                         <div class="card-body">
                             <form method="POST" class="row g-3">
+                                <?php echo CSRFProtection::getTokenField(); ?>
                                 <div class="col-md-4">
                                     <label for="month" class="form-label">Filter by Month:</label>
                                     <select name="month" id="month" class="form-select">
@@ -199,8 +210,7 @@ $result = $stmt->get_result();
                                         } else {
                                             echo "<tr><td colspan='6' class='text-center py-4'><i class='lni lni-information me-2'></i>No history available</td></tr>";
                                         }
-                                        $stmt->close();
-                                        $conn->close();
+                                        // Database connection is managed by the Database singleton
                                         ?>
                                         <tr id="no-record" style="display:none;">
                                             <td colspan="6" class="text-center py-4">

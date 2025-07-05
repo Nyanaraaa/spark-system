@@ -90,7 +90,7 @@ if ($base_path === '')
                 </a>
             </li>
             <div class="sidebar-item mt-4">
-                <a href="<?php echo $base_path; ?>index.php" class="sidebar-link" id="logout-link">
+                <a href="<?php echo $base_path; ?>index.php?logout=1" class="sidebar-link" id="logout-link">
                     <i class="lni lni-exit"></i>
                     <span>Logout</span>
                 </a>

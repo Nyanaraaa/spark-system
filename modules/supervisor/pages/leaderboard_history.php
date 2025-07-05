@@ -1,9 +1,19 @@
 <?php
-session_start();
-require '../../../config/database.php';
+require_once '../../../includes/bootstrap.php';
 
-$selected_month = isset($_POST['month']) ? $_POST['month'] : '';
-$selected_year = isset($_POST['year']) ? $_POST['year'] : '';
+// Require supervisor authentication
+AuthMiddleware::init('supervisor');
+
+// Handle form submission with CSRF protection
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    CSRFProtection::verifyToken($_POST['csrf_token'] ?? '');
+}
+
+$selected_month = isset($_POST['month']) ? InputValidator::sanitizeString($_POST['month']) : '';
+$selected_year = isset($_POST['year']) ? InputValidator::sanitizeString($_POST['year']) : '';
+
+// Get database connection
+$db = Database::getInstance();
 
 $sql = "SELECT * FROM leaderboard_history";
 
@@ -21,7 +31,7 @@ if (!empty($filters)) {
 
 $sql .= " ORDER BY total_rating DESC, created_at DESC";
 
-$stmt = $conn->prepare($sql);
+$stmt = $db->prepare($sql);
 
 $params = [];
 if ($selected_month) {
@@ -46,11 +56,11 @@ $result = $stmt->get_result();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SPARK - Leaderboard History</title>
-    <link href="https:
-    <link href=" https: integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ"
-        crossorigin="anonymous">
-    <link href="https:
-    <link rel=" manifest" href="../../../manifest.json">
+    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="manifest" href="../../../manifest.json">
     <link rel="stylesheet"
         href="../../../assets/css/supervisor_leaderboard.css?v=<?php echo filemtime('../../../assets/css/supervisor_leaderboard.css'); ?>">
 </head>
@@ -82,6 +92,7 @@ $result = $stmt->get_result();
                         </div>
                         <div class="card-body">
                             <form method="POST" class="row g-3">
+                                <?php echo CSRFProtection::getTokenField(); ?>
                                 <div class="col-md-4">
                                     <label for="month" class="form-label">Filter by Month:</label>
                                     <select name="month" id="month" class="form-select">
@@ -199,8 +210,7 @@ $result = $stmt->get_result();
                                         } else {
                                             echo "<tr><td colspan='6' class='text-center py-4'><i class='lni lni-information me-2'></i>No history available</td></tr>";
                                         }
-                                        $stmt->close();
-                                        $conn->close();
+                                        // Database connection is managed by the Database singleton
                                         ?>
                                         <tr id="no-record" style="display:none;">
                                             <td colspan="6" class="text-center py-4">
@@ -218,8 +228,8 @@ $result = $stmt->get_result();
         </div>
     </div>
 
-    <script src="https:
-        integrity=" sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>
     <script>
         function filterStaff() {
@@ -258,25 +268,7 @@ $result = $stmt->get_result();
 
             printWindow.document.write('<html><head><title>Staff Performance Assessment, Recording and Keeping</title>');
             printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">');
-            printWindow.document.write('<style>');
-            printWindow.document.write('body { padding: 20px; font-family: Arial, sans-serif; }');
-            printWindow.document.write('.header { margin-bottom: 20px; }');
-            printWindow.document.write('.logo { width: 200px; height: auto; }');
-            printWindow.document.write('h1 { color: #800000; margin-top: 20px; }');
-            printWindow.document.write('table { width: 100%; border-collapse: collapse; margin-top: 20px; }');
-            printWindow.document.write('th, td { border: 1px solid #000; padding: 8px 12px; text-align: left; }');
-            printWindow.document.write('th { background-color: #800000; color: white; font-weight: bold; }');
-            printWindow.document.write('tr:nth-child(even) { background-color: #f9f9f9; }');
-            printWindow.document.write('tr:nth-child(odd) { background-color: #ffffff; }');
-            printWindow.document.write('.badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }');
-            printWindow.document.write('.badge-gold { background-color: #FFD700; color: #000; }');
-            printWindow.document.write('.badge-silver { background-color: #C0C0C0; color: #000; }');
-            printWindow.document.write('.badge-bronze { background-color: #CD7F32; color: #fff; }');
-            printWindow.document.write('.text-success { color: #28a745 !important; font-weight: bold; }');
-            printWindow.document.write('.text-warning { color: #ffc107 !important; font-weight: bold; }');
-            printWindow.document.write('.text-danger { color: #dc3545 !important; font-weight: bold; }');
-            printWindow.document.write('.trophy-icon { margin-right: 5px; }');
-            printWindow.document.write('</style>');
+            printWindow.document.write('<style>body { padding: 20px; } .header { margin-bottom: 20px; text-align: center; } .logo { width: 200px; height: auto; margin-bottom: 15px; } h1 { color: #800000; margin-top: 20px; } table { width: 100%; border-collapse: collapse; } th { background-color: #800000; color: white; } </style>');
             printWindow.document.write('</head><body>');
 
             printWindow.document.write('<div class="header">');
@@ -284,69 +276,16 @@ $result = $stmt->get_result();
             printWindow.document.write('<h1>Leaderboard History</h1>');
             printWindow.document.write('</div>');
 
-            printWindow.document.write('<table>' + tableClone.innerHTML + '</table>');
-            printWindow.document.write('<div style="margin-top: 20px; text-align: center; color: #666; font-size: 0.9rem;">Generated on ' + new Date().toLocaleString() + '</div>');
+            printWindow.document.write('<table class="table table-bordered">' + tableClone.outerHTML + '</table>');
+            printWindow.document.write('<div class="mt-4 text-center text-muted"><small>Generated on ' + new Date().toLocaleString() + '</small></div>');
             printWindow.document.write('</body></html>');
 
             printWindow.document.close();
-
-
-            let printExecuted = false;
-            let attempts = 0;
-            const maxAttempts = 3;
-
-            function executePrint() {
-                if (printExecuted || attempts >= maxAttempts) return;
-
-                attempts++;
-                printExecuted = true;
-
-                try {
-                    printWindow.focus();
-                    printWindow.print();
-                    printWindow.close();
-                } catch (error) {
-                    console.warn('Print attempt failed:', error);
-                    printExecuted = false;
-
-                    if (attempts < maxAttempts) {
-                        setTimeout(executePrint, 500);
-                    } else {
-                        printWindow.close();
-                        alert('Print failed. Please try again.');
-                    }
-                }
-            }
-
-
-            const img = printWindow.document.querySelector('img');
-
-            if (img) {
-
-                img.onload = executePrint;
-                img.onerror = executePrint;
-            }
-
-
-            if (printWindow.document.readyState === 'complete') {
-                setTimeout(executePrint, 100);
-            } else {
-                printWindow.document.addEventListener('DOMContentLoaded', executePrint);
-            }
-
-
-            setTimeout(executePrint, 1000);
-            setTimeout(executePrint, 3000);
-
-
-            printWindow.addEventListener('load', executePrint);
-
-
-            setTimeout(() => {
-                if (!printWindow.closed) {
-                    printWindow.close();
-                }
-            }, 10000);
+            printWindow.document.querySelector('img').onload = function () {
+                printWindow.focus();
+                printWindow.print();
+                printWindow.close();
+            };
         });
     </script>
 </body>

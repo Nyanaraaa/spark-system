@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once '../../includes/bootstrap.php';
 ?>
 
 <!DOCTYPE html>
@@ -31,21 +31,21 @@ session_start();
 
                     <div class="card-body">
                         <?php
-
-                        if (isset($_SESSION['status'])) {
+                        $flashMessage = SessionManager::getFlashMessage();
+                        if ($flashMessage && $flashMessage['type'] === 'error') {
                             ?>
                             <div class="row justify-content-center mt-3">
                                 <div class="col-12">
                                     <div class="alert alert-danger text-center" id="alert">
-                                        <h5><?= $_SESSION['status']; ?></h5>
+                                        <h5><?= htmlspecialchars($flashMessage['message']); ?></h5>
                                     </div>
                                 </div>
                             </div>
                             <?php
-                            unset($_SESSION['status']);
                         }
                         ?>
                         <form action="auth/password-reset-code.php" method="POST">
+                            <?php echo CSRFProtection::getTokenField(); ?>
                             <input type="hidden" name="password_token" value="<?php if (isset($_GET['token'])) {
                                 echo $_GET['token'];
                             } ?>">

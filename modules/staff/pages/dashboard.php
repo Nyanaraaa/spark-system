@@ -1,16 +1,40 @@
 <?php
-session_start();
-require '../../../config/database.php';
+/**
+ * Staff Dashboard
+ * Uses new security components and authentication
+ */
 
-if (!isset($_SESSION['staff_id'])) {
-    echo "Access denied. Please log in.";
-    exit();
-}
+// Include bootstrap for security components  
+require_once dirname(dirname(dirname(__DIR__))) . '/includes/bootstrap.php';
 
-$stmt = $conn->prepare("SELECT staff_id, first_name, last_name FROM staff WHERE staff_id = ?");
-$stmt->bind_param("i", $_SESSION['staff_id']);
-$stmt->execute();
-$result = $stmt->get_result();
+// Initialize authentication middleware
+$userData = AuthMiddleware::configurePage([
+    'role' => 'housekeeping_staff',
+    'permissions' => ['view_profile'],
+    'csrf' => true,
+    'log_access' => true
+]);
+
+try {
+    // Validate user data
+    if (!$userData || !isset($userData['staff_id'])) {
+        AuthMiddleware::init('housekeeping_staff');
+        exit();
+    }
+
+    $staff_id = $userData['staff_id'];
+    $employee_id = $userData['employee_id'];
+
+    // Get database connection
+    $db = Database::getInstance();
+    /** @var MySQLiCompatibility $conn */
+    $conn = $db->getConnection();
+
+    // Get staff information using the staff_id from session
+    $stmt = $conn->prepare("SELECT staff_id, first_name, last_name FROM staff WHERE staff_id = ?");
+    $stmt->bind_param("i", $staff_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $staff = $result->fetch_assoc();
@@ -68,6 +92,17 @@ if ($leaderboard_result->num_rows > 0) {
         }
     }
 }
+
+} catch (Exception $e) {
+    ErrorHandler::logError('Dashboard error: ' . $e->getMessage(), [
+        'staff_id' => $staff_id ?? 'unknown',
+        'employee_id' => $employee_id ?? 'unknown'
+    ]);
+    
+    SessionManager::setFlashMessage('An error occurred loading the dashboard. Please try again.', 'error');
+    header('Location: ../../../index.php');
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -118,10 +153,6 @@ if ($leaderboard_result->num_rows > 0) {
                                         </thead>
                                         <tbody>
                                             <?php
-                                            require '../../../config/database.php';
-
-                                            $employee_id = $_SESSION['employee_id'];
-
                                             $stmt = $conn->prepare("SELECT report_id, report_image, created_at, description FROM progress_reports WHERE employee_id = ? ORDER BY created_at DESC LIMIT 10");
                                             $stmt->bind_param("s", $employee_id);
                                             $stmt->execute();
@@ -264,7 +295,7 @@ if ($leaderboard_result->num_rows > 0) {
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center p-0">
-                    <img id="imagePreview" src="/placeholder.svg" alt="Report Image" class="img-fluid">
+                    <img id="imagePreview" src="../../../assets/images/spark_logo.png" alt="Report Image" class="img-fluid">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -438,7 +469,20 @@ if ($leaderboard_result->num_rows > 0) {
         });
 
         function previewImage(imageSrc) {
-            document.getElementById('imagePreview').src = imageSrc;
+            // Handle different image path formats
+            let processedSrc = imageSrc;
+            
+            if (imageSrc && !imageSrc.startsWith('data:image/') && !imageSrc.startsWith('http')) {
+                // If it starts with uploads/, convert to correct path
+                if (imageSrc.startsWith('uploads/')) {
+                    processedSrc = '../../../assets/images/' + imageSrc;
+                } else if (!imageSrc.startsWith('../../../assets/images/')) {
+                    // Assume it's just a filename and add the full path
+                    processedSrc = '../../../assets/images/uploads/' + imageSrc;
+                }
+            }
+            
+            document.getElementById('imagePreview').src = processedSrc;
         }
 
         function updateLeaderboard() {
@@ -670,7 +714,7 @@ if ($leaderboard_result->num_rows > 0) {
                 button.addEventListener('click', function () {
                     const reportId = this.getAttribute('data-report-id');
                     console.log('Fetching assessment for report ID:', reportId);
-                    fetch(`../../api/fetch_assessment.php?report_id=${reportId}`)
+                    fetch(`../../../modules/api/fetch_assessment.php?report_id=${reportId}`)
                         .then(response => {
                             console.log('Response status:', response.status);
                             if (!response.ok) {

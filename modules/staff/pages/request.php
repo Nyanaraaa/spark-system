@@ -1,4 +1,32 @@
-<?php session_start(); ?>
+<?php
+/**
+ * Supply Request Page
+ * Uses new security components and authentication
+ */
+
+// Include bootstrap for security components
+require_once dirname(dirname(dirname(__DIR__))) . '/includes/bootstrap.php';
+
+// Check authentication
+SessionManager::requireAuth();
+SessionManager::requireRole('housekeeping_staff');
+
+try {
+    // Get current user data
+    $userData = SessionManager::getCurrentUser();
+    if (!$userData || !isset($userData['employee_id'])) {
+        SessionManager::setFlashMessage('Session expired. Please log in again.', 'error');
+        header('Location: ../../../index.php');
+        exit();
+    }
+
+    $employee_id = $userData['employee_id'];
+
+    // Get database connection
+    $db = Database::getInstance();
+    /** @var MySQLiCompatibility $conn */
+    $conn = $db->getConnection();
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,9 +39,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="../../../manifest.json">
     <link rel="stylesheet"
-        href="../../../assets/css/housekeeping_request.css?v=<?php echo filemtime('../../../assets/css/housekeeping_request.css'); ?>">
+        href="../../../assets/css/staff_request.css?v=<?php echo filemtime('../../../assets/css/staff_request.css'); ?>">
 </head>
 
 <body>
@@ -49,7 +77,6 @@
                                     <select id="category-filter" class="form-select">
                                         <option value="">All Brands</option>
                                         <?php
-                                        require '../../../config/database.php';
                                         $categoryQuery = "SELECT DISTINCT brand FROM supplies";
                                         $categoryResult = $conn->query($categoryQuery);
                                         while ($categoryRow = $categoryResult->fetch_assoc()) {
@@ -76,11 +103,13 @@
                 </div>
             </div>
 
-            <?php if (isset($_SESSION['message'])): ?>
-                <div class="alert alert-<?= $_SESSION['alert_type']; ?>" id="alert-message">
-                    <i
-                        class="lni lni-<?= $_SESSION['alert_type'] === 'success' ? 'checkmark-circle' : 'warning'; ?> me-2"></i>
-                    <?= htmlspecialchars($_SESSION['message']); ?>
+            <?php 
+            // Check for flash messages
+            $flashMessage = SessionManager::getFlashMessage();
+            if ($flashMessage): ?>
+                <div class="alert alert-<?= $flashMessage['type'] === 'success' ? 'success' : 'danger'; ?>" id="alert-message">
+                    <i class="lni lni-<?= $flashMessage['type'] === 'success' ? 'checkmark-circle' : 'warning'; ?> me-2"></i>
+                    <?= htmlspecialchars($flashMessage['message']); ?>
                 </div>
                 <script>
                     setTimeout(function () {
@@ -90,8 +119,6 @@
                         }
                     }, 5000);
                 </script>
-                <?php unset($_SESSION['message']);
-                unset($_SESSION['alert_type']); ?>
             <?php endif; ?>
 
             <div class="row">
@@ -118,14 +145,9 @@
                                     </thead>
                                     <tbody id="supplies-table-body">
                                         <?php
-                                        require '../../../config/database.php';
-
-                                        // Assuming the employee ID is stored in the session when the user is logged in
-                                        $employeeId = isset($_SESSION['employee_id']) ? $_SESSION['employee_id'] : ''; // Leave as string
-                                        
-                                        // If employee_id is not set or invalid, handle the error
-                                        if (empty($employeeId)) {
-                                            die('Invalid employee ID.');
+                                        // Employee ID is already available from session validation above
+                                        if (empty($employee_id)) {
+                                            throw new Exception('Invalid employee ID.');
                                         }
 
                                         $sql = "SELECT supplies_id, supplies, classification, brand, stocks, last_updated FROM supplies";
@@ -200,7 +222,6 @@
                                             echo '<tr id="no-record"><td colspan="6" class="text-center py-4">No Record Found</td></tr>';
                                         }
 
-                                        $conn->close();
                                         ?>
                                     </tbody>
                                 </table>
@@ -211,6 +232,18 @@
             </div>
         </div>
     </div>
+
+<?php
+} catch (Exception $e) {
+    ErrorHandler::logError('Supply request page error: ' . $e->getMessage(), [
+        'employee_id' => $employee_id ?? 'unknown'
+    ]);
+    
+    SessionManager::setFlashMessage('An error occurred loading the supply request page. Please try again.', 'error');
+    header('Location: ../../../index.php');
+    exit();
+}
+?>
 
     <div class="modal fade" id="requestModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -224,6 +257,7 @@
                 </div>
                 <div class="modal-body">
                     <form action="../../../modules/staff/api/submit_request.php" method="POST">
+                        <?php echo CSRFProtection::getTokenField(); ?>
                         <input type="hidden" id="request-supplies-id" name="supplies_id">
                         <div class="mb-3">
                             <label for="request-supplies-name" class="form-label">Supply Name</label>

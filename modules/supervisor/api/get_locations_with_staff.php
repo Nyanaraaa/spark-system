@@ -1,7 +1,9 @@
 <?php
-header('Content-Type: application/json');
-require '../../../config/database.php';
+require_once '../../../includes/bootstrap.php';
 
+$db = Database::getInstance();
+
+header('Content-Type: application/json');
 try {
 
     $sql = "
@@ -20,7 +22,7 @@ try {
             location.id, location.location_name, location.building
     ";
 
-    $result = $conn->query($sql);
+    $result = $db->query($sql);
 
     if ($result->num_rows > 0) {
         $locations = [];
@@ -41,5 +43,5 @@ try {
     echo json_encode(['status' => 'error', 'message' => 'An error occurred while fetching data.']);
 }
 
-$conn->close();
+$db->close();
 ?>

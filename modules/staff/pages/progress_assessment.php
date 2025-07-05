@@ -1,17 +1,31 @@
 <?php
-session_start();
+/**
+ * Progress Assessment Page
+ * Uses new security components and authentication
+ */
 
-require '../../../config/database.php';
+// Include bootstrap for security components
+require_once dirname(dirname(dirname(__DIR__))) . '/includes/bootstrap.php';
 
+// Check authentication
+SessionManager::requireAuth();
+SessionManager::requireRole('housekeeping_staff');
 
-if (!isset($_SESSION['username'])) {
+try {
+    // Get current user data
+    $userData = SessionManager::getCurrentUser();
+    if (!$userData || !isset($userData['employee_id'])) {
+        SessionManager::setFlashMessage('Session expired. Please log in again.', 'error');
+        header('Location: ../../../index.php');
+        exit();
+    }
 
-    header("Location: index.php");
-    exit();
-}
+    $employee_id = $userData['employee_id'];
 
-
-$employee_id = $_SESSION['employee_id'];
+    // Get database connection
+    $db = Database::getInstance();
+    /** @var MySQLiCompatibility $conn */
+    $conn = $db->getConnection();
 ?>
 
 <!DOCTYPE html>
@@ -24,7 +38,7 @@ $employee_id = $_SESSION['employee_id'];
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="../../../manifest.json">
     <link rel="stylesheet"
         href="../../../assets/css/progress_assessment.css?v=<?php echo filemtime('../../../assets/css/progress_assessment.css'); ?>">
 
@@ -54,8 +68,6 @@ $employee_id = $_SESSION['employee_id'];
                             </thead>
                             <tbody>
                                 <?php
-                                require '../../../config/database.php';
-
                                 // Fetch all progress reports for the logged-in employee
                                 $sql = "SELECT report_id, report_image, employee_id, description, created_at 
                                         FROM progress_reports 
@@ -69,9 +81,28 @@ $employee_id = $_SESSION['employee_id'];
                                 if ($result->num_rows > 0) {
                                     while ($row = $result->fetch_assoc()) {
                                         $formattedDate = date("F j, Y g:ia", strtotime($row["created_at"]));
+                                        
+                                        // Handle image path
+                                        $imagePath = $row["report_image"];
+                                        if ($imagePath) {
+                                            // Check if it's base64 data
+                                            if (strpos($imagePath, 'data:image/') === 0) {
+                                                // Already a complete data URL, use as is
+                                            } elseif (preg_match('/^[A-Za-z0-9+\/=]+$/', $imagePath) && strlen($imagePath) > 100) {
+                                                // Looks like base64 without data URL prefix, add it
+                                                $imagePath = 'data:image/jpeg;base64,' . $imagePath;
+                                            } elseif (strpos($imagePath, 'uploads/') === 0) {
+                                                // Handle uploads/ prefix - convert to correct path
+                                                $imagePath = '../../../assets/images/' . $imagePath;
+                                            } elseif (!preg_match('/^(https?:\/\/|\/|\.\.\/)/i', $imagePath)) {
+                                                // Regular file path, add relative path to assets/images/uploads
+                                                $imagePath = '../../../assets/images/uploads/' . $imagePath;
+                                            }
+                                        }
+                                        
                                         echo '<tr>
                                             <td>
-                                                <img src="' . htmlspecialchars($row["report_image"]) . '" alt="Report Image" class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
+                                                <img src="' . htmlspecialchars($imagePath) . '" alt="Report Image" class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
                                             </td>
                                             <td>' . $formattedDate . '</td>
                                             <td>
@@ -97,7 +128,6 @@ $employee_id = $_SESSION['employee_id'];
                                 }
 
                                 $stmt->close();
-                                $conn->close();
                                 ?>
                             </tbody>
                         </table>
@@ -106,6 +136,18 @@ $employee_id = $_SESSION['employee_id'];
             </div>
         </div>
     </div>
+
+<?php
+} catch (Exception $e) {
+    ErrorHandler::logError('Progress assessment error: ' . $e->getMessage(), [
+        'employee_id' => $employee_id ?? 'unknown'
+    ]);
+    
+    SessionManager::setFlashMessage('An error occurred loading your assessments. Please try again.', 'error');
+    header('Location: ../../../index.php');
+    exit();
+}
+?>
 
     <!-- Image Preview Modal -->
     <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
@@ -118,7 +160,7 @@ $employee_id = $_SESSION['employee_id'];
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center">
-                    <img id="modalImage" src="/placeholder.svg" alt="Report Image" class="img-fluid mb-3" />
+                    <img id="modalImage" src="../../../assets/images/spark_logo.png" alt="Report Image" class="img-fluid mb-3" />
                     <div class="mt-3">
                         <h6 class="text-maroon mb-2" style="color: var(--maroon);">Description</h6>
                         <div id="modalDescription" class="p-3 bg-light rounded"></div>
@@ -143,7 +185,7 @@ $employee_id = $_SESSION['employee_id'];
                 </div>
                 <div class="modal-body">
                     <div class="text-center mb-3">
-                        <img id="detailsImage" src="/placeholder.svg" alt="Report Image" class="img-fluid"
+                        <img id="detailsImage" src="../../../assets/images/spark_logo.png" alt="Report Image" class="img-fluid"
                             style="max-height: 250px;" />
                     </div>
                     <ul class="list-group">
@@ -334,7 +376,7 @@ $employee_id = $_SESSION['employee_id'];
             document.querySelectorAll('.view-assessment').forEach(button => {
                 button.addEventListener('click', function () {
                     const reportId = this.getAttribute('data-report-id');
-                    fetch(`../../api/fetch_assessment.php?report_id=${reportId}`)
+                    fetch(`../../../modules/api/fetch_assessment.php?report_id=${reportId}`)
                         .then(response => response.json())
                         .then(data => {
                             document.getElementById('ratingDisplay').textContent = data.rating || '-';

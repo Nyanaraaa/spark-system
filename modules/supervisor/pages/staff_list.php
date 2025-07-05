@@ -1,7 +1,19 @@
 <?php
-session_start();
-if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
-}
+/**
+ * Supervisor Staff List Page
+ * Uses new security components and authentication
+ */
+
+// Include bootstrap for security components
+require_once dirname(dirname(dirname(__DIR__))) . '/includes/bootstrap.php';
+
+// Initialize authentication middleware
+$userData = AuthMiddleware::configurePage([
+    'role' => 'supervisor',
+    'permissions' => ['manage_staff'],
+    'csrf' => true,
+    'log_access' => true
+]);
 ?>
 
 <!DOCTYPE html>
@@ -79,12 +91,12 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        // Include the database connection file
-                                        require '../../../config/database.php';
+                                        // Get database instance
+                                        $db = Database::getInstance();
 
                                         // SQL query to fetch staff information from the database
                                         $sql = "SELECT staff_id, first_name, last_name, employee_id, position FROM staff";
-                                        $result = $conn->query($sql); // Execute the query and store the result
+                                        $result = $db->query($sql); // Execute the query and store the result
                                         
                                         // Check if there are any staff records returned from the query
                                         if ($result->num_rows > 0) {
@@ -119,8 +131,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                                             echo '<tr><td colspan="4" class="text-center py-4">No staff records found</td></tr>';
                                         }
 
-                                        // Close the database connection
-                                        $conn->close();
+                                        // Database connection is managed by the Database singleton
                                         ?>
                                         <tr id="no-record" style="display:none;">
                                             <td colspan="4" class="text-center py-4">

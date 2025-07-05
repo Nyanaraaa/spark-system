@@ -1,5 +1,9 @@
 const hamBurger = document.querySelector(".toggle-btn");
-hamBurger.addEventListener("click", function () {
-  
-  document.querySelector("#sidebar").classList.toggle("expand");
-});
+if (hamBurger) {
+    hamBurger.addEventListener("click", function () {
+        const sidebar = document.querySelector("#sidebar");
+        if (sidebar) {
+            sidebar.classList.toggle("expand");
+        }
+    });
+}

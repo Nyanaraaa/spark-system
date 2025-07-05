@@ -1,6 +1,7 @@
 <?php
-include '../../../config/database.php';
+require_once '../../../includes/bootstrap.php';
 
+$db = Database::getInstance();
 
 $staff_id = isset($_GET['staff_id']) ? $_GET['staff_id'] : null;
 
@@ -9,13 +10,13 @@ if ($staff_id) {
             FROM staff_schedule s
             JOIN location l ON s.location = l.location_name
             WHERE s.staff_id = ?";
-    $stmt = $conn->prepare($sql);
+    $stmt = $db->prepare($sql);
     $stmt->bind_param("i", $staff_id);
 } else {
     $sql = "SELECT s.schedule_id, s.staff_id, s.days, s.shift_time, s.location, s.break_time, l.building 
             FROM staff_schedule s
             JOIN location l ON s.location = l.location_name";
-    $stmt = $conn->prepare($sql);
+    $stmt = $db->prepare($sql);
 }
 
 $stmt->execute();
@@ -38,5 +39,5 @@ while ($row = $result->fetch_assoc()) {
 echo json_encode($schedules);
 
 $stmt->close();
-$conn->close();
+$db->close();
 ?>

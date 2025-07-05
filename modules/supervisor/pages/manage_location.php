@@ -1,7 +1,7 @@
 <?php
-session_start();
-if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
-}
+require_once '../../../includes/bootstrap.php';
+
+AuthMiddleware::requireAuth('supervisor');
 ?>
 
 <!DOCTYPE html>
@@ -17,11 +17,17 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="manifest" href="../../../manifest.json">
     <link rel="stylesheet"
-        href="../../../assets/css/manage_location.css?v=<?php echo filemtime('../../../assets/css/manage_location.css'); ?>">
+        href="../../../assets/css/manage_location.css?v=<?php
+require_once '../../../includes/bootstrap.php';
+
+AuthMiddleware::requireAuth('supervisor'); echo filemtime('../../../assets/css/manage_location.css'); ?>">
 </head>
 
 <body>
-    <?php include '../../../components/navbar/supervisor_navbar.php'; ?>
+    <?php
+require_once '../../../includes/bootstrap.php';
+
+AuthMiddleware::requireAuth('supervisor'); include '../../../components/navbar/supervisor_navbar.php'; ?>
 
     <div class="main p-9">
         <div class="container">

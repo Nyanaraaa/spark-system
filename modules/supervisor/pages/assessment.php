@@ -1,7 +1,21 @@
-<?php session_start();
-if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
-    // Redirect logic would go here if needed
-}
+<?php 
+/**
+ * Supervisor Assessment Page
+ * Uses new security components and authentication
+ */
+
+// Include bootstrap for security components
+require_once dirname(dirname(dirname(__DIR__))) . '/includes/bootstrap.php';
+
+// Check authentication
+SessionManager::requireAuth();
+SessionManager::requireRole('supervisor');
+
+try {
+    // Get database connection
+    $db = Database::getInstance();
+    /** @var MySQLiCompatibility $conn */
+    $conn = $db->getConnection();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -29,9 +43,12 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                 Progress Assessment
             </h1>
 
-            <?php if (isset($_SESSION['message'])): ?>
-                <div class="alert alert-<?= $_SESSION['msg_type']; ?>" id="alert-message">
-                    <?= htmlspecialchars($_SESSION['message']); ?>
+            <?php 
+            // Check for flash messages from SessionManager
+            $flashMessage = SessionManager::getFlashMessage();
+            if ($flashMessage): ?>
+                <div class="alert alert-<?= $flashMessage['type'] === 'success' ? 'success' : ($flashMessage['type'] === 'error' ? 'danger' : 'info'); ?>" id="alert-message">
+                    <?= htmlspecialchars($flashMessage['message']); ?>
                 </div>
                 <script>
                     setTimeout(function () {
@@ -41,9 +58,27 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                         }
                     }, 5000);
                 </script>
+            <?php endif; ?>
+
+            <?php 
+            // Also check for legacy session messages (for backward compatibility)
+            if (isset($_SESSION['message'])): ?>
+                <div class="alert alert-<?= isset($_SESSION['msg_type']) ? $_SESSION['msg_type'] : 'info'; ?>" id="alert-message-legacy">
+                    <?= htmlspecialchars($_SESSION['message']); ?>
+                </div>
+                <script>
+                    setTimeout(function () {
+                        const alertMessage = document.getElementById('alert-message-legacy');
+                        if (alertMessage) {
+                            alertMessage.style.display = 'none';
+                        }
+                    }, 5000);
+                </script>
                 <?php
                 unset($_SESSION['message']);
-                unset($_SESSION['msg_type']);
+                if (isset($_SESSION['msg_type'])) {
+                    unset($_SESSION['msg_type']);
+                }
                 ?>
             <?php endif; ?>
 
@@ -144,8 +179,6 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        require '../../../config/database.php';
-
                                         // SQL query to fetch data, including the evaluation's created_at
                                         $sql = "SELECT pr.full_name, pr.employee_id, pr.report_id, pr.report_image, pr.location, pr.description, pr.created_at AS report_created_at, 
                                                e.created_at AS evaluation_created_at, pr.is_evaluated 
@@ -168,9 +201,12 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                                                     } elseif (preg_match('/^[A-Za-z0-9+\/=]+$/', $imagePath) && strlen($imagePath) > 100) {
                                                         // Looks like base64 without data URL prefix, add it
                                                         $imagePath = 'data:image/jpeg;base64,' . $imagePath;
+                                                    } elseif (strpos($imagePath, 'uploads/') === 0) {
+                                                        // Handle uploads/ prefix - convert to correct path
+                                                        $imagePath = '../../../assets/images/' . $imagePath;
                                                     } elseif (!preg_match('/^(https?:\/\/|\/|\.\.\/)/i', $imagePath)) {
-                                                        // Regular file path, add relative path
-                                                        $imagePath = '../../../' . $imagePath;
+                                                        // Regular file path, add relative path to assets/images/uploads
+                                                        $imagePath = '../../../assets/images/uploads/' . $imagePath;
                                                     }
                                                 }
 
@@ -227,7 +263,6 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                                         } else {
                                             echo '<tr><td colspan="8" class="text-center">No Report Found</td></tr>';
                                         }
-                                        $conn->close();
                                         ?>
 
                                         <tr id="no-record" style="display:none;">
@@ -261,7 +296,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                         <div class="col-md-8">
                             <div class="p-3 d-flex justify-content-center align-items-center bg-light"
                                 style="min-height: 300px;">
-                                <img id="modalImage" src="/placeholder.svg" alt="Report Image"
+                                <img id="modalImage" src="../../../assets/images/spark_logo.png" alt="Report Image"
                                     class="img-fluid rounded shadow-sm" />
                             </div>
                         </div>
@@ -404,7 +439,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                 </div>
                 <div class="modal-body">
                     <div class="text-center mb-4">
-                        <img id="evaluationImage" src="/placeholder.svg" alt="Report Image"
+                        <img id="evaluationImage" src="../../../assets/images/spark_logo.png" alt="Report Image"
                             class="img-fluid rounded shadow-sm"
                             style="max-width: 100%; height: auto; max-height: 300px; object-fit: contain;" />
                     </div>
@@ -416,6 +451,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                     <div id="ratingDisplay" class="mt-3"></div>
 
                     <form id="evaluationForm" action="../api/submit_evaluation.php" method="POST">
+                        <?php echo CSRFProtection::getTokenField(); ?>
                         <input type="hidden" name="employee_id" value="">
                         <input type="hidden" name="report_id" value="">
 
@@ -675,7 +711,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
                 button.addEventListener('click', function () {
                     const reportId = this.getAttribute('data-report-id');
 
-                    fetch(`../../api/fetch_assessment.php?report_id=${reportId}`)
+                    fetch(`../../../modules/api/fetch_assessment.php?report_id=${reportId}`)
                         .then(response => response.json())
                         .then(data => {
                             document.getElementById('ratingDisplay').textContent = data.rating || '';
@@ -972,3 +1008,12 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] != 'supervisor') {
 </body>
 
 </html>
+
+<?php
+} catch (Exception $e) {
+    ErrorHandler::logError('Supervisor assessment page error: ' . $e->getMessage());
+    SessionManager::setFlashMessage('An error occurred loading the assessment page. Please try again.', 'error');
+    header('Location: ../../../index.php');
+    exit();
+}
+?>

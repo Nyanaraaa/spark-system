@@ -1,5 +1,10 @@
 <?php
-session_start();
+require_once '../../../includes/bootstrap.php';
+
+// Require staff authentication
+AuthMiddleware::init('housekeeping_staff');
+
+$db = Database::getInstance();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -12,9 +17,9 @@ session_start();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="../../../manifest.json">
     <link rel="stylesheet"
-        href="../../../assets/css/housekeeping_history.css?v=<?php echo filemtime('../../../assets/css/housekeeping_history.css'); ?>">
+        href="../../../assets/css/staff_history.css?v=<?php echo filemtime('../../../assets/css/staff_history.css'); ?>">
 </head>
 
 <body>
@@ -117,8 +122,6 @@ session_start();
                                     </thead>
                                     <tbody>
                                         <?php
-                                        require '../../../config/database.php';
-
                                         $employee_id = $_SESSION['employee_id'] ?? null;
 
                                         // Only show records for the logged-in user
@@ -127,7 +130,7 @@ session_start();
                                                 WHERE employee_id = ?
                                                 ORDER BY transaction_date DESC";
 
-                                        $stmt = $conn->prepare($sql);
+                                        $stmt = $db->prepare($sql);
                                         $stmt->bind_param("s", $employee_id);
                                         $stmt->execute();
                                         $result = $stmt->get_result();
@@ -160,7 +163,7 @@ session_start();
                                             echo '<tr><td colspan="3" class="text-center py-4">No Record Found</td></tr>';
                                         }
 
-                                        $conn->close();
+                                        // Database connection is managed by the Database singleton
                                         ?>
                                         <tr id="no-record" style="display:none;">
                                             <td colspan="3" class="text-center py-4">
