@@ -17,6 +17,7 @@ AuthMiddleware::init('supervisor');
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="manifest" href="../../../manifest.json">
+    <link rel="stylesheet" href="../../../assets/css/global.css?v=<?php echo filemtime('../../../assets/css/global.css'); ?>">
     <link rel="stylesheet"
         href="../../../assets/css/supervisor_usage_history.css?v=<?php echo filemtime('../../../assets/css/supervisor_usage_history.css'); ?>">
 </head>

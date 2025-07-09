@@ -29,8 +29,9 @@ try {
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="manifest" href="../../../manifest.json">
+    <link rel="stylesheet" href="../../../assets/css/global.css?v=<?php echo filemtime('../../../assets/css/global.css'); ?>">
     <link rel="stylesheet"
-        href="../../../assets/css/supervisorassessment.css?v=<?php echo filemtime('../../../assets/css/supervisorassessment.css'); ?>">
+        href="../../../assets/css/supervisor_assessment.css?v=<?php echo filemtime('../../../assets/css/supervisor_assessment.css'); ?>">
 </head>
 
 <body>
@@ -144,7 +145,7 @@ try {
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <h5 class="mb-1">Staff Name: <span id="summary-name" class="fw-normal"></span></h5>
+                                    <h6 class="mb-1">Staff Name: <span id="summary-name" class="fw-normal"></span></h6>
                                     <h6 class="mb-0 text-muted">Employee ID: <span id="summary-id"
                                             class="fw-normal"></span></h6>
                                 </div>
@@ -251,8 +252,6 @@ try {
                                                         data-employee-id="' . htmlspecialchars($row["employee_id"]) . '" 
                                                         data-image="' . htmlspecialchars($imagePath) . '"
                                                         data-description="' . htmlspecialchars($row["description"]) . '"   
-                                                        data-bs-toggle="modal" 
-                                                        data-bs-target="#evaluateModal" 
                                                         id="evaluate-btn-' . htmlspecialchars($row["report_id"]) . '">
                                                         <i class="lni lni-pencil me-1"></i> Evaluate
                                                         </button>';
@@ -281,355 +280,9 @@ try {
         </div>
     </div>
 
-    <!-- Image Preview Modal -->
-    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="imageModalLabel">
-                        <i class="lni lni-image me-2"></i> Image Preview
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-0">
-                    <div class="row g-0">
-                        <div class="col-md-8">
-                            <div class="p-3 d-flex justify-content-center align-items-center bg-light"
-                                style="min-height: 300px;">
-                                <img id="modalImage" src="../../../assets/images/spark_logo.png" alt="Report Image"
-                                    class="img-fluid rounded shadow-sm" />
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="p-3">
-                                <h6 class="border-bottom pb-2 mb-3" style="color: var(--maroon);">Description</h6>
-                                <div id="modalDescription" class="text-start"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Assessment Details Modal -->
-    <div class="modal fade" id="viewAssessmentModal" tabindex="-1" aria-labelledby="viewAssessmentModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="viewAssessmentModalLabel">
-                        <i class="lni lni-clipboard-check me-2"></i>Assessment Details
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-5">
-                            <div class="dashboard-card mb-3">
-                                <div class="card-header">
-                                    <h5 class="card-title">
-                                        <i class="lni lni-star me-2"></i>Overall Rating
-                                    </h5>
-                                </div>
-                                <div class="card-body text-center">
-                                    <div class="rating-display" id="ratingDisplay">-</div>
-                                    <div class="text-muted">Performance Score</div>
-                                    <div class="text-muted mt-2" id="evaluationTime">Evaluated on: <span>-</span></div>
-                                    <div class="mt-3">
-                                        <div class="d-flex justify-content-center">
-                                            <div class="px-2">
-                                                <i class="lni lni-star-filled" style="color: var(--gold);"></i>
-                                            </div>
-                                            <div class="px-2">
-                                                <i class="lni lni-star-filled" style="color: var(--gold);"></i>
-                                            </div>
-                                            <div class="px-2">
-                                                <i class="lni lni-star-filled" style="color: var(--gold);"></i>
-                                            </div>
-                                            <div class="px-2">
-                                                <i class="lni lni-star-filled" style="color: var(--gold);"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-7">
-                            <div class="dashboard-card mb-3">
-                                <div class="card-header">
-                                    <h5 class="card-title">
-                                        <i class="lni lni-list me-2"></i>Evaluation Criteria
-                                    </h5>
-                                </div>
-                                <div class="card-body">
-                                    <ul class="criteria-list">
-                                        <li class="criteria-item">
-                                            <span class="criteria-label">
-                                                <i class="lni lni-checkmark me-2" style="color: var(--maroon);"></i>Task
-                                                Completion
-                                            </span>
-                                            <span class="criteria-score" id="criteria-task_completion">-</span>
-                                        </li>
-                                        <li class="criteria-item">
-                                            <span class="criteria-label">
-                                                <i class="lni lni-eye me-2" style="color: var(--maroon);"></i>Attention
-                                                to Detail
-                                            </span>
-                                            <span class="criteria-score" id="criteria-attention_to_detail">-</span>
-                                        </li>
-                                        <li class="criteria-item">
-                                            <span class="criteria-label">
-                                                <i class="lni lni-cart me-2" style="color: var(--maroon);"></i>Trash
-                                                Management
-                                            </span>
-                                            <span class="criteria-score" id="criteria-trash_management">-</span>
-                                        </li>
-                                        <li class="criteria-item">
-                                            <span class="criteria-label">
-                                                <i class="lni lni-brush me-2" style="color: var(--maroon);"></i>Floor
-                                                Care
-                                            </span>
-                                            <span class="criteria-score" id="criteria-floor_care">-</span>
-                                        </li>
-                                        <li class="criteria-item">
-                                            <span class="criteria-label">
-                                                <i class="lni lni-grid-alt me-2"
-                                                    style="color: var(--maroon);"></i>Organization
-                                            </span>
-                                            <span class="criteria-score" id="criteria-organization">-</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="dashboard-card">
-                                <div class="card-header">
-                                    <h5 class="card-title">
-                                        <i class="lni lni-comments me-2"></i>Supervisor Remarks
-                                    </h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="remarks-container" id="remarksText">No remarks provided.</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Staff Performance Evaluation Modal -->
-    <div class="modal fade" id="evaluateModal" tabindex="-1" aria-labelledby="evaluateModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="evaluateModalLabel">
-                        <i class="lni lni-star me-2"></i> Staff Performance Evaluation
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="text-center mb-4">
-                        <img id="evaluationImage" src="../../../assets/images/spark_logo.png" alt="Report Image"
-                            class="img-fluid rounded shadow-sm"
-                            style="max-width: 100%; height: auto; max-height: 300px; object-fit: contain;" />
-                    </div>
-
-                    <div id="evaluationDescription" class="mb-4 p-3 border rounded bg-light">
-                        <strong style="color: var(--maroon);">Description:</strong> <span></span>
-                    </div>
-
-                    <div id="ratingDisplay" class="mt-3"></div>
-
-                    <form id="evaluationForm" action="../api/submit_evaluation.php" method="POST">
-                        <?php echo CSRFProtection::getTokenField(); ?>
-                        <input type="hidden" name="employee_id" value="">
-                        <input type="hidden" name="report_id" value="">
-
-                        <div class="bg-light p-4 rounded shadow-sm mb-4">
-                            <h6 style="color: var(--maroon);" class="text-start mb-3">Standards Criteria</h6>
-
-                            <!-- Modified criteria grid for better mobile display -->
-                            <div class="criteria-grid mb-4 border-bottom pb-3">
-                                <div class="criteria-cell excellent">4<br><small>Excellent</small></div>
-                                <div class="criteria-cell good">3<br><small>Good</small></div>
-                                <div class="criteria-cell needs-improvement">2<br><small>Needs Improvement</small></div>
-                                <div class="criteria-cell unsatisfactory">1<br><small>Unsatisfactory</small></div>
-                            </div>
-
-                            <div class="form-group mb-4">
-                                <label class="form-label"><strong style="color: var(--maroon);">Task
-                                        Completion</strong></label>
-                                <div class="rating-options-grid">
-                                    <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="task_completion"
-                                            value="Excellent" id="taskCompletionExcellent" required>
-                                        <label class="rating-badge excellent" for="taskCompletionExcellent">4</label>
-                                    </div>
-                                    <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="task_completion" value="Good"
-                                            id="taskCompletionGood">
-                                        <label class="rating-badge good" for="taskCompletionGood">3</label>
-                                    </div>
-                                    <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="task_completion"
-                                            value="Needs Improvement" id="taskCompletionNeedsImprovement">
-                                        <label class="rating-badge needs-improvement"
-                                            for="taskCompletionNeedsImprovement">2</label>
-                                    </div>
-                                    <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="task_completion"
-                                            value="Unsatisfactory" id="taskCompletionUnsatisfactory">
-                                        <label class="rating-badge unsatisfactory"
-                                            for="taskCompletionUnsatisfactory">1</label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group mb-4">
-                                <label class="form-label"><strong style="color: var(--maroon);">Attention To
-                                        Detail</strong></label>
-                                <div class="rating-options-grid">
-                                    <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="attention_to_detail"
-                                            value="Excellent" id="attentionToDetailExcellent" required>
-                                        <label class="rating-badge excellent" for="attentionToDetailExcellent">4</label>
-                                    </div>
-                                    <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="attention_to_detail"
-                                            value="Good" id="attentionToDetailGood">
-                                        <label class="rating-badge good" for="attentionToDetailGood">3</label>
-                                    </div>
-                                    <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="attention_to_detail"
-                                            value="Needs Improvement" id="attentionToDetailNeedsImprovement">
-                                        <label class="rating-badge needs-improvement"
-                                            for="attentionToDetailNeedsImprovement">2</label>
-                                    </div>
-                                    <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="attention_to_detail"
-                                            value="Unsatisfactory" id="attentionToDetailUnsatisfactory">
-                                        <label class="rating-badge unsatisfactory"
-                                            for="attentionToDetailUnsatisfactory">1</label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group mb-4">
-                                <label class="form-label"><strong style="color: var(--maroon);">Trash
-                                        Management</strong></label>
-                                <div class="rating-options-grid">
-                                    <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="trash_management"
-                                            value="Excellent" id="trashManagementExcellent" required>
-                                        <label class="rating-badge excellent" for="trashManagementExcellent">4</label>
-                                    </div>
-                                    <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="trash_management"
-                                            value="Good" id="trashManagementGood">
-                                        <label class="rating-badge good" for="trashManagementGood">3</label>
-                                    </div>
-                                    <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="trash_management"
-                                            value="Needs Improvement" id="trashManagementNeedsImprovement">
-                                        <label class="rating-badge needs-improvement"
-                                            for="trashManagementNeedsImprovement">2</label>
-                                    </div>
-                                    <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="trash_management"
-                                            value="Unsatisfactory" id="trashManagementUnsatisfactory">
-                                        <label class="rating-badge unsatisfactory"
-                                            for="trashManagementUnsatisfactory">1</label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group mb-4">
-                                <label class="form-label"><strong style="color: var(--maroon);">Floor
-                                        Care</strong></label>
-                                <div class="rating-options-grid">
-                                    <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="floor_care" value="Excellent"
-                                            id="floorCareExcellent" required>
-                                        <label class="rating-badge excellent" for="floorCareExcellent">4</label>
-                                    </div>
-                                    <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="floor_care" value="Good"
-                                            id="floorCareGood">
-                                        <label class="rating-badge good" for="floorCareGood">3</label>
-                                    </div>
-                                    <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="floor_care"
-                                            value="Needs Improvement" id="floorCareNeedsImprovement">
-                                        <label class="rating-badge needs-improvement"
-                                            for="floorCareNeedsImprovement">2</label>
-                                    </div>
-                                    <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="floor_care"
-                                            value="Unsatisfactory" id="floorCareUnsatisfactory">
-                                        <label class="rating-badge unsatisfactory"
-                                            for="floorCareUnsatisfactory">1</label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group mb-4">
-                                <label class="form-label"><strong
-                                        style="color: var(--maroon);">Organization</strong></label>
-                                <div class="rating-options-grid">
-                                    <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="organization"
-                                            value="Excellent" id="organizationExcellent" required>
-                                        <label class="rating-badge excellent" for="organizationExcellent">4</label>
-                                    </div>
-                                    <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="organization" value="Good"
-                                            id="organizationGood">
-                                        <label class="rating-badge good" for="organizationGood">3</label>
-                                    </div>
-                                    <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="organization"
-                                            value="Needs Improvement" id="organizationNeedsImprovement">
-                                        <label class="rating-badge needs-improvement"
-                                            for="organizationNeedsImprovement">2</label>
-                                    </div>
-                                    <div class="rating-option">
-                                        <input class="form-check-input" type="radio" name="organization"
-                                            value="Unsatisfactory" id="organizationUnsatisfactory">
-                                        <label class="rating-badge unsatisfactory"
-                                            for="organizationUnsatisfactory">1</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group mt-4">
-                            <label for="remark" class="form-label fw-bold" style="color: var(--maroon);">Remarks</label>
-                            <textarea class="form-control" id="remark" name="remark" rows="4"
-                                placeholder="Add detailed remarks here..." required
-                                style="border-color: var(--maroon);"></textarea>
-                            <div class="form-text">Please provide specific feedback to help with improvement.</div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="saveEvaluation">
-                        <i class="lni lni-checkmark-circle me-1"></i> Send Evaluation
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <?php include '../../../components/modals/supervisor_image_preview_modal.php'; ?>
+    <?php include '../../../components/modals/supervisor_assessment_details_modal.php'; ?>
+    <?php include '../../../components/modals/staff_evaluation_modal.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
@@ -658,17 +311,42 @@ try {
             }
 
             const evaluateButtons = document.querySelectorAll('.evaluate-btn');
+            console.log('Found evaluate buttons:', evaluateButtons.length); // Debug log
+            
             evaluateButtons.forEach(button => {
-                button.addEventListener('click', function () {
+                button.addEventListener('click', function (e) {
+                    console.log('Evaluate button clicked'); // Debug log
+                    e.preventDefault(); // Prevent any default behavior
+                    
                     const reportId = this.getAttribute('data-report-id');
                     const employeeId = this.getAttribute('data-employee-id');
                     const reportImage = this.getAttribute('data-image');
                     const description = this.getAttribute('data-description');
 
-                    document.getElementById('evaluationImage').src = reportImage;
-                    document.querySelector('input[name="employee_id"]').value = employeeId;
-                    document.querySelector('input[name="report_id"]').value = reportId;
-                    document.querySelector('#evaluationDescription span').textContent = description;
+                    console.log('Modal data:', { reportId, employeeId, reportImage, description }); // Debug log
+
+                    // Populate modal with data
+                    const evaluationImage = document.getElementById('evaluationImage');
+                    const employeeIdInput = document.querySelector('input[name="employee_id"]');
+                    const reportIdInput = document.querySelector('input[name="report_id"]');
+                    const descriptionSpan = document.querySelector('#evaluationDescription span');
+
+                    if (evaluationImage) evaluationImage.src = reportImage;
+                    if (employeeIdInput) employeeIdInput.value = employeeId;
+                    if (reportIdInput) reportIdInput.value = reportId;
+                    if (descriptionSpan) descriptionSpan.textContent = description;
+
+                    // Manually show the modal to ensure it opens
+                    const modalElement = document.getElementById('evaluateModal');
+                    console.log('Modal element found:', modalElement); // Debug log
+                    
+                    if (modalElement) {
+                        const modal = new bootstrap.Modal(modalElement);
+                        modal.show();
+                        console.log('Modal show() called'); // Debug log
+                    } else {
+                        console.error('Modal element not found!');
+                    }
                 });
             });
 
@@ -779,9 +457,9 @@ try {
                 const matchesDate = !dateFilter || reportDate === dateFilter;
                 let matchesStatus = true;
                 if (window.currentStatusFilter === 'pending') {
-                    matchesStatus = statusText === 'pending';
+                    matchesStatus = statusText.includes('pending');
                 } else if (window.currentStatusFilter === 'evaluated') {
-                    matchesStatus = statusText === 'evaluated';
+                    matchesStatus = statusText.includes('evaluated');
                 }
 
                 if (matchesSearch && matchesDate && matchesStatus) {
@@ -815,16 +493,16 @@ try {
                 summaryName.textContent = fullNames[0] || '';
                 summaryId.textContent = employeeIDs[0] || '';
 
-                if (headerRow.children[employeeidIndex]) headerRow.children[employeeidIndex].style.display = 'none';
+                // Only hide the Full Name column, keep Employee ID visible
                 if (headerRow.children[fullNameIndex]) headerRow.children[fullNameIndex].style.display = 'none';
 
                 rows.forEach(row => {
-                    if (row.children[employeeidIndex]) row.children[employeeidIndex].style.display = 'none';
                     if (row.children[fullNameIndex]) row.children[fullNameIndex].style.display = 'none';
                 });
             } else {
                 staffSummary.style.display = 'none';
 
+                // Show both columns when not filtering for specific staff
                 if (headerRow.children[employeeidIndex]) headerRow.children[employeeidIndex].style.display = '';
                 if (headerRow.children[fullNameIndex]) headerRow.children[fullNameIndex].style.display = '';
 

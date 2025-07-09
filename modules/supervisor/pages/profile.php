@@ -320,27 +320,27 @@ try {
                                     </div>
                                 </div>
 
-                                <div class="mb-4">
-                                    <label for="contact" class="form-label">
-                                        <i class="lni lni-phone me-1" style="color: var(--maroon);"></i> Contact Number
-                                    </label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="lni lni-phone"></i></span>
-                                        <input type="text" name="contact" id="contact" class="form-control"
-                                            value="<?php echo htmlspecialchars($contact_no ?? ''); ?>" placeholder="Optional">
+                                <div class="row mb-4 align-items-center">
+                                    <div class="col-md-6">
+                                        <label for="contact" class="form-label">
+                                            <i class="lni lni-phone me-1" style="color: var(--maroon);"></i> Contact Number
+                                        </label>
+                                        <div class="input-group w-100">
+                                            <span class="input-group-text"><i class="lni lni-phone"></i></span>
+                                            <input type="text" name="contact" id="contact" class="form-control"
+                                                value="<?php echo htmlspecialchars($contact_no ?? ''); ?>" placeholder="Optional">
+                                        </div>
                                     </div>
-                                </div>
-
-                                <div class="mb-4">
-                                    <label for="password" class="form-label">
-                                        <i class="lni lni-lock-alt me-1" style="color: var(--maroon);"></i> New Password
-                                    </label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="lni lni-lock-alt"></i></span>
-                                        <input type="password" name="password" id="password" class="form-control"
-                                            placeholder="Enter new password">
+                                    <div class="col-md-6">
+                                        <label for="password" class="form-label">
+                                            <i class="lni lni-lock-alt me-1" style="color: var(--maroon);"></i> New Password
+                                        </label>
+                                        <div class="input-group w-100">
+                                            <span class="input-group-text"><i class="lni lni-lock-alt"></i></span>
+                                            <input type="password" name="password" id="password" class="form-control"
+                                                placeholder="Enter new password">
+                                        </div>
                                     </div>
-                                    <small class="text-muted mt-1">Leave blank to keep current password</small>
                                 </div>
 
                                 <div class="d-flex justify-content-center mt-4">

@@ -62,17 +62,20 @@ $result = $stmt->get_result();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="manifest" href="../../../manifest.json">
     <link rel="stylesheet"
+        href="../../../assets/css/global.css?v=<?php echo filemtime('../../../assets/css/global.css'); ?>">
+    <link rel="stylesheet"
         href="../../../assets/css/supervisor_leaderboard.css?v=<?php echo filemtime('../../../assets/css/supervisor_leaderboard.css'); ?>">
 </head>
 
 <body>
     <div class="main p-9">
         <div class="container">
-            <div class="d-flex align-items-center mb-4">
-                <a href="../../../modules/staff/pages/leaderboard.php" class="btn btn-print me-3">
+            <div class="mb-4">
+                <a href="../../../modules/staff/pages/leaderboard.php" class="btn btn-back me-3 mb-3"
+                    style="display: inline-block;">
                     <i class="lni lni-arrow-left me-1"></i> Back
                 </a>
-                <h1 class="mb-0 flex-grow-1">
+                <h1 class="mb-0">
                     <i class="lni lni-archive me-2" style="color: var(--gold);"></i>
                     Leaderboard History
                 </h1>
@@ -81,59 +84,52 @@ $result = $stmt->get_result();
             <div class="row mb-4">
                 <div class="col-md-12">
                     <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="card-header justify-content-between align-items-center">
                             <h5 class="card-title">
-                                <i class="lni lni-filter me-2"></i>
+                                <i class="lni lni-search me-2"></i>
                                 Filter Options
                             </h5>
-                            <button type="button" class="btn btn-print" id="print-button">
-                                <i class="lni lni-printer me-1"></i> Print
-                            </button>
                         </div>
                         <div class="card-body">
-                            <form method="POST" class="row g-3">
-                                <?php echo CSRFProtection::getTokenField(); ?>
-                                <div class="col-md-4">
-                                    <label for="month" class="form-label">Filter by Month:</label>
-                                    <select name="month" id="month" class="form-select">
-                                        <option value="">All Months</option>
-                                        <?php
-                                        for ($month = 1; $month <= 12; $month++) {
-                                            $selected = ($month == $selected_month) ? 'selected' : '';
-                                            echo "<option value='{$month}' {$selected}>" . date("F", mktime(0, 0, 0, $month, 1)) . "</option>";
-                                        }
-                                        ?>
-                                    </select>
+                            <div class="d-flex gap-3">
+                                <div style="width: 300px;">
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="lni lni-search"></i>
+                                        </span>
+                                        <input type="text" id="search-input" class="form-control"
+                                            placeholder="Search by name or ID" onkeyup="filterStaff()">
+                                    </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <label for="year" class="form-label">Filter by Year:</label>
-                                    <select name="year" id="year" class="form-select">
-                                        <option value="">All Years</option>
-                                        <?php
-                                        $current_year = date("Y");
-                                        for ($year = $current_year; $year >= $current_year - 5; $year--) {
-                                            $selected = ($year == $selected_year) ? 'selected' : '';
-                                            echo "<option value='{$year}' {$selected}>$year</option>";
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label" style="visibility:hidden;">Apply</label>
-                                    <button type="submit" class="btn btn-filter w-100 mt-2 mt-md-0">
-                                        <i class="lni lni-filter me-1"></i> Apply Filters
-                                    </button>
-                                </div>
-                            </form>
 
-                            <div class="mt-4">
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="lni lni-search"></i>
-                                    </span>
-                                    <input type="text" id="search-input" class="form-control"
-                                        placeholder="Search by name or ID" onkeyup="filterStaff()">
-                                </div>
+                                <form method="POST" id="filter-form" class="d-flex gap-3 align-items-center">
+                                    <?php echo CSRFProtection::getTokenField(); ?>
+                                    <div style="width: 200px;">
+                                        <select name="month" id="month" class="form-select"
+                                            onchange="document.getElementById('filter-form').submit();">
+                                            <option value="">All Months</option>
+                                            <?php
+                                            for ($month = 1; $month <= 12; $month++) {
+                                                $selected = ($month == $selected_month) ? 'selected' : '';
+                                                echo "<option value='{$month}' {$selected}>" . date("F", mktime(0, 0, 0, $month, 1)) . "</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <div style="width: 150px;">
+                                        <select name="year" id="year" class="form-select"
+                                            onchange="document.getElementById('filter-form').submit();">
+                                            <option value="">All Years</option>
+                                            <?php
+                                            $current_year = date("Y");
+                                            for ($year = $current_year; $year >= $current_year - 5; $year--) {
+                                                $selected = ($year == $selected_year) ? 'selected' : '';
+                                                echo "<option value='{$year}' {$selected}>$year</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -198,6 +194,7 @@ $result = $stmt->get_result();
                                                     $ratingIcon = '<i class="bi bi-star-half me-1 trophy-icon"></i>';
                                                 } else {
                                                     $textClass = 'text-danger';
+                                                    $ratingIcon = '<i class="lni lni-star-half trophy-icon"></i>';
                                                 }
 
                                                 echo "<td class='{$textClass}'>{$ratingIcon}{$totalRating}</td>";
@@ -258,35 +255,6 @@ $result = $stmt->get_result();
                 noRecordMessage.style.display = '';
             }
         }
-    </script>
-    <script>
-        document.getElementById('print-button').addEventListener('click', function () {
-            const table = document.getElementById('leaderboard-history-table');
-            const tableClone = table.cloneNode(true);
-
-            const printWindow = window.open('', '', 'height=800,width=1000');
-
-            printWindow.document.write('<html><head><title>Staff Performance Assessment, Recording and Keeping</title>');
-            printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">');
-            printWindow.document.write('<style>body { padding: 20px; } .header { margin-bottom: 20px; text-align: center; } .logo { width: 200px; height: auto; margin-bottom: 15px; } h1 { color: #800000; margin-top: 20px; } table { width: 100%; border-collapse: collapse; } th { background-color: #800000; color: white; } </style>');
-            printWindow.document.write('</head><body>');
-
-            printWindow.document.write('<div class="header">');
-            printWindow.document.write('<img src="../../../assets/images/spark_logo.png" alt="Spark Logo" class="logo"/>');
-            printWindow.document.write('<h1>Leaderboard History</h1>');
-            printWindow.document.write('</div>');
-
-            printWindow.document.write('<table class="table table-bordered">' + tableClone.outerHTML + '</table>');
-            printWindow.document.write('<div class="mt-4 text-center text-muted"><small>Generated on ' + new Date().toLocaleString() + '</small></div>');
-            printWindow.document.write('</body></html>');
-
-            printWindow.document.close();
-            printWindow.document.querySelector('img').onload = function () {
-                printWindow.focus();
-                printWindow.print();
-                printWindow.close();
-            };
-        });
     </script>
 </body>
 

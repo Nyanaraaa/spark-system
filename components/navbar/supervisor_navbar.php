@@ -10,7 +10,7 @@ if ($base_path === '')
     href="<?php echo $base_path; ?>assets/css/navbar.css?v=<?php echo filemtime($base_path . 'assets/css/navbar.css'); ?>">
 
 <!-- Menu Button -->
-<button class="btn btn-tertiary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar"
+<button class="btn btn-menu" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar"
     aria-controls="offcanvasSidebar">
     <i class="lni lni-menu"></i>
 </button>
