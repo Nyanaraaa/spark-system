@@ -1,7 +1,7 @@
 <?php
 require_once '../../../includes/bootstrap.php';
 
-AuthMiddleware::requireAuth('supervisor');
+AuthMiddleware::init('supervisor');
 ?>
 
 <!DOCTYPE html>
@@ -16,18 +16,12 @@ AuthMiddleware::requireAuth('supervisor');
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="manifest" href="../../../manifest.json">
-    <link rel="stylesheet"
-        href="../../../assets/css/manage_location.css?v=<?php
-require_once '../../../includes/bootstrap.php';
-
-AuthMiddleware::requireAuth('supervisor'); echo filemtime('../../../assets/css/manage_location.css'); ?>">
+    <link rel="stylesheet" href="../../../assets/css/global.css?v=<?php echo filemtime('../../../assets/css/global.css'); ?>">
+    <link rel="stylesheet" href="../../../assets/css/manage_location.css?v=<?php echo filemtime('../../../assets/css/manage_location.css'); ?>">
 </head>
 
 <body>
-    <?php
-require_once '../../../includes/bootstrap.php';
-
-AuthMiddleware::requireAuth('supervisor'); include '../../../components/navbar/supervisor_navbar.php'; ?>
+    <?php include '../../../components/navbar/supervisor_navbar.php'; ?>
 
     <div class="main p-9">
         <div class="container">
@@ -41,14 +35,14 @@ AuthMiddleware::requireAuth('supervisor'); include '../../../components/navbar/s
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="card-title">
-                                <i class="lni lni-search me-2"></i>
+                                <i class="lni lni-eye me-2"></i>
                                 View All Locations
                             </h5>
                         </div>
                         <div class="card-body">
                             <button class="btn btn-primary" id="viewLocationsBtn" data-bs-toggle="modal"
                                 data-bs-target="#viewLocationsModal">
-                                <i class="lni lni-eye me-2"></i>View All Locations
+                                </i>View All Locations
                             </button>
                             <div id="errorMessageContainer" class="mt-3"></div>
                         </div>
@@ -106,9 +100,11 @@ AuthMiddleware::requireAuth('supervisor'); include '../../../components/navbar/s
                             </h5>
                         </div>
                         <div class="card-body p-0">
-                            <ul id="locationList" class="list-group">
-                                <!-- Locations will be populated here -->
-                            </ul>
+                            <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                                <ul id="locationList" class="list-group" style="min-width: 600px;">
+                                    <!-- Locations will be populated here -->
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -116,57 +112,7 @@ AuthMiddleware::requireAuth('supervisor'); include '../../../components/navbar/s
         </div>
     </div>
 
-    <!-- View Locations Modal -->
-    <div class="modal fade" id="viewLocationsModal" tabindex="-1" aria-labelledby="viewLocationsModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="viewLocationsModalLabel">
-                        <i class="lni lni-map me-2"></i>
-                        Locations and Staff
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="lni lni-search"></i>
-                            </span>
-                            <input type="text" id="searchInput" class="form-control"
-                                placeholder="Search by building, location or staff" onkeyup="filterLocations()">
-                        </div>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover" id="locationsTable">
-                            <thead>
-                                <tr>
-                                    <th width="20%">Building</th>
-                                    <th width="25%">Location Name</th>
-                                    <th width="40%">Assigned Staff</th>
-                                    <th width="15%">Number of Assigned Staff</th>
-                                </tr>
-                            </thead>
-                            <tbody id="locationsTableBody">
-                                <!-- Table rows will be populated here -->
-                            </tbody>
-                        </table>
-                        <div id="noRecordMessage" style="display: none;" class="text-center py-4">
-                            <i class="lni lni-search-alt" style="font-size: 2rem; color: var(--maroon-light);"></i>
-                            <p class="mt-2 mb-0">No matching records found</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" id="printLocationsBtn">
-                        <i class="lni lni-printer me-2"></i>Print
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <?php include '../../../components/modals/view_locations_modal.php'; ?>
 
     <!-- Bootstrap JavaScript Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
@@ -188,18 +134,25 @@ AuthMiddleware::requireAuth('supervisor'); include '../../../components/navbar/s
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Check if all required elements exist
             const newLocationInput = document.getElementById('newLocationInput');
             const newBuildingInput = document.getElementById('newBuildingInput');
             const saveNewLocation = document.getElementById('saveNewLocation');
             const locationList = document.getElementById('locationList');
             const viewLocationsBtn = document.getElementById('viewLocationsBtn');
             const locationsTableBody = document.getElementById('locationsTableBody');
+            const addLocationForm = document.getElementById('addLocationForm');
+
+            if (!newLocationInput || !newBuildingInput || !locationList || !viewLocationsBtn || !locationsTableBody || !addLocationForm) {
+                console.error('Required elements not found. Please check the HTML structure.');
+                return;
+            }
 
             // Fetch locations on page load
             fetchLocations();
 
             // Add event listener for form submission
-            document.getElementById('addLocationForm').addEventListener('submit', function (event) {
+            addLocationForm.addEventListener('submit', function (event) {
                 event.preventDefault();
 
                 const newLocation = newLocationInput.value.trim();
@@ -266,7 +219,7 @@ AuthMiddleware::requireAuth('supervisor'); include '../../../components/navbar/s
 
                 const deleteBtn = document.createElement('button');
                 deleteBtn.classList.add('btn', 'btn-danger', 'btn-sm');
-                deleteBtn.innerHTML = '<i class="lni lni-trash me-1"></i> Delete';
+                deleteBtn.innerHTML = '<i class="lni lni-trash-can me-1"></i> Delete';
                 deleteBtn.addEventListener('click', () => deleteLocation(id, li));
 
                 li.appendChild(deleteBtn);
@@ -364,6 +317,19 @@ AuthMiddleware::requireAuth('supervisor'); include '../../../components/navbar/s
                         console.error('Error fetching locations with staff:', error);
                     });
             });
+
+            // Check and initialize modals to prevent Bootstrap errors
+            const viewLocationsModal = document.getElementById('viewLocationsModal');
+            if (viewLocationsModal) {
+                // Ensure modal is properly initialized
+                viewLocationsModal.addEventListener('shown.bs.modal', function () {
+                    console.log('View Locations Modal opened successfully');
+                });
+                
+                viewLocationsModal.addEventListener('hidden.bs.modal', function () {
+                    console.log('View Locations Modal closed successfully');
+                });
+            }
         });
     </script>
 
@@ -403,7 +369,10 @@ AuthMiddleware::requireAuth('supervisor'); include '../../../components/navbar/s
     </script>
 
     <script>
-        document.getElementById('printLocationsBtn').addEventListener('click', function () {
+        // Print functionality with error handling
+        const printBtn = document.getElementById('printLocationsBtn');
+        if (printBtn) {
+            printBtn.addEventListener('click', function () {
             const table = document.getElementById('locationsTable');
             const tableClone = table.cloneNode(true);
 
@@ -465,6 +434,7 @@ AuthMiddleware::requireAuth('supervisor'); include '../../../components/navbar/s
                 setTimeout(executePrint, 100);
             }
         });
+        } // Close the if (printBtn) statement
     </script>
 </body>
 

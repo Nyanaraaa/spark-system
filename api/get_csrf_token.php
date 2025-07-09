@@ -2,7 +2,7 @@
 // Start output buffering to catch any unexpected output
 ob_start();
 
-require_once 'includes/bootstrap.php';
+require_once '../includes/bootstrap.php';
 
 header('Content-Type: application/json');
 

@@ -1,55 +1,6 @@
-:root {
-  --maroon: #800000;
-  --maroon-light: #a52a2a;
-  --maroon-dark: #600000;
-  --gold: #ffd700;
-  --gold-light: #ffdf4f;
-  --gold-dark: #d4af37;
-  --gray-light: #f5f5f5;
-  --gray: #6c757d;
-  --gray-dark: #343a40;
-  --white: #ffffff;
-  --black: #000000;
-}
+/* Staff Request specific styles */
 
-body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: var(--gray-light);
-  color: var(--gray-dark);
-}
-
-/* Main Content */
-.main {
-  padding: 20px;
-  transition: margin-left 0.3s ease;
-}
-
-h1 {
-  color: var(--maroon);
-  font-weight: 700;
-  margin-bottom: 25px;
-  border-bottom: 2px solid var(--maroon);
-  padding-bottom: 10px;
-  text-align: center;
-}
-
-/* Cards Styling */
-.card {
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-  border: none;
-  overflow: hidden;
-}
-
-.card-header {
-  background-color: var(--maroon);
-  color: var(--white);
-  font-weight: 600;
-  padding: 15px 20px;
-  border-bottom: none;
-}
-
+/* Request form specific styling */
 .card-title {
   color: var(--white);
   font-weight: 600;
@@ -269,6 +220,17 @@ h1 {
   margin-bottom: 20px;
   border: none;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom colors for Bootstrap text utility classes */
+.text-danger {
+  color: #dc3545
+}
+.text-warning {
+  color: #ffc107
+}
+.text-success {
+  color: #198754
 }
 
 /* Responsive */

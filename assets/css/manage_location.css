@@ -1,52 +1,4 @@
-:root {
-  --maroon: #800000;
-  --maroon-light: #a52a2a;
-  --maroon-dark: #600000;
-  --gold: #ffd700;
-  --gold-light: #ffdf4f;
-  --gold-dark: #d4af37;
-  --gray-light: #f5f5f5;
-  --gray: #6c757d;
-  --gray-dark: #343a40;
-  --white: #ffffff;
-  --black: #000000;
-}
-
-body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: var(--gray-light);
-  color: var(--gray-dark);
-}
-
-
-.main {
-  padding: 20px;
-  transition: margin-left 0.3s ease;
-}
-
-h1 {
-  color: var(--maroon);
-  font-weight: 700;
-  margin-bottom: 25px;
-  border-bottom: 2px solid var(--maroon);
-  padding-bottom: 10px;
-  text-align: center;
-}
-
-h5 {
-  color: var(--maroon);
-  font-weight: 600;
-  margin-bottom: 15px;
-}
-
-
-.card {
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-  border: none;
-  overflow: hidden;
-}
+/* Manage Location specific styles */
 
 .card-header {
   background-color: var(--maroon);
@@ -263,12 +215,15 @@ h5 {
   margin-bottom: 20px;
 }
 
+
 .list-group-item {
   border-left: none;
   border-right: none;
   border-radius: 0;
   padding: 15px;
   transition: background-color 0.3s ease;
+  min-width: 550px;
+  /* Make each item wide for horizontal scroll */
 }
 
 .list-group-item:first-child {
@@ -314,11 +269,24 @@ h5 {
 }
 
 
+@media (max-width: 992px) {
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .list-group {
+    min-width: 600px;
+  }
+}
+
 @media (max-width: 768px) {
   .table-responsive {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
-
+  .list-group {
+    min-width: 500px;
+  }
   .btn {
     padding: 0.375rem 0.75rem;
     font-size: 0.875rem;

@@ -17,6 +17,7 @@ AuthMiddleware::init('supervisor');
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="manifest" href="../../../manifest.json">
+    <link rel="stylesheet" href="../../../assets/css/global.css?v=<?php echo filemtime('../../../assets/css/global.css'); ?>">
     <link rel="stylesheet"
         href="../../../assets/css/staff.css?v=<?php echo filemtime('../../../assets/css/staff.css'); ?>">
 
@@ -75,7 +76,7 @@ AuthMiddleware::init('supervisor');
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="card-title">
                                 <i class="lni lni-cog me-2"></i>
-                                Staff Management
+                                Manage Staff
                             </h5>
                             <button type="button" class="btn btn-print" id="print-button">
                                 <i class="lni lni-printer me-1"></i> Print Records
@@ -193,157 +194,8 @@ AuthMiddleware::init('supervisor');
         </div>
     </div>
 
-    <!-- Create Staff Record Modal -->
-    <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="uploadModalLabel">
-                        <i class="lni lni-user-add me-2"></i>
-                        Create Staff Record
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="../api/create_staff_record.php" method="post" enctype="multipart/form-data">
-                        <div class="mb-3">
-                            <label for="first_name" class="form-label">First Name</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="lni lni-user"></i></span>
-                                <input type="text" id="first_name" name="first_name" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="last_name" class="form-label">Last Name</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="lni lni-user"></i></span>
-                                <input type="text" id="last_name" name="last_name" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="contact_no" class="form-label">Contact Number</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="lni lni-phone"></i></span>
-                                <input type="text" id="contact_no" name="contact_no" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="email_address" class="form-label">Email Address</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="lni lni-envelope"></i></span>
-                                <input type="email" id="email_address" name="email_address" class="form-control"
-                                    required>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="position" class="form-label">Position</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="lni lni-briefcase"></i></span>
-                                <select id="position" name="position" class="form-select" required
-                                    onchange="toggleOtherInput()">
-                                    <option value="" disabled selected>Select a position</option>
-                                    <option value="Janitor">Janitor</option>
-                                    <option value="Janitress">Janitress</option>
-                                    <option value="Gardener">Gardener</option>
-                                    <option value="Custodian">Custodian</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div id="otherPositionDiv" class="mb-3" style="display: none;">
-                            <label for="otherPosition" class="form-label">Please specify</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="lni lni-pencil"></i></span>
-                                <input type="text" id="otherPosition" name="otherPosition" class="form-control"
-                                    oninput="updateDropdown()">
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="employee_id" class="form-label">Employee ID</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="lni lni-id-card"></i></span>
-                                <input type="text" id="employee_id" name="employee_id" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="lni lni-save me-1"></i> Create Record
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit Staff Record Modal -->
-    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">
-                        <i class="lni lni-pencil me-2"></i>
-                        Edit Staff Record
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="../api/edit_staff_record.php" method="post" enctype="multipart/form-data">
-                        <input type="hidden" id="edit_staff_id" name="staff_id">
-                        <div class="mb-3">
-                            <label for="edit_first_name" class="form-label">First Name</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="lni lni-user"></i></span>
-                                <input type="text" id="edit_first_name" name="first_name" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_last_name" class="form-label">Last Name</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="lni lni-user"></i></span>
-                                <input type="text" id="edit_last_name" name="last_name" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_contact_no" class="form-label">Contact Number</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="lni lni-phone"></i></span>
-                                <input type="text" id="edit_contact_no" name="contact_no" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_email_address" class="form-label">Email Address</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="lni lni-envelope"></i></span>
-                                <input type="email" id="edit_email_address" name="email_address" class="form-control"
-                                    required>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_position" class="form-label">Position</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="lni lni-briefcase"></i></span>
-                                <input type="text" id="edit_position" name="position" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_employee_id" class="form-label">Employee ID</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="lni lni-id-card"></i></span>
-                                <input type="text" id="edit_employee_id" name="employee_id" class="form-control"
-                                    required>
-                            </div>
-                        </div>
-                        <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-warning w-100">
-                                <i class="lni lni-save me-1"></i> Save Changes
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+    <?php include '../../../components/modals/create_staff_record_modal.php'; ?>
+    <?php include '../../../components/modals/edit_staff_record_modal.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"

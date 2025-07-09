@@ -62,17 +62,21 @@ $result = $stmt->get_result();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="manifest" href="../../../manifest.json">
     <link rel="stylesheet"
+        href="../../../assets/css/global.css?v=<?php echo filemtime('../../../assets/css/global.css'); ?>">
+    <link rel="stylesheet"
         href="../../../assets/css/supervisor_leaderboard.css?v=<?php echo filemtime('../../../assets/css/supervisor_leaderboard.css'); ?>">
 </head>
 
 <body>
     <div class="main p-9">
         <div class="container">
-            <div class="d-flex align-items-center mb-4">
-                <a href="../../../modules/supervisor/pages/leaderboard.php" class="btn btn-print me-3">
+
+            <div class="mb-4">
+                <a href="../../../modules/supervisor/pages/leaderboard.php" class="btn btn-back me-3 mb-3"
+                    style="display: inline-block;">
                     <i class="lni lni-arrow-left me-1"></i> Back
                 </a>
-                <h1 class="mb-0 flex-grow-1">
+                <h1 class="mb-0">
                     <i class="lni lni-archive me-2" style="color: var(--gold);"></i>
                     Leaderboard History
                 </h1>
@@ -81,59 +85,52 @@ $result = $stmt->get_result();
             <div class="row mb-4">
                 <div class="col-md-12">
                     <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="card-header justify-content-between align-items-center">
                             <h5 class="card-title">
-                                <i class="lni lni-filter me-2"></i>
+                                <i class="lni lni-search me-2"></i>
                                 Filter Options
                             </h5>
-                            <button type="button" class="btn btn-print" id="print-button">
-                                <i class="lni lni-printer me-1"></i> Print
-                            </button>
                         </div>
                         <div class="card-body">
-                            <form method="POST" class="row g-3">
-                                <?php echo CSRFProtection::getTokenField(); ?>
-                                <div class="col-md-4">
-                                    <label for="month" class="form-label">Filter by Month:</label>
-                                    <select name="month" id="month" class="form-select">
-                                        <option value="">All Months</option>
-                                        <?php
-                                        for ($month = 1; $month <= 12; $month++) {
-                                            $selected = ($month == $selected_month) ? 'selected' : '';
-                                            echo "<option value='{$month}' {$selected}>" . date("F", mktime(0, 0, 0, $month, 1)) . "</option>";
-                                        }
-                                        ?>
-                                    </select>
+                            <div class="d-flex gap-3">
+                                <div style="width: 300px;">
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="lni lni-search"></i>
+                                        </span>
+                                        <input type="text" id="search-input" class="form-control"
+                                            placeholder="Search by name or ID" onkeyup="filterStaff()">
+                                    </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <label for="year" class="form-label">Filter by Year:</label>
-                                    <select name="year" id="year" class="form-select">
-                                        <option value="">All Years</option>
-                                        <?php
-                                        $current_year = date("Y");
-                                        for ($year = $current_year; $year >= $current_year - 5; $year--) {
-                                            $selected = ($year == $selected_year) ? 'selected' : '';
-                                            echo "<option value='{$year}' {$selected}>$year</option>";
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label" style="visibility:hidden;">Apply</label>
-                                    <button type="submit" class="btn btn-filter w-100 mt-2 mt-md-0">
-                                        <i class="lni lni-filter me-1"></i> Apply Filters
-                                    </button>
-                                </div>
-                            </form>
 
-                            <div class="mt-4">
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="lni lni-search"></i>
-                                    </span>
-                                    <input type="text" id="search-input" class="form-control"
-                                        placeholder="Search by name or ID" onkeyup="filterStaff()">
-                                </div>
+                                <form method="POST" id="filter-form" class="d-flex gap-3 align-items-center">
+                                    <?php echo CSRFProtection::getTokenField(); ?>
+                                    <div style="width: 200px;">
+                                        <select name="month" id="month" class="form-select"
+                                            onchange="document.getElementById('filter-form').submit();">
+                                            <option value="">All Months</option>
+                                            <?php
+                                            for ($month = 1; $month <= 12; $month++) {
+                                                $selected = ($month == $selected_month) ? 'selected' : '';
+                                                echo "<option value='{$month}' {$selected}>" . date("F", mktime(0, 0, 0, $month, 1)) . "</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <div style="width: 150px;">
+                                        <select name="year" id="year" class="form-select"
+                                            onchange="document.getElementById('filter-form').submit();">
+                                            <option value="">All Years</option>
+                                            <?php
+                                            $current_year = date("Y");
+                                            for ($year = $current_year; $year >= $current_year - 5; $year--) {
+                                                $selected = ($year == $selected_year) ? 'selected' : '';
+                                                echo "<option value='{$year}' {$selected}>$year</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -143,11 +140,14 @@ $result = $stmt->get_result();
             <div class="row">
                 <div class="col-md-12">
                     <div class="card">
-                        <div class="card-header">
+                        <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="card-title">
                                 <i class="lni lni-list me-2"></i>
                                 Historical Rankings
                             </h5>
+                            <button type="button" class="btn btn-gold" id="print-button">
+                                <i class="lni lni-printer me-1"></i> Print Rank History
+                            </button>
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
@@ -198,6 +198,7 @@ $result = $stmt->get_result();
                                                     $ratingIcon = '<i class="bi bi-star-half me-1 trophy-icon"></i>';
                                                 } else {
                                                     $textClass = 'text-danger';
+                                                    $ratingIcon = '<i class="lni lni-star-half trophy-icon"></i>';
                                                 }
 
                                                 echo "<td class='{$textClass}'>{$ratingIcon}{$totalRating}</td>";

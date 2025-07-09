@@ -59,6 +59,8 @@ $result = $db->query($sql);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="manifest" href="../../../manifest.json">
     <link rel="stylesheet"
+        href="../../../assets/css/global.css?v=<?php echo filemtime('../../../assets/css/global.css'); ?>">
+    <link rel="stylesheet"
         href="../../../assets/css/supervisor_leaderboard.css?v=<?php echo filemtime('../../../assets/css/supervisor_leaderboard.css'); ?>">
 </head>
 
@@ -93,108 +95,113 @@ $result = $db->query($sql);
                                     <input type="text" id="search-input" class="form-control"
                                         placeholder="Search by name or ID" onkeyup="filterStaff()">
                                 </div>
-
-                                <button type="button" class="btn btn-print" id="print-button">
-                                    <i class="lni lni-printer me-1"></i> Print
-                                </button>
                             </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table id="leaderboard-table" class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Rank</th>
+                                                <th>Employee ID</th>
+                                                <th>Full Name</th>
+                                                <th>Total Rating</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                            if ($result && $result->num_rows > 0) {
+                                                $rank = 1;
+                                                while ($row = $result->fetch_assoc()) {
+                                                    $rankClass = '';
+                                                    $rankBadge = '';
 
-                            <div class="table-responsive">
-                                <table id="leaderboard-table" class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th width="10%">Rank</th>
-                                            <th width="25%">Employee ID</th>
-                                            <th width="40%">Full Name</th>
-                                            <th width="25%">Total Rating</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        if ($result && $result->num_rows > 0) {
-                                            $rank = 1;
-                                            while ($row = $result->fetch_assoc()) {
-                                                $rankClass = '';
-                                                $rankBadge = '';
+                                                    if ($rank === 1) {
+                                                        $rankClass = 'rank-1';
+                                                        $rankBadge = '<span class="badge badge-gold me-2"><i class="lni lni-crown"></i> 1st</span>';
+                                                    } elseif ($rank === 2) {
+                                                        $rankClass = 'rank-2';
+                                                        $rankBadge = '<span class="badge badge-silver me-2">2nd</span>';
+                                                    } elseif ($rank === 3) {
+                                                        $rankClass = 'rank-3';
+                                                        $rankBadge = '<span class="badge badge-bronze me-2">3rd</span>';
+                                                    }
 
-                                                if ($rank === 1) {
-                                                    $rankClass = 'rank-1';
-                                                    $rankBadge = '<span class="badge badge-gold me-2"><i class="lni lni-crown"></i> 1st</span>';
-                                                } elseif ($rank === 2) {
-                                                    $rankClass = 'rank-2';
-                                                    $rankBadge = '<span class="badge badge-silver me-2">2nd</span>';
-                                                } elseif ($rank === 3) {
-                                                    $rankClass = 'rank-3';
-                                                    $rankBadge = '<span class="badge badge-bronze me-2">3rd</span>';
+                                                    echo "<tr>";
+                                                    echo "<td class='{$rankClass}'>{$rankBadge}{$rank}</td>";
+                                                    echo "<td>{$row['employee_id']}</td>";
+                                                    echo "<td>{$row['full_name']}</td>";
+
+                                                    $totalRating = $row['total_rating'];
+                                                    $textClass = '';
+                                                    $ratingIcon = '';
+
+                                                    if ($totalRating >= 100) {
+                                                        $textClass = 'text-success';
+                                                        $ratingIcon = '<i class="bi bi-star-fill me-1 trophy-icon"></i>';
+                                                    } elseif ($totalRating >= 50) {
+                                                        $textClass = 'text-warning';
+                                                        $ratingIcon = '<i class="bi bi-star-half me-1 trophy-icon"></i>';
+                                                    } else {
+                                                        $textClass = 'text-danger';
+                                                        $ratingIcon = '<i class="lni lni-star-half trophy-icon"></i>';
+                                                    }
+
+                                                    echo "<td class='{$textClass}'>{$ratingIcon}{$totalRating}</td>";
+                                                    echo "</tr>";
+                                                    $rank++;
                                                 }
-
-                                                echo "<tr>";
-                                                echo "<td class='{$rankClass}'>{$rankBadge}{$rank}</td>";
-                                                echo "<td>{$row['employee_id']}</td>";
-                                                echo "<td>{$row['full_name']}</td>";
-
-                                                $totalRating = $row['total_rating'];
-                                                $textClass = '';
-                                                $ratingIcon = '';
-
-                                                if ($totalRating >= 100) {
-                                                    $textClass = 'text-success';
-                                                    $ratingIcon = '<i class="lni lni-star-filled trophy-icon"></i>';
-                                                } elseif ($totalRating >= 50) {
-                                                    $textClass = 'text-warning';
-                                                    $ratingIcon = '<i class="lni lni-star-half trophy-icon"></i>';
-                                                } else {
-                                                    $textClass = 'text-danger';
-                                                }
-
-                                                echo "<td class='{$textClass}'>{$ratingIcon}{$totalRating}</td>";
-                                                echo "</tr>";
-                                                $rank++;
+                                            } else {
+                                                echo "<tr><td colspan='4' class='text-center py-4'><i class='lni lni-information me-2'></i>No data available</td></tr>";
                                             }
-                                        } else {
-                                            echo "<tr><td colspan='4' class='text-center py-4'><i class='lni lni-information me-2'></i>No data available</td></tr>";
-                                        }
-                                        // Database connection is managed by the Database singleton
-                                        ?>
-                                        <tr id="no-record" style="display:none;">
-                                            <td colspan="4" class="text-center py-4">
-                                                <i class="lni lni-search me-2"></i>
-                                                No matching records found
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                            ?>
+                                            <tr id="no-record" style="display:none;">
+                                                <td colspan="4" class="text-center py-4">
+                                                    <i class="lni lni-search me-2"></i>
+                                                    No matching records found
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <!-- Print button moved OUTSIDE the table -->
+                                <div class="justify-content-end mt-3">
+                                    <button type="button" class="btn btn-print" id="print-button">
+                                        <i class="lni lni-printer me-1"></i> Print
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title">
-                                <i class="lni lni-information me-2"></i>
-                                Leaderboard Information
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <p>The leaderboard displays the current rankings based on total ratings received. Rankings
-                                are reset at the end of each month.</p>
-                            <ul>
-                                <li><span class="text-success"><i class="bi bi-star-fill me-1"></i>100+ points</span> -
-                                    Excellent performance</li>
-                                <li><span class="text-warning"><i class="bi bi-star-half me-1"></i>50-99 points</span> -
-                                    Good performance</li>
-                                <li><span class="text-danger"><i class="lni lni-star-half me-1"></i>Below 50
-                                        points</span> - Needs improvement</li>
-                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="lni lni-information me-2"></i>
+                            Leaderboard Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p>The leaderboard displays the current rankings based on total ratings received. Rankings
+                            are reset at the end of each month.</p>
+                        <ul>
+                            <li><span class="text-success"><i class="bi bi-star-fill me-1"></i>100+ points</span> -
+                                Excellent performance</li>
+                            <li><span class="text-warning"><i class="bi bi-star-half me-1"></i>50-99 points</span> -
+                                Good performance</li>
+                            <li><span class="text-danger"><i class="lni lni-star-half me-1"></i>Below 50
+                                    points</span> - Needs improvement</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"

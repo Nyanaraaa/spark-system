@@ -64,6 +64,7 @@ $result = $db->query($sql);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="manifest" href="../../../manifest.json">
+    <link rel="stylesheet" href="../../../assets/css/global.css?v=<?php echo filemtime('../../../assets/css/global.css'); ?>">
     <link rel="stylesheet" href="../../../assets/css/staff_leaderboard.css?v=1">
 </head>
 
@@ -142,12 +143,13 @@ $result = $db->query($sql);
 
                                                 if ($totalRating >= 100) {
                                                     $textClass = 'text-success';
-                                                    $ratingIcon = '<i class="lni lni-star-filled trophy-icon"></i>';
+                                                    $ratingIcon = '<i class="bi bi-star-fill me-1 trophy-icon"></i>';
                                                 } elseif ($totalRating >= 50) {
                                                     $textClass = 'text-warning';
-                                                    $ratingIcon = '<i class="lni lni-star-half trophy-icon"></i>';
+                                                    $ratingIcon = '<i class="bi bi-star-half me-1 trophy-icon"></i>';
                                                 } else {
                                                     $textClass = 'text-danger';
+                                                    $ratingIcon = '<i class="lni lni-star-half trophy-icon"></i>';
                                                 }
 
                                                 echo "<td class='{$textClass}'>{$ratingIcon}{$totalRating}</td>";

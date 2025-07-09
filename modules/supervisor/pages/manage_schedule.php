@@ -29,6 +29,7 @@ $userData = AuthMiddleware::configurePage([
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="manifest" href="../../../manifest.json">
+    <link rel="stylesheet" href="../../../assets/css/global.css?v=<?php echo filemtime('../../../assets/css/global.css'); ?>">
     <link rel="stylesheet"
         href="../../../assets/css/manage_schedule.css?v=<?php echo filemtime('../../../assets/css/manage_schedule.css'); ?>">
 </head>
@@ -570,7 +571,7 @@ $userData = AuthMiddleware::configurePage([
                                                 </td>
                                                 <td>
                                                     <button class="btn btn-danger btn-sm" onclick="deleteSchedule(${schedule.schedule_id})">
-                                                        <i class="lni lni-trash me-1"></i> Delete
+                                                        <i class="lni lni-trash me-1"></i>Delete
                                                     </button>
                                                 </td>
                                             </tr>

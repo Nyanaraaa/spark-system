@@ -8,6 +8,7 @@ self.addEventListener('install', function(event) {
       return Promise.all([
         '/',
         'index.php',
+        'assets/css/global.css',
         'assets/css/style.css',
         'assets/images/favicon/web-app-manifest-192x192.png',
         'assets/images/favicon/web-app-manifest-512x512.png',
