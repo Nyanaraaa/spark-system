@@ -20,21 +20,20 @@ try {
     // Validate CSRF token
     CSRFProtection::validateRequest();
 
-    // Define validation rules
+    // Define validation rules (array format for validateFields)
     $validationRules = [
-        'request_id' => 'required|integer|min:1',
-        'action' => 'required|string|in:approve,reject'
+        'request_id' => ['type' => 'integer', 'min' => 1, 'required' => true],
+        'action' => ['type' => 'text', 'required' => true, 'allowed_values' => ['approve', 'reject']]
     ];
 
     // Validate input
-    $validatedData = InputValidator::validate($_POST, $validationRules);
-    
-    if (!$validatedData) {
+    $validatedData = InputValidator::validateFields($_POST, $validationRules);
+    if (!$validatedData || !$validatedData['valid']) {
         throw new Exception(InputValidator::getFirstError());
     }
 
-    $request_id = $validatedData['request_id'];
-    $action = $validatedData['action'];
+    $request_id = $validatedData['fields']['request_id']['value'];
+    $action = $validatedData['fields']['action']['value'];
 
     // Get database connection
     $db = Database::getInstance();

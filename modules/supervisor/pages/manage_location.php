@@ -229,12 +229,20 @@ AuthMiddleware::init('supervisor');
             // Delete location
             function deleteLocation(locationId, listItem) {
                 if (confirm('Are you sure you want to delete this location?')) {
+                    // Get CSRF token from hidden input or meta tag
+                    let csrfToken = '';
+                    const input = document.querySelector('input[name="csrf_token"]');
+                    if (input) csrfToken = input.value;
+                    else {
+                        const meta = document.querySelector('meta[name="csrf-token"]');
+                        if (meta) csrfToken = meta.getAttribute('content');
+                    }
                     fetch('../api/delete_location.php', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded'
                         },
-                        body: `location_id=${encodeURIComponent(locationId)}`
+                        body: `location_id=${encodeURIComponent(locationId)}&csrf_token=${encodeURIComponent(csrfToken)}`
                     })
                         .then(response => response.json())
                         .then(data => {

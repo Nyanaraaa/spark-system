@@ -92,6 +92,9 @@ try {
                                             } elseif (preg_match('/^[A-Za-z0-9+\/=]+$/', $imagePath) && strlen($imagePath) > 100) {
                                                 // Looks like base64 without data URL prefix, add it
                                                 $imagePath = 'data:image/jpeg;base64,' . $imagePath;
+                                            } elseif (strpos($imagePath, 'assets/images/uploads/') === 0) {
+                                                // If path starts with assets/images/uploads/, prepend ../../../
+                                                $imagePath = '../../../' . $imagePath;
                                             } elseif (strpos($imagePath, 'uploads/') === 0) {
                                                 // Handle uploads/ prefix - convert to correct path
                                                 $imagePath = '../../../assets/images/' . $imagePath;
@@ -115,7 +118,7 @@ try {
                                             </td>
                                             <td>
                                                 <button class="btn btn-secondary btn-sm view-details" 
-                                                    data-image="' . htmlspecialchars($row["report_image"]) . '"
+                                                    data-image="' . htmlspecialchars($imagePath) . '"
                                                     data-description="' . htmlspecialchars($row["description"]) . '"
                                                     data-created="' . $formattedDate . '"
                                                     data-bs-toggle="modal" data-bs-target="#detailsModal">

@@ -16,31 +16,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Validate CSRF token
         CSRFProtection::validateRequest();
 
-        // Define validation rules
+        // Define validation rules for validateFields
         $validationRules = [
-            'first_name' => 'required|string|min:2|max:50|alpha',
-            'last_name' => 'required|string|min:2|max:50|alpha',
-            'contact_no' => 'required|string|phone',
-            'email_address' => 'required|email|max:255',
-            'employee_id' => 'required|string|employee_id',
-            'position' => 'required|string|min:2|max:100'
+            'first_name' => ['type' => 'text', 'min_length' => 2, 'max_length' => 50],
+            'last_name' => ['type' => 'text', 'min_length' => 2, 'max_length' => 50],
+            'contact_no' => ['type' => 'phone'],
+            'email_address' => ['type' => 'email'],
+            'employee_id' => ['type' => 'employee_id'],
+            'position' => ['type' => 'text', 'min_length' => 2, 'max_length' => 100]
         ];
 
-        // Validate input
-        $validatedData = InputValidator::validate($_POST, $validationRules);
-        
-        if (!$validatedData) {
-            SessionManager::setFlashMessage(InputValidator::getFirstError(), 'error');
+        $validationResult = InputValidator::validateFields($_POST, $validationRules);
+        if (!$validationResult['valid']) {
+            // Get first error message
+            $firstError = '';
+            foreach ($validationResult['fields'] as $field) {
+                if (!$field['valid']) {
+                    $firstError = $field['message'];
+                    break;
+                }
+            }
+            SessionManager::setFlashMessage($firstError ?: 'Invalid input', 'error');
             header("Location: ../pages/staff_record.php");
             exit();
         }
 
-        $first_name = $validatedData['first_name'];
-        $last_name = $validatedData['last_name'];
-        $contact_no = $validatedData['contact_no'];
-        $email_address = $validatedData['email_address'];
-        $employee_id = $validatedData['employee_id'];
-        $job_position = $validatedData['position'];
+        $first_name = $validationResult['fields']['first_name']['value'];
+        $last_name = $validationResult['fields']['last_name']['value'];
+        $contact_no = $validationResult['fields']['contact_no']['value'];
+        $email_address = $validationResult['fields']['email_address']['value'];
+        $employee_id = $validationResult['fields']['employee_id']['value'];
+        $job_position = $validationResult['fields']['position']['value'];
 
         // Get database connection
         $db = Database::getInstance();

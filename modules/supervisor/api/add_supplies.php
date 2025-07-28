@@ -16,29 +16,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Validate CSRF token
         CSRFProtection::validateRequest();
 
-        // Define validation rules
+        // Define validation rules (array format for validateFields)
         $validationRules = [
-            'supply_name' => 'required|string|min:2|max:100',
-            'category' => 'required|string|min:2|max:50',
-            'classification' => 'required|string|min:2|max:50',
-            'initial_stock' => 'required|integer|min:0|max:9999',
-            'stock_limit' => 'required|integer|min:0|max:9999'
+            'supply_name' => ['type' => 'text', 'min_length' => 2, 'max_length' => 100, 'required' => true],
+            'category' => ['type' => 'text', 'min_length' => 2, 'max_length' => 50, 'required' => true],
+            'classification' => ['type' => 'text', 'min_length' => 2, 'max_length' => 50, 'required' => true],
+            'initial_stock' => ['type' => 'integer', 'min' => 0, 'max' => 9999, 'required' => true],
+            'stock_limit' => ['type' => 'integer', 'min' => 0, 'max' => 9999, 'required' => true]
         ];
 
         // Validate input
-        $validatedData = InputValidator::validate($_POST, $validationRules);
-        
+        $validatedData = InputValidator::validateFields($_POST, $validationRules);
         if (!$validatedData) {
             SessionManager::setFlashMessage(InputValidator::getFirstError(), 'error');
             header("Location: ../pages/manage_supplies.php");
             exit();
         }
 
-        $supply_name = $validatedData['supply_name'];
-        $category = $validatedData['category'];
-        $classification = $validatedData['classification'];
-        $initial_stock = $validatedData['initial_stock'];
-        $stock_limit = $validatedData['stock_limit'];
+        $supply_name = $validatedData['fields']['supply_name']['value'];
+        $category = $validatedData['fields']['category']['value'];
+        $classification = $validatedData['fields']['classification']['value'];
+        $initial_stock = $validatedData['fields']['initial_stock']['value'];
+        $stock_limit = $validatedData['fields']['stock_limit']['value'];
 
         // Business logic validation
         if ($stock_limit > 0 && $initial_stock > $stock_limit) {

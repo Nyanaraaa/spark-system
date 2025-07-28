@@ -10,6 +10,7 @@
             </div>
             <div class="modal-body">
                 <form action="../api/create_staff_record.php" method="post" enctype="multipart/form-data">
+                    <?php if (function_exists('CSRFProtection::getTokenField')) { echo CSRFProtection::getTokenField(); } else if (class_exists('CSRFProtection')) { echo CSRFProtection::getTokenField(); } ?>
                     <div class="mb-3">
                         <label for="first_name" class="form-label">First Name</label>
                         <div class="input-group">

@@ -62,6 +62,19 @@
   color: #cd7f32;
 }
 
+.btn-print{
+  background-color: var(--maroon);
+  color: var(--white);
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn-print:hover {
+  background-color: var(--maroon-dark);
+  color: var(--white);
+}
+
 .btn-tertiary {
   position: fixed;
   top: 15px;

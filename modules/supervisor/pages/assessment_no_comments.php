@@ -4,17 +4,13 @@
  * Uses new security components and authentication
  */
 
-// Include bootstrap for security components
 require_once dirname(dirname(dirname(__DIR__))) . '/includes/bootstrap.php';
 
-// Check authentication
 SessionManager::requireAuth();
 SessionManager::requireRole('supervisor');
 
 try {
-    // Get database connection
     $db = Database::getInstance();
-    /** @var MySQLiCompatibility $conn */
     $conn = $db->getConnection();
 ?>
 <!DOCTYPE html>
@@ -31,7 +27,7 @@ try {
     <link rel="manifest" href="../../../manifest.json">
     <link rel="stylesheet" href="../../../assets/css/global.css?v=<?php echo filemtime('../../../assets/css/global.css'); ?>">
     <link rel="stylesheet"
-        href="../../../assets/css/supervisor_assessment.css?v=<?php echo filemtime('../../../assets/css/supervisor_assessment.css'); ?>">
+        href="../../../assets/css/supervisorassessment.css?v=<?php echo filemtime('../../../assets/css/supervisorassessment.css'); ?>">
 </head>
 
 <body>
@@ -45,7 +41,6 @@ try {
             </h1>
 
             <?php 
-            // Check for flash messages from SessionManager
             $flashMessage = SessionManager::getFlashMessage();
             if ($flashMessage): ?>
                 <div class="alert alert-<?= $flashMessage['type'] === 'success' ? 'success' : ($flashMessage['type'] === 'error' ? 'danger' : 'info'); ?>" id="alert-message">
@@ -62,7 +57,6 @@ try {
             <?php endif; ?>
 
             <?php 
-            // Also check for legacy session messages (for backward compatibility)
             if (isset($_SESSION['message'])): ?>
                 <div class="alert alert-<?= isset($_SESSION['msg_type']) ? $_SESSION['msg_type'] : 'info'; ?>" id="alert-message-legacy">
                     <?= htmlspecialchars($_SESSION['message']); ?>
@@ -180,7 +174,6 @@ try {
                                     </thead>
                                     <tbody>
                                         <?php
-                                        // SQL query to fetch data, including the evaluation's created_at
                                         $sql = "SELECT pr.full_name, pr.employee_id, pr.report_id, pr.report_image, pr.location, pr.description, pr.created_at AS report_created_at, 
                                                e.created_at AS evaluation_created_at, pr.is_evaluated 
                                               FROM progress_reports pr
@@ -193,23 +186,14 @@ try {
                                             while ($row = $result->fetch_assoc()) {
                                                 $formattedReportDate = $row["report_created_at"] ? date("F j, Y g:ia", strtotime($row["report_created_at"])) : 'N/A';
 
-                                                // Smart handling for base64 images and file paths
                                                 $imagePath = $row["report_image"];
                                                 if ($imagePath) {
-                                                    // Check if it's base64 data
                                                     if (strpos($imagePath, 'data:image/') === 0) {
-                                                        // Already a complete data URL, use as is
                                                     } elseif (preg_match('/^[A-Za-z0-9+\/=]+$/', $imagePath) && strlen($imagePath) > 100) {
-                                                        // Looks like base64 without data URL prefix, add it
                                                         $imagePath = 'data:image/jpeg;base64,' . $imagePath;
-                                                    } elseif (strpos($imagePath, 'assets/images/uploads/') === 0) {
-                                                        // If path starts with assets/images/uploads/, prepend ../../../
-                                                        $imagePath = '../../../' . $imagePath;
                                                     } elseif (strpos($imagePath, 'uploads/') === 0) {
-                                                        // Handle uploads/ prefix - convert to correct path
                                                         $imagePath = '../../../assets/images/' . $imagePath;
                                                     } elseif (!preg_match('/^(https?:\/\/|\/|\.\.\/)/i', $imagePath)) {
-                                                        // Regular file path, add relative path to assets/images/uploads
                                                         $imagePath = '../../../assets/images/uploads/' . $imagePath;
                                                     }
                                                 }
@@ -328,7 +312,6 @@ try {
 
                     console.log('Modal data:', { reportId, employeeId, reportImage, description }); // Debug log
 
-                    // Populate modal with data
                     const evaluationImage = document.getElementById('evaluationImage');
                     const employeeIdInput = document.querySelector('input[name="employee_id"]');
                     const reportIdInput = document.querySelector('input[name="report_id"]');
@@ -339,7 +322,6 @@ try {
                     if (reportIdInput) reportIdInput.value = reportId;
                     if (descriptionSpan) descriptionSpan.textContent = description;
 
-                    // Manually show the modal to ensure it opens
                     const modalElement = document.getElementById('evaluateModal');
                     console.log('Modal element found:', modalElement); // Debug log
                     
@@ -496,7 +478,6 @@ try {
                 summaryName.textContent = fullNames[0] || '';
                 summaryId.textContent = employeeIDs[0] || '';
 
-                // Only hide the Full Name column, keep Employee ID visible
                 if (headerRow.children[fullNameIndex]) headerRow.children[fullNameIndex].style.display = 'none';
 
                 rows.forEach(row => {
@@ -505,7 +486,6 @@ try {
             } else {
                 staffSummary.style.display = 'none';
 
-                // Show both columns when not filtering for specific staff
                 if (headerRow.children[employeeidIndex]) headerRow.children[employeeidIndex].style.display = '';
                 if (headerRow.children[fullNameIndex]) headerRow.children[fullNameIndex].style.display = '';
 

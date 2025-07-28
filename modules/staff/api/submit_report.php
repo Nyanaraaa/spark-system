@@ -21,17 +21,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Validate CSRF token
         CSRFProtection::validateRequest();
 
-        // Define validation rules
+
+        // Define validation rules (array format for validateFields)
         $validationRules = [
-            'reportDescription' => 'required|string|min:10|max:1000',
-            'location' => 'required|string|min:3|max:255'
+            'reportDescription' => ['type' => 'text', 'min_length' => 10, 'max_length' => 1000, 'required' => true],
+            'location' => ['type' => 'text', 'min_length' => 3, 'max_length' => 255, 'required' => true]
         ];
 
         // Validate input
-        $validatedData = InputValidator::validate($_POST, $validationRules);
-        
-        if (!$validatedData) {
-            header("Location: ../pages/progress_report.php?message=" . urlencode(InputValidator::getFirstError()) . "&status=danger");
+        $validatedData = InputValidator::validateFields($_POST, $validationRules);
+        if (!$validatedData || !$validatedData['valid']) {
+            // Extract first error message from validation result
+            $firstError = 'Invalid input.';
+            if (isset($validatedData['fields']) && is_array($validatedData['fields'])) {
+                foreach ($validatedData['fields'] as $field) {
+                    if (isset($field['valid']) && !$field['valid'] && !empty($field['message'])) {
+                        $firstError = $field['message'];
+                        break;
+                    }
+                }
+            }
+            header("Location: ../pages/progress_report.php?message=" . urlencode($firstError) . "&status=danger");
             exit;
         }
 
@@ -41,14 +51,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        $fileValidation = InputValidator::validateFile(
-            $_FILES['reportImage'], 
-            ['image/jpeg', 'image/png', 'image/gif', 'image/webp'], 
+        $fileValidation = InputValidator::validateFileUpload(
+            $_FILES['reportImage'],
+            ['jpg', 'jpeg', 'png', 'gif'],
             5242880 // 5MB
         );
 
-        if (isset($fileValidation['error'])) {
-            header("Location: ../pages/progress_report.php?message=" . urlencode($fileValidation['error']) . "&status=danger");
+        if (!$fileValidation['valid']) {
+            header("Location: ../pages/progress_report.php?message=" . urlencode($fileValidation['message']) . "&status=danger");
             exit;
         }
 
@@ -56,8 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $currentUser = SessionManager::getCurrentUser();
         $account_id = $currentUser['account_id'];
 
-        $description = $validatedData['reportDescription'];
-        $location = $validatedData['location'];
+        $description = $validatedData['fields']['reportDescription']['value'];
+        $location = $validatedData['fields']['location']['value'];
         $reportImage = $_FILES['reportImage'];
 
         // Validate image file

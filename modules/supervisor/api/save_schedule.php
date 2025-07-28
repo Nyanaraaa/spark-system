@@ -41,31 +41,37 @@ try {
         throw new Exception('Invalid JSON data.');
     }
 
-    // Define validation rules
+    // Define validation rules for validateFields
     $validationRules = [
-        'staff_id' => 'required|integer|min:1',
-        'days' => 'required|string|min:1|max:255',
-        'shift_time' => 'required|string|min:1|max:50',
-        'location' => 'required|string|min:1|max:255',
-        'break_time' => 'required|string|min:1|max:50'
+        'staff_id' => ['type' => 'text', 'min_length' => 1, 'max_length' => 20],
+        'days' => ['type' => 'text', 'min_length' => 1, 'max_length' => 255],
+        'shift_time' => ['type' => 'text', 'min_length' => 1, 'max_length' => 50],
+        'location' => ['type' => 'text', 'min_length' => 1, 'max_length' => 255],
+        'break_time' => ['type' => 'text', 'min_length' => 1, 'max_length' => 50],
     ];
 
-    // Validate input
-    $validatedData = InputValidator::validate($data, $validationRules);
-    
-    if (!$validatedData) {
+    $validationResult = InputValidator::validateFields($data, $validationRules);
+    if (!$validationResult['valid']) {
+        // Get first error message
+        $firstError = '';
+        foreach ($validationResult['fields'] as $field) {
+            if (!$field['valid']) {
+                $firstError = $field['message'];
+                break;
+            }
+        }
         echo json_encode([
             'success' => false,
-            'error' => InputValidator::getFirstError()
+            'error' => $firstError ?: 'Invalid input'
         ]);
         exit;
     }
 
-    $staff_id = $validatedData['staff_id'];
-    $days = $validatedData['days'];
-    $shift_time = $validatedData['shift_time'];
-    $location = $validatedData['location'];
-    $break_time = $validatedData['break_time'];
+    $staff_id = $validationResult['fields']['staff_id']['value'];
+    $days = $validationResult['fields']['days']['value'];
+    $shift_time = $validationResult['fields']['shift_time']['value'];
+    $location = $validationResult['fields']['location']['value'];
+    $break_time = $validationResult['fields']['break_time']['value'];
 
     // Get database connection
     $db = Database::getInstance();

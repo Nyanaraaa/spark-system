@@ -50,14 +50,32 @@ AuthMiddleware::init('housekeeping_staff');
                                             <i class="lni lni-camera"></i> Capture Image
                                         </label>
                                         <div class="text-center">
-                                            <label for="reportImage" class="btn btn-capture">
+                                            <button type="button" id="openCameraBtn" class="btn btn-capture" tabindex="0">
                                                 <i class="lni lni-camera"></i> Take Photo
-                                            </label>
+                                            </button>
                                             <input type="file" class="form-control" id="reportImage" name="reportImage"
                                                 accept="image/*" capture="environment" style="display: none;"
                                                 onchange="validateCapture(event)" required>
-                                            <p class="text-muted mt-2 small">You must take a new photo using your
-                                                camera. Gallery photos are not allowed.</p>
+                                            <p class="text-muted mt-2 small">You must take a new photo using your camera. Gallery photos are not allowed.</p>
+                                        </div>
+
+                                        <!-- Camera Modal for PC -->
+                                        <div class="modal fade" id="cameraModal" tabindex="-1" aria-labelledby="cameraModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="cameraModalLabel"><i class="lni lni-camera"></i> Take Photo</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body text-center">
+                                                        <video id="cameraVideo" width="100%" height="240" autoplay playsinline style="background:#000;"></video>
+                                                        <canvas id="cameraCanvas" width="640" height="480" style="display:none;"></canvas>
+                                                        <div class="mt-3">
+                                                            <button type="button" class="btn btn-primary" id="capturePhotoBtn"><i class="lni lni-camera"></i> Capture</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -107,6 +125,93 @@ AuthMiddleware::init('housekeeping_staff');
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>
     <script src="../../../assets/js/script.js"></script>
+
+    <script>
+        // Camera modal logic for PC webcam capture
+        document.addEventListener('DOMContentLoaded', function () {
+            const openCameraBtn = document.getElementById('openCameraBtn');
+            const fileInput = document.getElementById('reportImage');
+            const cameraModal = document.getElementById('cameraModal');
+            const cameraVideo = document.getElementById('cameraVideo');
+            const cameraCanvas = document.getElementById('cameraCanvas');
+            const capturePhotoBtn = document.getElementById('capturePhotoBtn');
+            let stream = null;
+
+            function isMobile() {
+                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            }
+
+            // Only open camera modal on PC, file input on mobile
+            if (openCameraBtn && fileInput) {
+                openCameraBtn.addEventListener('click', function (e) {
+                    if (isMobile()) {
+                        // On mobile, open file input (camera/gallery)
+                        fileInput.value = '';
+                        fileInput.click();
+                    } else if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                        // On PC, open camera modal only
+                        const modal = new bootstrap.Modal(cameraModal);
+                        modal.show();
+                        navigator.mediaDevices.getUserMedia({ video: true })
+                            .then(function (mediaStream) {
+                                stream = mediaStream;
+                                cameraVideo.srcObject = stream;
+                                cameraVideo.play();
+                            })
+                            .catch(function (err) {
+                                alert('Unable to access camera: ' + err.message);
+                                modal.hide();
+                            });
+                    }
+                });
+                // Keyboard accessibility
+                openCameraBtn.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        openCameraBtn.click();
+                    }
+                });
+            }
+
+            // Capture photo from webcam
+            if (capturePhotoBtn && cameraVideo && cameraCanvas) {
+                capturePhotoBtn.addEventListener('click', function () {
+                    cameraCanvas.width = cameraVideo.videoWidth;
+                    cameraCanvas.height = cameraVideo.videoHeight;
+                    cameraCanvas.getContext('2d').drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
+                    cameraCanvas.toBlob(function (blob) {
+                        // Create a File from the Blob
+                        const file = new File([blob], 'captured_photo.png', { type: 'image/png' });
+                        // Set the file to the file input using DataTransfer
+                        const dt = new DataTransfer();
+                        dt.items.add(file);
+                        fileInput.files = dt.files;
+                        // Trigger change event for preview/validation
+                        fileInput.dispatchEvent(new Event('change'));
+                        // Hide modal and stop camera
+                        const modal = bootstrap.Modal.getInstance(cameraModal);
+                        if (modal) modal.hide();
+                        if (stream) {
+                            stream.getTracks().forEach(track => track.stop());
+                            stream = null;
+                        }
+                    }, 'image/png');
+                });
+            }
+
+            // Stop camera when modal is closed
+            if (cameraModal) {
+                cameraModal.addEventListener('hidden.bs.modal', function () {
+                    if (stream) {
+                        stream.getTracks().forEach(track => track.stop());
+                        stream = null;
+                    }
+                });
+            }
+        });
+    </script>
+
+    <!-- Removed duplicate event handler that always opens file input -->
 
     <script>
         const logoutLink = document.getElementById('logout-link');

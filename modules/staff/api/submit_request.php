@@ -16,23 +16,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Validate CSRF token
         CSRFProtection::validateRequest();
 
-        // Define validation rules
+        // Define validation rules (array format for validateFields)
         $validationRules = [
-            'supplies_id' => 'required|integer|min:1',
-            'quantity' => 'required|integer|min:1|max:999'
+            'supplies_id' => ['type' => 'integer', 'min' => 1, 'required' => true],
+            'quantity' => ['type' => 'integer', 'min' => 1, 'max' => 999, 'required' => true]
         ];
 
         // Validate input
-        $validatedData = InputValidator::validate($_POST, $validationRules);
-        
-        if (!$validatedData) {
+        $validatedData = InputValidator::validateFields($_POST, $validationRules);
+        if (!$validatedData || !$validatedData['valid']) {
             SessionManager::setFlashMessage(InputValidator::getFirstError(), 'error');
             header("Location: ../pages/request.php");
             exit();
         }
 
-        $supplies_id = $validatedData['supplies_id'];
-        $quantity = $validatedData['quantity'];
+        $supplies_id = $validatedData['fields']['supplies_id']['value'];
+        $quantity = $validatedData['fields']['quantity']['value'];
 
         // Get current user data
         $userData = SessionManager::getCurrentUser();

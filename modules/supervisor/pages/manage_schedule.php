@@ -100,6 +100,7 @@ $userData = AuthMiddleware::configurePage([
                         <div class="card-body">
                             <div id="alert-container" class="mt-3"></div>
                             <form id="scheduleForm">
+                                <?php if (function_exists('CSRFProtection::getTokenField')) { echo CSRFProtection::getTokenField(); } else if (class_exists('CSRFProtection')) { echo CSRFProtection::getTokenField(); } ?>
                                 <div class="row">
                                     <div class="col-md-6 mb-4">
                                         <div class="card">
@@ -682,15 +683,31 @@ $userData = AuthMiddleware::configurePage([
                 location: location,
             });
 
+            // Get CSRF token from meta tag or PHP variable
+            let csrfToken = '';
+            const meta = document.querySelector('meta[name="csrf-token"]');
+            if (meta) {
+                csrfToken = meta.getAttribute('content');
+            } else if (window.csrfToken) {
+                csrfToken = window.csrfToken;
+            } else {
+                // Try to find a hidden input in the DOM
+                const input = document.querySelector('input[name="csrf_token"]');
+                if (input) csrfToken = input.value;
+            }
+
             const xhr = new XMLHttpRequest();
             xhr.open('POST', '../api/save_schedule.php', true);
             xhr.setRequestHeader('Content-Type', 'application/json');
+            if (csrfToken) {
+                xhr.setRequestHeader('X-CSRF-Token', csrfToken);
+            }
             xhr.onload = function () {
                 if (xhr.status === 200) {
                     try {
                         const response = JSON.parse(xhr.responseText);
                         if (response.success) {
-                            alert(response.success);
+                            alert('Schedule saved successfully!');
 
                             const schedule = {
                                 staff_id: staffId,

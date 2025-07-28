@@ -269,7 +269,25 @@ $result = $stmt->get_result();
 
             printWindow.document.write('<html><head><title>Staff Performance Assessment, Recording and Keeping</title>');
             printWindow.document.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">');
-            printWindow.document.write('<style>body { padding: 20px; } .header { margin-bottom: 20px; text-align: center; } .logo { width: 200px; height: auto; margin-bottom: 15px; } h1 { color: #800000; margin-top: 20px; } table { width: 100%; border-collapse: collapse; } th { background-color: #800000; color: white; } </style>');
+            printWindow.document.write('<style>');
+            printWindow.document.write('body { padding: 20px; font-family: Arial, sans-serif; }');
+            printWindow.document.write('.header { margin-bottom: 20px; }');
+            printWindow.document.write('.logo { width: 200px; height: auto; }');
+            printWindow.document.write('h1 { color: #800000; margin-top: 20px; }');
+            printWindow.document.write('table { width: 100%; border-collapse: collapse; margin-top: 20px; }');
+            printWindow.document.write('th, td { border: 1px solid #000; padding: 8px 12px; text-align: left; }');
+            printWindow.document.write('th { background-color: #800000; color: white; font-weight: bold; }');
+            printWindow.document.write('tr:nth-child(even) { background-color: #f9f9f9; }');
+            printWindow.document.write('tr:nth-child(odd) { background-color: #ffffff; }');
+            printWindow.document.write('.badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }');
+            printWindow.document.write('.badge-gold { background-color: #FFD700; color: #000; }');
+            printWindow.document.write('.badge-silver { background-color: #C0C0C0; color: #000; }');
+            printWindow.document.write('.badge-bronze { background-color: #CD7F32; color: #fff; }');
+            printWindow.document.write('.text-success { color: #28a745 !important; font-weight: bold; }');
+            printWindow.document.write('.text-warning { color: #ffc107 !important; font-weight: bold; }');
+            printWindow.document.write('.text-danger { color: #dc3545 !important; font-weight: bold; }');
+            printWindow.document.write('.trophy-icon { margin-right: 5px; }');
+            printWindow.document.write('</style>');
             printWindow.document.write('</head><body>');
 
             printWindow.document.write('<div class="header">');
@@ -277,16 +295,69 @@ $result = $stmt->get_result();
             printWindow.document.write('<h1>Leaderboard History</h1>');
             printWindow.document.write('</div>');
 
-            printWindow.document.write('<table class="table table-bordered">' + tableClone.outerHTML + '</table>');
-            printWindow.document.write('<div class="mt-4 text-center text-muted"><small>Generated on ' + new Date().toLocaleString() + '</small></div>');
+            printWindow.document.write('<table>' + tableClone.innerHTML + '</table>');
+            printWindow.document.write('<div style="margin-top: 20px; text-align: center; color: #666; font-size: 0.9rem;">Generated on ' + new Date().toLocaleString() + '</div>');
             printWindow.document.write('</body></html>');
 
             printWindow.document.close();
-            printWindow.document.querySelector('img').onload = function () {
-                printWindow.focus();
-                printWindow.print();
-                printWindow.close();
-            };
+
+            // Enhanced print handling with multiple fallbacks (same as leaderboard)
+            let printExecuted = false;
+            let attempts = 0;
+            const maxAttempts = 3;
+
+            function executePrint() {
+                if (printExecuted || attempts >= maxAttempts) return;
+
+                attempts++;
+                printExecuted = true;
+
+                try {
+                    printWindow.focus();
+                    printWindow.print();
+                    printWindow.close(); // Auto-close after print dialog
+                } catch (error) {
+                    console.warn('Print attempt failed:', error);
+                    printExecuted = false; // Reset for retry
+
+                    if (attempts < maxAttempts) {
+                        setTimeout(executePrint, 500);
+                    } else {
+                        printWindow.close();
+                        alert('Print failed. Please try again.');
+                    }
+                }
+            }
+
+            // Multiple approaches to trigger print
+            const img = printWindow.document.querySelector('img');
+
+            if (img) {
+                // Method 1: Image load event
+                img.onload = executePrint;
+                img.onerror = executePrint;
+            }
+
+            // Method 2: Document ready state
+            if (printWindow.document.readyState === 'complete') {
+                setTimeout(executePrint, 100);
+            } else {
+                printWindow.document.addEventListener('DOMContentLoaded', executePrint);
+            }
+
+            // Method 3: Fallback timers
+            setTimeout(executePrint, 1000);  // 1 second fallback
+            setTimeout(executePrint, 3000);  // 3 second fallback (final)
+
+            // Method 4: Window load event
+            printWindow.addEventListener('load', executePrint);
+
+            // Emergency cleanup if window is still open after 10 seconds
+            setTimeout(() => {
+                if (!printWindow.closed) {
+                    printWindow.close();
+                }
+            }, 10000);
         });
     </script>
 </body>
