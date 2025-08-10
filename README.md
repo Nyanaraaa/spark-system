@@ -1,7 +1,7 @@
-﻿# SPARK System
+# SPARK System
 > **Staff Performance Assessment, Recording and Keeping**
 
-A web-based management system for housekeeping teams. SPARK helps staff submit their daily progress reports, lets supervisors provide feedback, evaluate perfromance, manage staff records, handle scheduling and location assignments. The system also includes inventory tracking and a leaderboard to recognize top performers.
+A web-based management system for housekeeping teams. SPARK helps staff submit their daily progress reports, lets supervisors provide feedback, evaluate performance, manage staff records, handle scheduling and location assignments. The system also includes inventory tracking and a leaderboard to recognize top performers.
 
 ## 🎯 Features & User Roles
 
